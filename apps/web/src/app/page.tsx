@@ -1,16 +1,25 @@
-/**
- * Página placeholder — se reemplaza por el shell y el login OTP cuando
- * arranque la implementación de páginas (paso 2 del proyecto).
- */
-export default function Home() {
+'use client';
+
+import { useRouter } from 'next/navigation';
+import { useEffect } from 'react';
+
+import { useFaroStore } from '../store/use-faro-store';
+import { perfilHomePath } from '../lib/utils/perfil';
+
+export default function Index() {
+  const router = useRouter();
+  const hidratado = useFaroStore((s) => s.hidratado);
+  const sesion = useFaroStore((s) => s.sesion);
+
+  useEffect(() => {
+    if (!hidratado) return;
+    if (sesion) router.replace(perfilHomePath[sesion.perfilActivo]);
+    else router.replace('/login');
+  }, [hidratado, sesion, router]);
+
   return (
-    <main className="flex min-h-dvh items-center justify-center p-6">
-      <div className="max-w-md text-center">
-        <h1 className="text-3xl font-semibold">Faro</h1>
-        <p className="mt-2 text-slate-600">
-          Andamiaje listo. Esperando documentación de producto para arrancar la implementación.
-        </p>
-      </div>
-    </main>
+    <div className="min-h-dvh grid place-items-center bg-slate-50">
+      <div className="h-8 w-8 rounded-full border-4 border-brand-200 border-t-brand-600 animate-spin" />
+    </div>
   );
 }
