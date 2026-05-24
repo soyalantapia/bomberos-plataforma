@@ -7,6 +7,8 @@ import { Button, Card, CardContent, Kpi, useToast } from '@faro/ui';
 
 import { PageHero } from '../../../components/shared/page-hero';
 import { FiltersBar, type FilterChip } from '../../../components/shared/filters-bar';
+import { useRouter } from 'next/navigation';
+
 import { PersonaCard } from '../../../components/personal/persona-card';
 import {
   clasificarCuerpo,
@@ -24,6 +26,7 @@ export default function PadronPage() {
   const cuartel = useFaroStore(selectCuartelActivo);
   const allPersonas = useFaroStore((s) => s.personas);
   const toast = useToast();
+  const router = useRouter();
 
   const personas = useMemo(
     () => allPersonas.filter((p) => p.cuartelId === cuartel?.id),
@@ -232,14 +235,7 @@ export default function PadronPage() {
             <PersonaCard
               key={p.id}
               persona={p}
-              onClick={() =>
-                toast.push({
-                  kind: 'info',
-                  title: `${p.nombre} ${p.apellido}`,
-                  description:
-                    'Ficha completa próximamente — incluye 8 sub-fichas (Datos, Salud, Familia, Laboral, Formación, Cursos, Lic. conducir, Destino).',
-                })
-              }
+              onClick={() => router.push(`/administrativo/personas/${p.id}` as never)}
             />
           ))}
         </div>
