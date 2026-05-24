@@ -1,6 +1,6 @@
 'use client';
 
-import { Bell, Flame, LogOut, Menu, X } from 'lucide-react';
+import { Bell, Flame, LogOut, Menu, Search, X } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
@@ -126,6 +126,13 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             <span>{perfilLabel[sesion.perfilActivo]}</span>
           </div>
           <div className="flex-1" />
+          <Link
+            href="/buscar"
+            className="grid h-9 w-9 place-items-center rounded-lg text-slate-700 hover:bg-slate-100"
+            aria-label="Búsqueda global"
+          >
+            <Search size={18} />
+          </Link>
           <Link
             href="/notificaciones"
             className="relative grid h-9 w-9 place-items-center rounded-lg text-slate-700 hover:bg-slate-100"
