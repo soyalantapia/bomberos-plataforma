@@ -9,6 +9,7 @@ import type {
   AuditEvent,
   Cuartel,
   Movil,
+  Notificacion,
   Perfil,
   Persona,
   Rendicion,
@@ -21,6 +22,7 @@ import {
   asistenciasMock,
   cuartelesMock,
   movilesMock,
+  notificacionesMock,
   personasMock,
   rendicionMayoMock,
   serviciosMock,
@@ -38,6 +40,7 @@ interface State {
   alertas: Alerta[];
   rendiciones: Record<string, Rendicion>;
   audit: AuditEvent[];
+  notificaciones: Notificacion[];
 }
 
 interface Actions {
@@ -48,6 +51,8 @@ interface Actions {
   crearServicio: (input: Omit<Servicio, 'id' | 'creadoEn' | 'estado'>) => Servicio;
   validarServicio: (servicioId: string, mandoId: string) => void;
   presentarRendicion: (rendicionId: string, mandoId: string) => void;
+  marcarNotifLeida: (id: string) => void;
+  marcarTodasLeidas: () => void;
 }
 
 type FaroStore = State & Actions;
@@ -63,6 +68,7 @@ const initialState: State = {
   alertas: alertasMock,
   rendiciones: { [rendicionMayoMock.id]: rendicionMayoMock },
   audit: [],
+  notificaciones: notificacionesMock,
 };
 
 function recalcularRendicion(state: State, cuartelId: string): State {
@@ -174,6 +180,16 @@ export const useFaroStore = create<FaroStore>()(
         const cuartelId = servicios.find((s) => s.id === servicioId)?.cuartelId;
         set(cuartelId ? recalcularRendicion(after, cuartelId) : after);
       },
+      marcarNotifLeida(id) {
+        set({
+          notificaciones: get().notificaciones.map((n) =>
+            n.id === id ? { ...n, leida: true } : n,
+          ),
+        });
+      },
+      marcarTodasLeidas() {
+        set({ notificaciones: get().notificaciones.map((n) => ({ ...n, leida: true })) });
+      },
       presentarRendicion(rendicionId, mandoId) {
         const r = get().rendiciones[rendicionId];
         if (!r) return;
@@ -196,7 +212,7 @@ export const useFaroStore = create<FaroStore>()(
     }),
     {
       name: 'faro-store',
-      version: 2,
+      version: 3,
       storage: createJSONStorage(() => localStorage),
       partialize: (s) => ({
         sesion: s.sesion,
@@ -204,6 +220,7 @@ export const useFaroStore = create<FaroStore>()(
         asistencias: s.asistencias,
         rendiciones: s.rendiciones,
         cuarteles: s.cuarteles,
+        notificaciones: s.notificaciones,
       }),
       migrate: () => initialState,
       onRehydrateStorage: () => (state) => {

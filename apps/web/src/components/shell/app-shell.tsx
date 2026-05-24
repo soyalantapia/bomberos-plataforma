@@ -1,6 +1,6 @@
 'use client';
 
-import { Flame, LogOut, Menu, X } from 'lucide-react';
+import { Bell, Flame, LogOut, Menu, X } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
@@ -21,6 +21,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const cuartel = useFaroStore(selectCuartelActivo);
   const cerrar = useFaroStore((s) => s.cerrarSesion);
   const hidratado = useFaroStore((s) => s.hidratado);
+  const notifSinLeer = useFaroStore((s) => s.notificaciones.filter((n) => !n.leida).length);
   const pathname = usePathname();
   const [mobileMenu, setMobileMenu] = useState(false);
 
@@ -125,6 +126,18 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             <span>{perfilLabel[sesion.perfilActivo]}</span>
           </div>
           <div className="flex-1" />
+          <Link
+            href="/notificaciones"
+            className="relative grid h-9 w-9 place-items-center rounded-lg text-slate-700 hover:bg-slate-100"
+            aria-label="Notificaciones"
+          >
+            <Bell size={18} />
+            {notifSinLeer > 0 && (
+              <span className="bg-status-risk absolute -right-0.5 -top-0.5 grid h-4 min-w-4 place-items-center rounded-full px-1 text-[10px] font-bold tabular-nums text-white ring-2 ring-white">
+                {notifSinLeer > 9 ? '9+' : notifSinLeer}
+              </span>
+            )}
+          </Link>
           <Link
             href="/seleccionar-perfil"
             className="ml-1 flex items-center gap-2 rounded-lg p-1 pr-2 hover:bg-slate-100"
