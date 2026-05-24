@@ -47,32 +47,36 @@ export function PageHero({
         className,
       )}
     >
-      <div className="flex items-start gap-4">
-        {icono && (
-          <div
-            className={cn(
-              'grid h-12 w-12 shrink-0 place-items-center rounded-xl shadow-sm sm:h-14 sm:w-14',
-              iconVariant[variant],
-            )}
-          >
-            {icono}
-          </div>
-        )}
-        <div className="min-w-0 flex-1">
-          <div className="text-xs font-semibold uppercase tracking-wide text-slate-500">
-            {objetivo}
-          </div>
-          <h1 className="mt-1 text-2xl font-bold text-slate-900 sm:text-3xl">{titulo}</h1>
-          {descripcion && (
-            <p className="mt-1.5 text-sm text-slate-700 sm:text-base">{descripcion}</p>
+      <div className="flex flex-col gap-4 lg:flex-row lg:items-start">
+        <div className="flex min-w-0 flex-1 items-start gap-4">
+          {icono && (
+            <div
+              className={cn(
+                'grid h-12 w-12 shrink-0 place-items-center rounded-xl shadow-sm sm:h-14 sm:w-14',
+                iconVariant[variant],
+              )}
+            >
+              {icono}
+            </div>
           )}
+          <div className="min-w-0 flex-1">
+            <div className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+              {objetivo}
+            </div>
+            <h1 className="mt-1 text-2xl font-bold leading-tight text-slate-900 sm:text-3xl">
+              {titulo}
+            </h1>
+            {descripcion && (
+              <p className="mt-1.5 text-sm text-slate-700 sm:text-base">{descripcion}</p>
+            )}
+          </div>
         </div>
-        {acciones && <div className="hidden shrink-0 gap-2 sm:flex">{acciones}</div>}
+        {acciones && (
+          <div className="flex flex-wrap gap-2 lg:shrink-0 lg:justify-end">{acciones}</div>
+        )}
       </div>
 
       {meta && <div className="mt-4">{meta}</div>}
-
-      {acciones && <div className="mt-4 flex flex-wrap gap-2 sm:hidden">{acciones}</div>}
     </div>
   );
 }
