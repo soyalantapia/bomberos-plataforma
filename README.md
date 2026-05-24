@@ -80,7 +80,7 @@ docker compose up -d
 # 5. Generar cliente Prisma
 pnpm --filter @faro/api prisma:generate
 
-# 6. Dev (web :3000 + api :3001)
+# 6. Dev (web :3010 + api :3011)
 pnpm dev
 ```
 
