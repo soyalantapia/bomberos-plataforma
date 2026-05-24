@@ -21,6 +21,7 @@ import { Badge, Button, Card, CardContent, Kpi, cn, useToast } from '@faro/ui';
 
 import { PageHero } from '../../../../components/shared/page-hero';
 import { FiltersBar, type FilterChip } from '../../../../components/shared/filters-bar';
+import { MapView } from '../../../../components/shared/map-view';
 import { fmtFechaHora, fmtHora } from '../../../../lib/utils/date';
 import { tipoServicioLabel } from '../../../../lib/utils/tipo-servicio';
 import {
@@ -60,6 +61,7 @@ export default function OperacionesPage() {
   const [tab, setTab] = useState<TabTipo>('todos');
   const [estado, setEstado] = useState<EstadoFiltro>('todos');
   const [expandido, setExpandido] = useState<string | null>(null);
+  const [vista, setVista] = useState<'lista' | 'mapa'>('lista');
 
   const servicios = useMemo(
     () =>
@@ -236,140 +238,205 @@ export default function OperacionesPage() {
         </div>
       </Card>
 
-      <FiltersBar chips={tipoChips} chipValue={tab} onChipChange={setTab} />
-      <FiltersBar chips={estadoChips} chipValue={estado} onChipChange={setEstado} />
-
-      <div className="space-y-3">
-        {filtradas.map((s) => {
-          const movil = moviles.find((m) => m.id === s.movilId);
-          const dotacion = s.dotacionIds
-            .map((id) => personas.find((p) => p.id === id))
-            .filter(Boolean);
-          const dur = Math.round(
-            (new Date(s.horaRegreso).getTime() - new Date(s.horaSalida).getTime()) / 60_000,
-          );
-          const isExpanded = expandido === s.id;
-          return (
-            <Card key={s.id} className="overflow-hidden">
-              <button
-                type="button"
-                onClick={() => setExpandido(isExpanded ? null : s.id)}
-                className="w-full p-4 text-left hover:bg-slate-50"
-              >
-                <div className="flex items-start gap-3">
-                  <div
-                    className={cn(
-                      'grid h-12 w-12 shrink-0 place-items-center rounded-xl text-white',
-                      TIPO_COLOR[s.tipo],
-                    )}
-                  >
-                    {TIPO_ICON[s.tipo]}
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <div className="flex flex-wrap items-center gap-2">
-                      <span className="font-semibold text-slate-900">
-                        {tipoServicioLabel[s.tipo]}
-                      </span>
-                      <Badge intent={s.origen === 'app' ? 'brand' : 'neutral'}>
-                        {s.origen === 'app' ? 'vía app' : 'manual'}
-                      </Badge>
-                      {s.estado === 'pendiente_validacion' && (
-                        <Badge intent="warn">Sin validar</Badge>
-                      )}
-                      {s.estado === 'validado' && <Badge intent="ok">Validado</Badge>}
-                    </div>
-                    <div className="mt-1 flex items-center gap-1 text-sm text-slate-700">
-                      <MapPin size={12} className="shrink-0 text-slate-400" />
-                      <span className="truncate">{s.direccion}</span>
-                    </div>
-                    <div className="mt-1 text-xs text-slate-500">
-                      {fmtFechaHora(s.horaSalida)} → {fmtHora(s.horaRegreso)} · {dur} min ·{' '}
-                      {dotacion.length} persona{dotacion.length === 1 ? '' : 's'} ·{' '}
-                      {movil?.codigo ?? '—'}
-                    </div>
-                  </div>
-                  <div className="flex shrink-0 items-center gap-2">
-                    {s.estado === 'pendiente_validacion' && (
-                      <Button
-                        intent="success"
-                        size="sm"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleValidar(s.id);
-                        }}
-                      >
-                        <Check size={14} /> Validar
-                      </Button>
-                    )}
-                    {isExpanded ? (
-                      <ChevronUp size={18} className="text-slate-400" />
-                    ) : (
-                      <ChevronDown size={18} className="text-slate-400" />
-                    )}
-                  </div>
-                </div>
-              </button>
-
-              {isExpanded && (
-                <div className="border-t border-slate-100 bg-slate-50 px-4 py-3 text-sm">
-                  <div className="mb-2 flex items-center gap-2 text-xs uppercase tracking-wide text-slate-500">
-                    <Users size={12} /> Dotación
-                  </div>
-                  <div className="flex flex-wrap gap-2">
-                    {dotacion.map((p) => (
-                      <span
-                        key={p!.id}
-                        className="inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-white px-2.5 py-1 text-xs"
-                      >
-                        <span className="font-medium text-slate-900">
-                          {p!.nombre} {p!.apellido}
-                        </span>
-                        <span className="font-mono text-slate-500">{p!.legajo}</span>
-                      </span>
-                    ))}
-                  </div>
-                  {s.notas && (
-                    <div className="mt-3 rounded-md bg-white p-2 text-slate-700">
-                      <span className="text-xs font-semibold text-slate-500">NOTAS · </span>
-                      {s.notas}
-                    </div>
-                  )}
-                  <div className="mt-3 grid grid-cols-2 gap-2 text-xs text-slate-600 sm:grid-cols-4">
-                    <div>
-                      <div className="text-slate-500">GPS</div>
-                      <div className="font-mono">
-                        {s.lat.toFixed(4)}, {s.lng.toFixed(4)}
-                      </div>
-                    </div>
-                    <div>
-                      <div className="text-slate-500">Móvil</div>
-                      <div className="font-medium">
-                        {movil?.codigo} · {movil?.tipo}
-                      </div>
-                    </div>
-                    <div>
-                      <div className="text-slate-500">Duración</div>
-                      <div className="font-medium">{dur} min</div>
-                    </div>
-                    <div>
-                      <div className="text-slate-500">Origen</div>
-                      <div className="font-medium capitalize">{s.origen}</div>
-                    </div>
-                  </div>
-                </div>
-              )}
-            </Card>
-          );
-        })}
-
-        {filtradas.length === 0 && (
-          <Card>
-            <CardContent className="p-6 text-center text-sm text-slate-500">
-              Sin servicios con esos filtros.
-            </CardContent>
-          </Card>
-        )}
+      <div className="flex gap-2">
+        <button
+          type="button"
+          onClick={() => setVista('lista')}
+          className={cn(
+            'inline-flex items-center gap-2 rounded-full px-3.5 py-2 text-sm font-medium transition-colors',
+            vista === 'lista'
+              ? 'bg-brand-600 text-white'
+              : 'bg-white text-slate-700 ring-1 ring-slate-200 hover:bg-slate-50',
+          )}
+        >
+          <Activity size={14} /> Lista
+        </button>
+        <button
+          type="button"
+          onClick={() => setVista('mapa')}
+          className={cn(
+            'inline-flex items-center gap-2 rounded-full px-3.5 py-2 text-sm font-medium transition-colors',
+            vista === 'mapa'
+              ? 'bg-brand-600 text-white'
+              : 'bg-white text-slate-700 ring-1 ring-slate-200 hover:bg-slate-50',
+          )}
+        >
+          <MapPin size={14} /> Mapa
+        </button>
       </div>
+
+      {vista === 'mapa' ? (
+        <Card className="overflow-hidden p-0">
+          <MapView
+            center={
+              cuartel ? { lat: cuartel.lat, lng: cuartel.lng } : { lat: -34.5476, lng: -58.5556 }
+            }
+            zoom={13}
+            pins={filtradas.map((s) => ({
+              id: s.id,
+              lat: s.lat,
+              lng: s.lng,
+              color: TIPO_COLOR[s.tipo],
+              label: s.tipo[0]?.toUpperCase() ?? '',
+              popup:
+                '<div style="font-family:system-ui;padding:4px 2px;min-width:180px">' +
+                '<div style="font-weight:700;color:#0f172a;font-size:13px">' +
+                tipoServicioLabel[s.tipo] +
+                '</div>' +
+                '<div style="font-size:12px;color:#475569;margin-top:2px">' +
+                s.direccion +
+                '</div>' +
+                '<div style="font-size:11px;color:#94a3b8;margin-top:4px">' +
+                fmtFechaHora(s.horaSalida) +
+                ' · ' +
+                s.dotacionIds.length +
+                'p</div>' +
+                '</div>',
+            }))}
+          />
+        </Card>
+      ) : null}
+
+      {vista === 'lista' && (
+        <>
+          <FiltersBar chips={tipoChips} chipValue={tab} onChipChange={setTab} />
+          <FiltersBar chips={estadoChips} chipValue={estado} onChipChange={setEstado} />
+        </>
+      )}
+
+      {vista === 'lista' && (
+        <div className="space-y-3">
+          {filtradas.map((s) => {
+            const movil = moviles.find((m) => m.id === s.movilId);
+            const dotacion = s.dotacionIds
+              .map((id) => personas.find((p) => p.id === id))
+              .filter(Boolean);
+            const dur = Math.round(
+              (new Date(s.horaRegreso).getTime() - new Date(s.horaSalida).getTime()) / 60_000,
+            );
+            const isExpanded = expandido === s.id;
+            return (
+              <Card key={s.id} className="overflow-hidden">
+                <button
+                  type="button"
+                  onClick={() => setExpandido(isExpanded ? null : s.id)}
+                  className="w-full p-4 text-left hover:bg-slate-50"
+                >
+                  <div className="flex items-start gap-3">
+                    <div
+                      className={cn(
+                        'grid h-12 w-12 shrink-0 place-items-center rounded-xl text-white',
+                        TIPO_COLOR[s.tipo],
+                      )}
+                    >
+                      {TIPO_ICON[s.tipo]}
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <span className="font-semibold text-slate-900">
+                          {tipoServicioLabel[s.tipo]}
+                        </span>
+                        <Badge intent={s.origen === 'app' ? 'brand' : 'neutral'}>
+                          {s.origen === 'app' ? 'vía app' : 'manual'}
+                        </Badge>
+                        {s.estado === 'pendiente_validacion' && (
+                          <Badge intent="warn">Sin validar</Badge>
+                        )}
+                        {s.estado === 'validado' && <Badge intent="ok">Validado</Badge>}
+                      </div>
+                      <div className="mt-1 flex items-center gap-1 text-sm text-slate-700">
+                        <MapPin size={12} className="shrink-0 text-slate-400" />
+                        <span className="truncate">{s.direccion}</span>
+                      </div>
+                      <div className="mt-1 text-xs text-slate-500">
+                        {fmtFechaHora(s.horaSalida)} → {fmtHora(s.horaRegreso)} · {dur} min ·{' '}
+                        {dotacion.length} persona{dotacion.length === 1 ? '' : 's'} ·{' '}
+                        {movil?.codigo ?? '—'}
+                      </div>
+                    </div>
+                    <div className="flex shrink-0 items-center gap-2">
+                      {s.estado === 'pendiente_validacion' && (
+                        <Button
+                          intent="success"
+                          size="sm"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleValidar(s.id);
+                          }}
+                        >
+                          <Check size={14} /> Validar
+                        </Button>
+                      )}
+                      {isExpanded ? (
+                        <ChevronUp size={18} className="text-slate-400" />
+                      ) : (
+                        <ChevronDown size={18} className="text-slate-400" />
+                      )}
+                    </div>
+                  </div>
+                </button>
+
+                {isExpanded && (
+                  <div className="border-t border-slate-100 bg-slate-50 px-4 py-3 text-sm">
+                    <div className="mb-2 flex items-center gap-2 text-xs uppercase tracking-wide text-slate-500">
+                      <Users size={12} /> Dotación
+                    </div>
+                    <div className="flex flex-wrap gap-2">
+                      {dotacion.map((p) => (
+                        <span
+                          key={p!.id}
+                          className="inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-white px-2.5 py-1 text-xs"
+                        >
+                          <span className="font-medium text-slate-900">
+                            {p!.nombre} {p!.apellido}
+                          </span>
+                          <span className="font-mono text-slate-500">{p!.legajo}</span>
+                        </span>
+                      ))}
+                    </div>
+                    {s.notas && (
+                      <div className="mt-3 rounded-md bg-white p-2 text-slate-700">
+                        <span className="text-xs font-semibold text-slate-500">NOTAS · </span>
+                        {s.notas}
+                      </div>
+                    )}
+                    <div className="mt-3 grid grid-cols-2 gap-2 text-xs text-slate-600 sm:grid-cols-4">
+                      <div>
+                        <div className="text-slate-500">GPS</div>
+                        <div className="font-mono">
+                          {s.lat.toFixed(4)}, {s.lng.toFixed(4)}
+                        </div>
+                      </div>
+                      <div>
+                        <div className="text-slate-500">Móvil</div>
+                        <div className="font-medium">
+                          {movil?.codigo} · {movil?.tipo}
+                        </div>
+                      </div>
+                      <div>
+                        <div className="text-slate-500">Duración</div>
+                        <div className="font-medium">{dur} min</div>
+                      </div>
+                      <div>
+                        <div className="text-slate-500">Origen</div>
+                        <div className="font-medium capitalize">{s.origen}</div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </Card>
+            );
+          })}
+
+          {filtradas.length === 0 && (
+            <Card>
+              <CardContent className="p-6 text-center text-sm text-slate-500">
+                Sin servicios con esos filtros.
+              </CardContent>
+            </Card>
+          )}
+        </div>
+      )}
     </div>
   );
 }

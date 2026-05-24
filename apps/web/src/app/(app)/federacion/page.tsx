@@ -1,13 +1,16 @@
 'use client';
 
-import { AlertTriangle, Flag, TrendingUp, Users } from 'lucide-react';
+import { AlertTriangle, Flag, MapPin, TrendingUp, Users } from 'lucide-react';
+import { useState } from 'react';
 
 import { Badge, Card, CardContent, CardHeader, CardTitle, cn, Kpi, StatusPill } from '@faro/ui';
 
+import { MapView } from '../../../components/shared/map-view';
 import { PageHero } from '../../../components/shared/page-hero';
 import { useFaroStore } from '../../../store/use-faro-store';
 
 export default function TableroFederacion() {
+  const [vista, setVista] = useState<'semaforo' | 'mapa'>('semaforo');
   const cuarteles = useFaroStore((s) => s.cuarteles);
   const servicios = useFaroStore((s) => s.servicios);
   const personas = useFaroStore((s) => s.personas);
@@ -61,52 +64,116 @@ export default function TableroFederacion() {
         }
       />
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Cuarteles · Semáforo</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-            {cuarteles.map((c) => {
-              const mostrarCiudad = c.ciudad && c.ciudad.toLowerCase() !== c.nombre.toLowerCase();
-              return (
-                <div
-                  key={c.id}
-                  className="flex cursor-pointer flex-col items-center rounded-xl border border-slate-200 p-4 text-center transition-all hover:-translate-y-0.5 hover:shadow-md"
-                >
+      <div className="flex gap-2">
+        <button
+          type="button"
+          onClick={() => setVista('semaforo')}
+          className={cn(
+            'inline-flex items-center gap-2 rounded-full px-3.5 py-2 text-sm font-medium transition-colors',
+            vista === 'semaforo'
+              ? 'bg-brand-600 text-white'
+              : 'bg-white text-slate-700 ring-1 ring-slate-200 hover:bg-slate-50',
+          )}
+        >
+          <Flag size={14} /> Semáforo
+        </button>
+        <button
+          type="button"
+          onClick={() => setVista('mapa')}
+          className={cn(
+            'inline-flex items-center gap-2 rounded-full px-3.5 py-2 text-sm font-medium transition-colors',
+            vista === 'mapa'
+              ? 'bg-brand-600 text-white'
+              : 'bg-white text-slate-700 ring-1 ring-slate-200 hover:bg-slate-50',
+          )}
+        >
+          <MapPin size={14} /> Mapa
+        </button>
+      </div>
+
+      {vista === 'mapa' && (
+        <Card className="overflow-hidden p-0">
+          <MapView
+            center={{ lat: -34.5, lng: -58.55 }}
+            zoom={10}
+            pins={cuarteles.map((c) => ({
+              id: c.id,
+              lat: c.lat,
+              lng: c.lng,
+              color:
+                c.cumplimiento === 'ok'
+                  ? 'bg-status-ok'
+                  : c.cumplimiento === 'warn'
+                    ? 'bg-status-warn'
+                    : 'bg-status-risk',
+              label: String(c.porcentajeRendicion),
+              popup:
+                '<div style="font-family:system-ui;padding:4px 2px;min-width:200px">' +
+                '<div style="font-weight:700;color:#0f172a;font-size:14px">' +
+                c.nombre +
+                '</div>' +
+                '<div style="font-size:12px;color:#475569;margin-top:2px">' +
+                c.ciudad +
+                ', ' +
+                c.provincia +
+                '</div>' +
+                '<div style="margin-top:6px;padding-top:6px;border-top:1px solid #e2e8f0;font-size:11px;color:#94a3b8">Cumplimiento: <strong style="color:#0f172a">' +
+                c.porcentajeRendicion +
+                '%</strong></div>' +
+                '</div>',
+            }))}
+          />
+        </Card>
+      )}
+
+      {vista === 'semaforo' && (
+        <Card>
+          <CardHeader>
+            <CardTitle>Cuarteles · Semáforo</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+              {cuarteles.map((c) => {
+                const mostrarCiudad = c.ciudad && c.ciudad.toLowerCase() !== c.nombre.toLowerCase();
+                return (
                   <div
-                    className={cn(
-                      'mb-2 grid h-16 w-16 place-items-center rounded-full text-lg font-bold text-white shadow-sm',
-                      c.cumplimiento === 'ok' && 'bg-status-ok',
-                      c.cumplimiento === 'warn' && 'bg-status-warn',
-                      c.cumplimiento === 'risk' && 'bg-status-risk',
-                      c.cumplimiento === 'neutral' && 'bg-status-neutral',
-                    )}
+                    key={c.id}
+                    className="flex cursor-pointer flex-col items-center rounded-xl border border-slate-200 p-4 text-center transition-all hover:-translate-y-0.5 hover:shadow-md"
                   >
-                    {c.porcentajeRendicion}
+                    <div
+                      className={cn(
+                        'mb-2 grid h-16 w-16 place-items-center rounded-full text-lg font-bold text-white shadow-sm',
+                        c.cumplimiento === 'ok' && 'bg-status-ok',
+                        c.cumplimiento === 'warn' && 'bg-status-warn',
+                        c.cumplimiento === 'risk' && 'bg-status-risk',
+                        c.cumplimiento === 'neutral' && 'bg-status-neutral',
+                      )}
+                    >
+                      {c.porcentajeRendicion}
+                    </div>
+                    <div className="font-semibold text-slate-900">{c.nombre}</div>
+                    {mostrarCiudad && <div className="text-xs text-slate-500">{c.ciudad}</div>}
                   </div>
-                  <div className="font-semibold text-slate-900">{c.nombre}</div>
-                  {mostrarCiudad && <div className="text-xs text-slate-500">{c.ciudad}</div>}
-                </div>
-              );
-            })}
-          </div>
-          <div className="mt-4 flex flex-wrap items-center gap-4 border-t border-slate-100 px-1 py-3 text-sm">
-            <div className="flex items-center gap-1.5">
-              <span className="bg-status-ok h-3 w-3 rounded-full" />
-              En regla ({enRegla.length})
+                );
+              })}
             </div>
-            <div className="flex items-center gap-1.5">
-              <span className="bg-status-warn h-3 w-3 rounded-full" />
-              Atención ({atencion.length})
+            <div className="mt-4 flex flex-wrap items-center gap-4 border-t border-slate-100 px-1 py-3 text-sm">
+              <div className="flex items-center gap-1.5">
+                <span className="bg-status-ok h-3 w-3 rounded-full" />
+                En regla ({enRegla.length})
+              </div>
+              <div className="flex items-center gap-1.5">
+                <span className="bg-status-warn h-3 w-3 rounded-full" />
+                Atención ({atencion.length})
+              </div>
+              <div className="flex items-center gap-1.5">
+                <span className="bg-status-risk h-3 w-3 rounded-full" />
+                En riesgo ({enRiesgo.length})
+              </div>
             </div>
-            <div className="flex items-center gap-1.5">
-              <span className="bg-status-risk h-3 w-3 rounded-full" />
-              En riesgo ({enRiesgo.length})
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
+      )}
 
       <div className="grid gap-5 lg:grid-cols-3">
         <Card className="lg:col-span-1">
