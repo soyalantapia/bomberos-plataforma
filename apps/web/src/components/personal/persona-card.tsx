@@ -12,7 +12,6 @@ import {
   detectarAlertasPersona,
   disponibleAhora,
 } from '../../lib/utils/cuerpo';
-import { fmtJerarquia } from '../../lib/utils/jerarquia';
 
 interface Props {
   persona: Persona;
@@ -55,9 +54,7 @@ export function PersonaCard({ persona, onClick, compact = false }: Props) {
             </div>
             <div className="shrink-0 font-mono text-xs text-slate-500">{persona.legajo}</div>
           </div>
-          <div className="mt-0.5 truncate text-xs text-slate-600">
-            {fmtJerarquia(persona.jerarquia)} · {persona.funcion}
-          </div>
+          <div className="mt-0.5 truncate text-xs text-slate-600">{persona.funcion}</div>
 
           {!compact && (alertas.length > 0 || persona.estado !== 'activo') && (
             <div className="mt-2 flex flex-wrap gap-1.5">
@@ -80,10 +77,10 @@ export function PersonaCard({ persona, onClick, compact = false }: Props) {
           )}
         </div>
 
-        <div className="hidden shrink-0 flex-col items-end gap-1.5 sm:flex">
+        <div className="hidden shrink-0 flex-col items-end gap-1.5 md:flex">
           <Badge
             intent={cuerpo === 'mando' ? 'warn' : cuerpo === 'cadete' ? 'ok' : 'neutral'}
-            className="capitalize"
+            className="whitespace-nowrap capitalize"
           >
             {cuerpoLabel[cuerpo]}
           </Badge>
@@ -93,15 +90,16 @@ export function PersonaCard({ persona, onClick, compact = false }: Props) {
       </div>
 
       {!compact && (
-        <div className="hidden items-center gap-4 border-t border-slate-100 bg-slate-50/50 px-4 py-2 text-xs text-slate-600 sm:flex">
-          <span className="inline-flex items-center gap-1">
-            <Mail size={12} /> {persona.email}
+        <div className="hidden items-center gap-4 border-t border-slate-100 bg-slate-50/50 px-4 py-2 text-xs text-slate-600 lg:flex">
+          <span className="inline-flex min-w-0 items-center gap-1 truncate">
+            <Mail size={12} className="shrink-0" />{' '}
+            <span className="truncate">{persona.email}</span>
           </span>
-          <span className="inline-flex items-center gap-1">
+          <span className="inline-flex shrink-0 items-center gap-1">
             <Phone size={12} /> {persona.telefono}
           </span>
           {persona.licenciaConducirCategorias && persona.licenciaConducirCategorias.length > 0 && (
-            <span className="ml-auto inline-flex items-center gap-1 font-mono">
+            <span className="ml-auto inline-flex shrink-0 items-center gap-1 font-mono">
               Cat. {persona.licenciaConducirCategorias.join('·')}
             </span>
           )}

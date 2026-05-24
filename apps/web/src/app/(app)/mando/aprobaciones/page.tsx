@@ -125,7 +125,7 @@ export default function AprobacionesPage() {
         titulo={
           pendientes.length === 0
             ? 'Nada para decidir hoy'
-            : `${pendientes.length} decisión${pendientes.length === 1 ? '' : 'es'} esperan tu firma`
+            : `${pendientes.length} ${pendientes.length === 1 ? 'decisión espera' : 'decisiones esperan'} tu firma`
         }
         descripcion="Cada decisión queda firmada en audit log con tu nombre, fecha y motivo. Doble check obligatorio en sanciones."
         icono={<ClipboardCheck size={26} />}
@@ -145,18 +145,21 @@ export default function AprobacionesPage() {
               intent={alta > 0 ? 'risk' : 'ok'}
             />
             <Kpi label="Aprobadas mes" value={aprobadas.length} intent="ok" />
-            <Kpi label="Tiempo medio" value="14 min" hint="decisión" intent="brand" />
+            <Kpi label="Tiempo medio" value={14} hint="min por decisión" intent="brand" />
           </div>
         }
       />
 
-      <div className="grid gap-4 lg:grid-cols-3">
+      <div className="-mx-4 grid snap-x snap-mandatory auto-cols-[85%] grid-flow-col gap-3 overflow-x-auto px-4 pb-2 sm:auto-cols-[60%] lg:mx-0 lg:auto-cols-auto lg:grid-flow-row lg:grid-cols-3 lg:gap-4 lg:px-0 lg:pb-0">
         {(['pendiente', 'aprobada', 'rechazada'] as const).map((estado) => {
           const col = COL_STYLE[estado];
           const lista =
             estado === 'pendiente' ? pendientes : estado === 'aprobada' ? aprobadas : rechazadas;
           return (
-            <div key={estado} className={cn('rounded-2xl p-3 ring-1', col.bg, col.ring)}>
+            <div
+              key={estado}
+              className={cn('snap-start rounded-2xl p-3 ring-1 lg:snap-none', col.bg, col.ring)}
+            >
               <div
                 className={cn('mb-3 flex items-center gap-2 px-1 text-sm font-bold', col.accent)}
               >

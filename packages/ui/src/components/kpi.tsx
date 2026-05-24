@@ -24,13 +24,28 @@ export function Kpi({
   };
 
   return (
-    <div className={cn('rounded-xl border border-slate-200 bg-white p-4 sm:p-5 shadow-sm', className)}>
+    <div
+      className={cn('rounded-xl border border-slate-200 bg-white p-3 shadow-sm sm:p-4', className)}
+    >
       <div className="flex items-start justify-between gap-2">
-        <div className="text-sm text-slate-600 font-medium">{label}</div>
-        {icon && <div className={cn('h-9 w-9 rounded-lg flex items-center justify-center shrink-0', intentBg[intent])}>{icon}</div>}
+        <div className="text-xs font-medium leading-tight text-slate-600 sm:text-sm">{label}</div>
+        {icon && (
+          <div
+            className={cn(
+              'flex h-7 w-7 shrink-0 items-center justify-center rounded-lg sm:h-8 sm:w-8',
+              intentBg[intent],
+            )}
+          >
+            {icon}
+          </div>
+        )}
       </div>
-      <div className="mt-2 text-2xl sm:text-3xl font-bold text-slate-900 tabular-nums">{value}</div>
-      {hint && <div className="mt-1 text-xs text-slate-500">{hint}</div>}
+      <div className="mt-1.5 text-xl font-bold tabular-nums leading-none text-slate-900 sm:text-2xl lg:text-3xl">
+        {value}
+      </div>
+      {hint && (
+        <div className="mt-1 text-[11px] leading-tight text-slate-500 sm:text-xs">{hint}</div>
+      )}
     </div>
   );
 }
