@@ -216,6 +216,7 @@ localStorage.clear(); location.reload();
 - **Mapas con OSM tiles públicos** (MapLibre sin token de Mapbox).
 - **Persistencia del demo en localStorage** (con `version: 2` para forzar reseed cuando cambian los mocks). Dexie está cableada pero el demo no la usa todavía — entra cuando se agregue offline real.
 - **lint no corre por ahora**: el binario de eslint no se resuelve por un bug de pnpm en la instalación actual. Anotado para fase de backend. Typecheck y tests sí corren.
+- **CI workflow parqueado**: `.github/workflows-pending/ci.yml` está listo (typecheck + tests + build + Playwright). Cuando hagas push con credenciales que tengan el scope `workflow` de GitHub, movelo a `.github/workflows/ci.yml` y queda activo.
 
 ---
 
