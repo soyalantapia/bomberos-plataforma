@@ -6,7 +6,7 @@ Contexto persistente del proyecto. Leelo siempre antes de tocar código.
 
 Plataforma de gestión para **bomberos voluntarios** (Argentina). Reemplaza al sistema heredado "GIB" y cierra el circuito **"de la calle al subsidio"**:
 
-> *Capturás una vez, en la calle, desde el teléfono. Asistencia, cómputo, ranking y rendición se arman solos y quedan listos para presentar a tiempo.*
+> _Capturás una vez, en la calle, desde el teléfono. Asistencia, cómputo, ranking y rendición se arman solos y quedan listos para presentar a tiempo._
 
 Se distribuye como **PWA responsive** (web + mobile, instalable, con uso offline en el campo).
 
@@ -33,33 +33,33 @@ Un mismo usuario puede tener más de un perfil y cambia con el **selector de per
 
 ## Stack
 
-| Capa | Elección |
-| --- | --- |
-| Monorepo | pnpm workspaces + Turborepo |
-| Web (PWA) | Next.js 15 (App Router) + React 19 + TypeScript strict |
-| API | NestJS 11 + TypeScript |
-| Estilos | Tailwind CSS v4 + shadcn/ui (Radix) + lucide-react |
-| Animaciones | Framer Motion |
-| Estado | TanStack Query (server) + Zustand (UI) |
-| Formularios | React Hook Form + Zod v4 |
-| Gráficos | Recharts |
-| Mapas / GPS | MapLibre GL + react-map-gl |
-| i18n | next-intl (`es-AR`, voseo) |
-| DB | PostgreSQL + Prisma 6 |
-| Colas / cache | Redis + BullMQ |
-| PWA | Serwist (service worker) + Dexie (IndexedDB) |
-| Auth | Better Auth (OTP passwordless) |
-| IA | `@anthropic-ai/sdk` + Vercel AI SDK |
-| Tests | Vitest (unit) + Playwright (e2e) |
-| CI | GitHub Actions |
+| Capa          | Elección                                               |
+| ------------- | ------------------------------------------------------ |
+| Monorepo      | pnpm workspaces + Turborepo                            |
+| Web (PWA)     | Next.js 15 (App Router) + React 19 + TypeScript strict |
+| API           | NestJS 11 + TypeScript                                 |
+| Estilos       | Tailwind CSS v4 + shadcn/ui (Radix) + lucide-react     |
+| Animaciones   | Framer Motion                                          |
+| Estado        | TanStack Query (server) + Zustand (UI)                 |
+| Formularios   | React Hook Form + Zod v4                               |
+| Gráficos      | Recharts                                               |
+| Mapas / GPS   | MapLibre GL + react-map-gl                             |
+| i18n          | next-intl (`es-AR`, voseo)                             |
+| DB            | PostgreSQL + Prisma 6                                  |
+| Colas / cache | Redis + BullMQ                                         |
+| PWA           | Serwist (service worker) + Dexie (IndexedDB)           |
+| Auth          | Better Auth (OTP passwordless)                         |
+| IA            | `@anthropic-ai/sdk` + Vercel AI SDK                    |
+| Tests         | Vitest (unit) + Playwright (e2e)                       |
+| CI            | GitHub Actions                                         |
 
 ## Estructura
 
 ```
 bomberos-plataforma/
 ├─ apps/
-│  ├─ web/          # Next.js PWA (puerto 3000)
-│  └─ api/          # NestJS (puerto 3001)
+│  ├─ web/          # Next.js PWA (puerto 3010)
+│  └─ api/          # NestJS (puerto 3011)
 ├─ packages/
 │  ├─ ui/           # shadcn/ui compartidos
 │  ├─ types/        # tipos de dominio + esquemas Zod
@@ -79,8 +79,11 @@ pnpm install
 # levantar infra local (postgres + redis)
 docker compose up -d
 
-# dev (web :3000 + api :3001 en paralelo)
+# dev (web :3010 + api :3011 en paralelo)
 pnpm dev
+
+# solo el frontend (no necesita postgres/redis para el demo)
+pnpm --filter @faro/web dev
 
 # calidad
 pnpm lint

@@ -6,7 +6,7 @@ Faro reemplaza al sistema heredado "GIB" y cierra el circuito **"de la calle al 
 
 > Capturás una vez, en la calle, desde el teléfono. Asistencia, cómputo, ranking y rendición se arman solos y quedan listos para presentar a tiempo.
 
-> **Estado actual:** andamiaje del repositorio (paso 1). Sin features implementadas todavía. La implementación arranca cuando se incorpore la documentación de producto (plan v0.2 + anexo de páginas).
+> **Estado actual:** demo navegable completo (31 pantallas de la spec). Todo el frontend corre con datos en memoria y, opcionalmente, IA real Claude. Backend NestJS preparado pero el demo no lo necesita. Ver [DEMO.md](./DEMO.md) para correrlo y un recorrido guiado.
 
 ---
 
@@ -36,8 +36,8 @@ Detalles y por qué de cada elección en [ARCHITECTURE.md](./ARCHITECTURE.md).
 ```
 bomberos-plataforma/
 ├─ apps/
-│  ├─ web/                # Next.js PWA (puerto 3000)
-│  └─ api/                # NestJS (puerto 3001)
+│  ├─ web/                # Next.js PWA (puerto 3010)
+│  └─ api/                # NestJS (puerto 3011)
 ├─ packages/
 │  ├─ ui/                 # componentes shadcn/ui compartidos
 │  ├─ types/              # tipos de dominio + esquemas Zod
@@ -88,16 +88,16 @@ pnpm dev
 
 ## Comandos principales
 
-| Comando | Qué hace |
-| --- | --- |
-| `pnpm dev` | Levanta web (3000) + api (3001) en paralelo |
-| `pnpm build` | Build de producción de todo el monorepo |
-| `pnpm lint` | ESLint en todo el monorepo |
-| `pnpm typecheck` | TypeScript strict check |
-| `pnpm test` | Tests unitarios (Vitest) |
-| `pnpm test:e2e` | Tests end-to-end (Playwright) |
-| `pnpm format` | Prettier en todo el código |
-| `docker compose up -d` | Postgres + Redis locales |
+| Comando                | Qué hace                                    |
+| ---------------------- | ------------------------------------------- |
+| `pnpm dev`             | Levanta web (3010) + api (3011) en paralelo |
+| `pnpm build`           | Build de producción de todo el monorepo     |
+| `pnpm lint`            | ESLint en todo el monorepo                  |
+| `pnpm typecheck`       | TypeScript strict check                     |
+| `pnpm test`            | Tests unitarios (Vitest)                    |
+| `pnpm test:e2e`        | Tests end-to-end (Playwright)               |
+| `pnpm format`          | Prettier en todo el código                  |
+| `docker compose up -d` | Postgres + Redis locales                    |
 
 Comandos por workspace:
 
