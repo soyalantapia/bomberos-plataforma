@@ -1,0 +1,19 @@
+// Schema base de Faro — placeholder.
+// El modelado real (Cuartel, Persona/Padrón, Servicio, Asistencia, Cómputo,
+// Rendición, Curso, Documento, AuditLog, etc.) se incorpora en el paso 2
+// cuando lleguen los inputs del plan de producto.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+/// Marcador para inicializar el schema sin entidades reales aún.
+model SchemaSeed {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+}

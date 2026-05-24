@@ -1,0 +1,20 @@
+/**
+ * Estilos base de @faro/ui — se importa desde apps/web.
+ * Tailwind v4 usa @import "tailwindcss" + capas semánticas.
+ */
+@import "tailwindcss";
+
+@theme {
+  --color-status-ok: #16a34a;
+  --color-status-warn: #eab308;
+  --color-status-risk: #dc2626;
+  --color-status-neutral: #64748b;
+
+  --color-brand-50: #eff6ff;
+  --color-brand-500: #2563eb;
+  --color-brand-600: #1d4ed8;
+  --color-brand-900: #0c1e45;
+
+  --radius-glove: 1rem;
+  --spacing-tap: 44px;
+}
