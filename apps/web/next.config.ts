@@ -8,11 +8,13 @@ const withSerwist = withSerwistInit({
   disable: process.env.NODE_ENV === 'development',
 });
 
-/** @type {import('next').NextConfig} */
-const nextConfig = {
+import type { NextConfig } from 'next';
+
+const nextConfig: NextConfig = {
   reactStrictMode: true,
   typedRoutes: true,
   transpilePackages: ['@faro/ui', '@faro/types'],
+  devIndicators: false,
   images: {
     remotePatterns: [],
   },
