@@ -1,8 +1,6 @@
+/// <reference lib="webworker" />
 /**
  * Service Worker de Faro — generado por Serwist.
- * Andamiaje únicamente: el comportamiento offline real (cache de assets,
- * sincronización de servicios cargados sin señal) se completa cuando
- * arranque la implementación de las páginas.
  */
 import { defaultCache } from '@serwist/next/worker';
 import type { PrecacheEntry, SerwistGlobalConfig } from 'serwist';
