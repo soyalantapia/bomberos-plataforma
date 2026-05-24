@@ -4,13 +4,26 @@ import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 
 import type {
-  Alerta, Asistencia, AuditEvent, Cuartel, Movil, Perfil,
-  Persona, Rendicion, Servicio, SesionUsuario,
+  Alerta,
+  Asistencia,
+  AuditEvent,
+  Cuartel,
+  Movil,
+  Perfil,
+  Persona,
+  Rendicion,
+  Servicio,
+  SesionUsuario,
 } from '@faro/types';
 
 import {
-  alertasMock, asistenciasMock, cuartelesMock, movilesMock,
-  personasMock, rendicionMayoMock, serviciosMock,
+  alertasMock,
+  asistenciasMock,
+  cuartelesMock,
+  movilesMock,
+  personasMock,
+  rendicionMayoMock,
+  serviciosMock,
 } from '../data';
 import { calcularComputoMensual } from '../lib/utils/computo';
 
@@ -56,7 +69,9 @@ function recalcularRendicion(state: State, cuartelId: string): State {
   const rendId = 'rend-2026-05';
   const rend = state.rendiciones[rendId];
   if (!rend || rend.cuartelId !== cuartelId) return state;
-  const validados = state.servicios.filter((s) => s.cuartelId === cuartelId && s.estado === 'validado').length;
+  const validados = state.servicios.filter(
+    (s) => s.cuartelId === cuartelId && s.estado === 'validado',
+  ).length;
   const total = state.servicios.filter((s) => s.cuartelId === cuartelId).length;
   const req = rend.requisitos.find((r) => r.id === 'req-servicios');
   if (req) {
@@ -68,13 +83,22 @@ function recalcularRendicion(state: State, cuartelId: string): State {
   rend.porcentaje = Math.round(suma / rend.requisitos.length);
   const cuarteles = state.cuarteles.map((c) =>
     c.id === cuartelId
-      ? { ...c, porcentajeRendicion: rend.porcentaje, cumplimiento: (rend.porcentaje >= 95 ? 'ok' : rend.porcentaje >= 70 ? 'warn' : 'risk') as Cuartel['cumplimiento'] }
-      : c
+      ? {
+          ...c,
+          porcentajeRendicion: rend.porcentaje,
+          cumplimiento: (rend.porcentaje >= 95
+            ? 'ok'
+            : rend.porcentaje >= 70
+              ? 'warn'
+              : 'risk') as Cuartel['cumplimiento'],
+        }
+      : c,
   );
   return { ...state, rendiciones: { ...state.rendiciones, [rendId]: { ...rend } }, cuarteles };
 }
 
-const genId = (prefix: string) => `${prefix}-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 6)}`;
+const genId = (prefix: string) =>
+  `${prefix}-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 6)}`;
 
 export const useFaroStore = create<FaroStore>()(
   persist(
@@ -84,7 +108,9 @@ export const useFaroStore = create<FaroStore>()(
         const persona = get().personas.find((p) => p.id === personaId);
         if (!persona) return;
         const sesion: SesionUsuario = {
-          personaId, cuartelId, perfilActivo,
+          personaId,
+          cuartelId,
+          perfilActivo,
           perfilesDisponibles: persona.perfiles,
           cuartelesDisponibles: get().cuarteles.map((c) => c.id),
           iniciadaEn: new Date().toISOString(),
@@ -99,7 +125,9 @@ export const useFaroStore = create<FaroStore>()(
         const s = get().sesion;
         if (s) set({ sesion: { ...s, cuartelId } });
       },
-      cerrarSesion() { set({ sesion: null }); },
+      cerrarSesion() {
+        set({ sesion: null });
+      },
       crearServicio(input) {
         const servicio: Servicio = {
           ...input,
@@ -107,23 +135,40 @@ export const useFaroStore = create<FaroStore>()(
           creadoEn: new Date().toISOString(),
           estado: 'pendiente_validacion',
         };
-        const horas = Math.max(1, Math.round((new Date(input.horaRegreso).getTime() - new Date(input.horaSalida).getTime()) / 3.6e6));
+        const horas = Math.max(
+          1,
+          Math.round(
+            (new Date(input.horaRegreso).getTime() - new Date(input.horaSalida).getTime()) / 3.6e6,
+          ),
+        );
         const fecha = input.horaSalida.slice(0, 10);
         const nuevas: Asistencia[] = input.dotacionIds.map((pid, idx) => ({
           id: `asist-${servicio.id}-${idx}`,
           cuartelId: input.cuartelId,
-          personaId: pid, fecha, tipo: 'accidental', horas,
+          personaId: pid,
+          fecha,
+          tipo: 'accidental',
+          horas,
           servicioId: servicio.id,
         }));
-        const after = { ...get(), servicios: [servicio, ...get().servicios], asistencias: [...nuevas, ...get().asistencias] };
+        const after = {
+          ...get(),
+          servicios: [servicio, ...get().servicios],
+          asistencias: [...nuevas, ...get().asistencias],
+        };
         set(recalcularRendicion(after, input.cuartelId));
         return servicio;
       },
       validarServicio(servicioId, mandoId) {
         const servicios = get().servicios.map((s) =>
           s.id === servicioId
-            ? { ...s, estado: 'validado' as const, confirmadoPor: mandoId, confirmadoEn: new Date().toISOString() }
-            : s
+            ? {
+                ...s,
+                estado: 'validado' as const,
+                confirmadoPor: mandoId,
+                confirmadoEn: new Date().toISOString(),
+              }
+            : s,
         );
         const after = { ...get(), servicios };
         const cuartelId = servicios.find((s) => s.id === servicioId)?.cuartelId;
@@ -133,16 +178,37 @@ export const useFaroStore = create<FaroStore>()(
         const r = get().rendiciones[rendicionId];
         if (!r) return;
         set({
-          rendiciones: { ...get().rendiciones, [rendicionId]: { ...r, estado: 'presentada', presentadaEn: new Date().toISOString(), presentadaPor: mandoId, porcentaje: 100 } },
-          cuarteles: get().cuarteles.map((c) => c.id === r.cuartelId ? { ...c, porcentajeRendicion: 100, cumplimiento: 'ok' } : c),
+          rendiciones: {
+            ...get().rendiciones,
+            [rendicionId]: {
+              ...r,
+              estado: 'presentada',
+              presentadaEn: new Date().toISOString(),
+              presentadaPor: mandoId,
+              porcentaje: 100,
+            },
+          },
+          cuarteles: get().cuarteles.map((c) =>
+            c.id === r.cuartelId ? { ...c, porcentajeRendicion: 100, cumplimiento: 'ok' } : c,
+          ),
         });
       },
     }),
     {
       name: 'faro-store',
+      version: 2,
       storage: createJSONStorage(() => localStorage),
-      partialize: (s) => ({ sesion: s.sesion, servicios: s.servicios, asistencias: s.asistencias, rendiciones: s.rendiciones, cuarteles: s.cuarteles }),
-      onRehydrateStorage: () => (state) => { if (state) state.hidratado = true; },
+      partialize: (s) => ({
+        sesion: s.sesion,
+        servicios: s.servicios,
+        asistencias: s.asistencias,
+        rendiciones: s.rendiciones,
+        cuarteles: s.cuarteles,
+      }),
+      migrate: () => initialState,
+      onRehydrateStorage: () => (state) => {
+        if (state) state.hidratado = true;
+      },
     },
   ),
 );
@@ -165,7 +231,9 @@ export function selectComputoActual(s: FaroStore, mes: string) {
 }
 export function selectRendicionActual(s: FaroStore) {
   if (!s.sesion) return undefined;
-  return Object.values(s.rendiciones).find((r) => r.cuartelId === s.sesion!.cuartelId && r.periodo === '2026-05');
+  return Object.values(s.rendiciones).find(
+    (r) => r.cuartelId === s.sesion!.cuartelId && r.periodo === '2026-05',
+  );
 }
 export function selectAlertasCuartel(s: FaroStore) {
   if (!s.sesion) return [];

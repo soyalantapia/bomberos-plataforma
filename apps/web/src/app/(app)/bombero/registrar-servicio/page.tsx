@@ -23,7 +23,7 @@ import {
   selectCuartelActivo,
 } from '../../../../store/use-faro-store';
 
-import type { TipoServicio } from '@faro/types';
+import type { PropuestaServicioIA, TipoServicio } from '@faro/types';
 
 type Step = 'tipo' | 'ubicacion' | 'movil' | 'dotacion' | 'horarios' | 'confirmar' | 'listo';
 
@@ -72,24 +72,59 @@ export default function RegistrarServicio() {
   const [horaRegreso, setHoraRegreso] = useState(horaActual);
   const [notas, setNotas] = useState('');
   const [iaUsada, setIaUsada] = useState(false);
+  const [iaTexto, setIaTexto] = useState(PARTE_DEMO);
+  const [iaCargando, setIaCargando] = useState(false);
+  const [iaConfianza, setIaConfianza] = useState<number | null>(null);
 
-  function probarVoz() {
-    // Demo: parser regex simple
-    const t = PARTE_DEMO.toLowerCase();
-    if (t.includes('incendio')) setTipo('incendio');
-    setDireccion('Av. Alvear 4250, Villa Ballester');
-    const m = movilesCuartel.find((m) => m.codigo === 'BV-3');
-    if (m) setMovilId(m.id);
-    setHoraSalida('22:15');
-    setHoraRegreso('23:48');
-    setDotacionIds(personasCuartel.slice(0, 4).map((p) => p.id));
+  function aplicarPropuesta(p: PropuestaServicioIA) {
+    if (p.tipo) setTipo(p.tipo);
+    if (p.direccion) setDireccion(p.direccion);
+    if (p.movilCodigo) {
+      const m = movilesCuartel.find((mo) => mo.codigo === p.movilCodigo);
+      if (m) setMovilId(m.id);
+    }
+    if (p.horaSalida) setHoraSalida(p.horaSalida);
+    if (p.horaRegreso) setHoraRegreso(p.horaRegreso);
+    if (p.dotacionLegajos && p.dotacionLegajos.length > 0) {
+      const ids = p.dotacionLegajos
+        .map((leg) => personasCuartel.find((per) => per.legajo === leg)?.id)
+        .filter(Boolean) as string[];
+      if (ids.length > 0) setDotacionIds(ids);
+    } else if (persona && dotacionIds.length === 0) {
+      setDotacionIds([persona.id]);
+    }
     setIaUsada(true);
-    toast.push({
-      kind: 'success',
-      title: 'IA llenó los campos',
-      description: 'Revisá antes de confirmar.',
-    });
+    setIaConfianza(p.confianza);
     setStep('ubicacion');
+  }
+
+  async function probarVoz() {
+    const texto = iaTexto.trim() || PARTE_DEMO;
+    setIaCargando(true);
+    try {
+      const resp = await fetch('/api/ai/extraer-servicio', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ texto }),
+      });
+      if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+      const json = (await resp.json()) as { propuesta: PropuestaServicioIA };
+      aplicarPropuesta(json.propuesta);
+      toast.push({
+        kind: 'success',
+        title: 'IA llenó los campos',
+        description: `Confianza ${Math.round((json.propuesta.confianza ?? 0.6) * 100)}%. Revisá antes de confirmar.`,
+      });
+    } catch (err) {
+      console.error('[ia voz]', err);
+      toast.push({
+        kind: 'error',
+        title: 'No se pudo procesar el texto',
+        description: 'Intentá de nuevo o cargá manualmente.',
+      });
+    } finally {
+      setIaCargando(false);
+    }
   }
 
   function confirmar() {
@@ -180,13 +215,22 @@ export default function RegistrarServicio() {
               <Sparkles size={20} />
             </div>
             <div className="flex-1">
-              <div className="font-semibold text-slate-900">Cargar por voz</div>
+              <div className="font-semibold text-slate-900">Cargar por voz · IA copiloto</div>
               <p className="mt-0.5 text-sm text-slate-600">
-                Dictás el parte y completamos los campos. Vos revisás y confirmás.
+                Dictás el parte (o lo tipeás) y la IA llena los campos. Vos revisás y confirmás.
               </p>
-              <div className="mt-3 flex flex-wrap gap-2">
-                <Button intent="primary" size="md" onClick={probarVoz}>
-                  <Mic size={18} /> Probar con texto demo
+              <div className="mt-3">
+                <Textarea
+                  value={iaTexto}
+                  onChange={(e) => setIaTexto(e.target.value)}
+                  rows={3}
+                  placeholder="Ej.: Incendio en Av. Alvear 4250, fuimos con BV-3, salimos 22:15..."
+                  disabled={iaCargando}
+                />
+              </div>
+              <div className="mt-3 flex flex-wrap items-center gap-2">
+                <Button intent="primary" size="md" onClick={probarVoz} disabled={iaCargando}>
+                  <Mic size={18} /> {iaCargando ? 'Procesando...' : 'Probar con IA'}
                 </Button>
               </div>
             </div>
@@ -197,9 +241,14 @@ export default function RegistrarServicio() {
       {iaUsada && step !== 'tipo' && (
         <div className="bg-brand-50 border-brand-100 flex items-center gap-2 rounded-lg border p-3 text-sm">
           <Sparkles size={16} className="text-brand-700" />
-          <span className="text-brand-900">
+          <span className="text-brand-900 flex-1">
             La IA propuso una versión. Revisá y ajustá lo que haga falta.
           </span>
+          {iaConfianza !== null && (
+            <span className="bg-brand-100 text-brand-800 rounded-full px-2 py-0.5 text-xs font-semibold">
+              Confianza {Math.round(iaConfianza * 100)}%
+            </span>
+          )}
         </div>
       )}
 
