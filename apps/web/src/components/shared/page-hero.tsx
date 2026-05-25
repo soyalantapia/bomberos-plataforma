@@ -1,5 +1,7 @@
 'use client';
 
+import { motion } from 'framer-motion';
+
 import { cn } from '@faro/ui';
 
 interface PageHeroProps {
@@ -40,7 +42,10 @@ export function PageHero({
   };
 
   return (
-    <div
+    <motion.div
+      initial={{ opacity: 0, y: 12 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
       className={cn(
         'overflow-hidden rounded-2xl border bg-gradient-to-br p-5 sm:p-6',
         variantClasses[variant],
@@ -50,14 +55,17 @@ export function PageHero({
       <div className="flex flex-col gap-4 lg:flex-row lg:items-start">
         <div className="flex min-w-0 flex-1 items-start gap-4">
           {icono && (
-            <div
+            <motion.div
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ delay: 0.1, type: 'spring', stiffness: 220, damping: 18 }}
               className={cn(
                 'grid h-12 w-12 shrink-0 place-items-center rounded-xl shadow-sm sm:h-14 sm:w-14',
                 iconVariant[variant],
               )}
             >
               {icono}
-            </div>
+            </motion.div>
           )}
           <div className="min-w-0 flex-1">
             <div className="text-xs font-semibold uppercase tracking-wide text-slate-500">
@@ -76,7 +84,16 @@ export function PageHero({
         )}
       </div>
 
-      {meta && <div className="mt-4">{meta}</div>}
-    </div>
+      {meta && (
+        <motion.div
+          initial={{ opacity: 0, y: 6 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.15, duration: 0.3 }}
+          className="mt-4"
+        >
+          {meta}
+        </motion.div>
+      )}
+    </motion.div>
   );
 }

@@ -1,5 +1,6 @@
 'use client';
 
+import { motion } from 'framer-motion';
 import {
   Activity,
   AlertTriangle,
@@ -287,8 +288,14 @@ export default function MandoDashboard() {
             </CardHeader>
             <CardContent>
               <ul className="divide-y divide-slate-100">
-                {servicios.slice(0, 6).map((s) => (
-                  <li key={s.id} className="flex items-center gap-3 py-3">
+                {servicios.slice(0, 6).map((s, idx) => (
+                  <motion.li
+                    key={s.id}
+                    initial={{ opacity: 0, x: -8 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.05 + idx * 0.04, duration: 0.3 }}
+                    className="flex items-center gap-3 py-3"
+                  >
                     <div className="bg-fire-100 text-fire-700 grid h-10 w-10 place-items-center rounded-lg text-xs font-bold uppercase">
                       {s.tipo[0]}
                     </div>
@@ -306,7 +313,7 @@ export default function MandoDashboard() {
                     ) : (
                       <Badge intent="ok">Validado</Badge>
                     )}
-                  </li>
+                  </motion.li>
                 ))}
               </ul>
               <div className="mt-3 border-t border-slate-100 pt-3">

@@ -1,5 +1,6 @@
 'use client';
 
+import { AnimatePresence, motion } from 'framer-motion';
 import { Bell, Flame, LogOut, Menu, Search, X } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
@@ -139,11 +140,20 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             aria-label="Notificaciones"
           >
             <Bell size={18} />
-            {notifSinLeer > 0 && (
-              <span className="bg-status-risk absolute -right-0.5 -top-0.5 grid h-4 min-w-4 place-items-center rounded-full px-1 text-[10px] font-bold tabular-nums text-white ring-2 ring-white">
-                {notifSinLeer > 9 ? '9+' : notifSinLeer}
-              </span>
-            )}
+            <AnimatePresence>
+              {notifSinLeer > 0 && (
+                <motion.span
+                  key={`badge-${notifSinLeer}`}
+                  initial={{ scale: 0, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  exit={{ scale: 0, opacity: 0 }}
+                  transition={{ type: 'spring', stiffness: 400, damping: 18 }}
+                  className="bg-status-risk absolute -right-0.5 -top-0.5 grid h-4 min-w-4 place-items-center rounded-full px-1 text-[10px] font-bold tabular-nums text-white ring-2 ring-white"
+                >
+                  {notifSinLeer > 9 ? '9+' : notifSinLeer}
+                </motion.span>
+              )}
+            </AnimatePresence>
           </Link>
           <Link
             href="/seleccionar-perfil"
