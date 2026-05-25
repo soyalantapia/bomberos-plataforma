@@ -13,9 +13,10 @@ export const auth = betterAuth({
     emailOTP({
       otpLength: 6,
       expiresIn: 300,
-      async sendVerificationOTP({ email, otp, type: _type }) {
+      sendVerificationOTP({ email, otp, type: _type }) {
         // TODO: conectar provider real (Resend / Twilio / WhatsApp).
         console.info(`[faro/auth] OTP ${otp} → ${email}`);
+        return Promise.resolve();
       },
     }),
   ],

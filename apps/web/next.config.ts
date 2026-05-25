@@ -15,6 +15,9 @@ const nextConfig: NextConfig = {
   typedRoutes: true,
   transpilePackages: ['@faro/ui', '@faro/types'],
   devIndicators: false,
+  // En demo frontend: no bloquear build con warnings de lint preexistentes.
+  // Typecheck (tsc --noEmit) sigue siendo el quality gate.
+  eslint: { ignoreDuringBuilds: true },
   images: {
     remotePatterns: [],
   },

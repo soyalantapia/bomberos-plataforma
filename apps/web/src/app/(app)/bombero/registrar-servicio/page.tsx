@@ -2,14 +2,19 @@
 
 import {
   ArrowRight,
+  Camera,
   Check,
+  FileImage,
+  ImagePlus,
   MapPin,
   Mic,
+  Paperclip,
   Sparkles,
   Car,
   Flame,
   LifeBuoy,
   MoreHorizontal,
+  Trash2,
   Trees,
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
@@ -75,6 +80,53 @@ export default function RegistrarServicio() {
   const [iaTexto, setIaTexto] = useState(PARTE_DEMO);
   const [iaCargando, setIaCargando] = useState(false);
   const [iaConfianza, setIaConfianza] = useState<number | null>(null);
+
+  // Adjuntos
+  interface Adjunto {
+    id: string;
+    nombre: string;
+    tipo: 'foto' | 'doc' | 'video';
+    pesoKb: number;
+    color: string;
+  }
+  const [adjuntos, setAdjuntos] = useState<Adjunto[]>([]);
+  const [arrastrando, setArrastrando] = useState(false);
+
+  function agregarAdjuntoDemo(tipoArchivo: Adjunto['tipo']) {
+    const nombres = {
+      foto: ['frente_inmueble.jpg', 'interior_lado_derecho.jpg', 'matafuegos_usados.jpg'],
+      doc: ['parte_servicio.pdf', 'acta_policia.pdf'],
+      video: ['movil_en_ruta.mp4'],
+    } as const;
+    const colores = {
+      foto: 'bg-brand-100 text-brand-700',
+      doc: 'bg-status-warn-bg text-status-warn-fg',
+      video: 'bg-fire-100 text-fire-700',
+    } as const;
+    const pool = nombres[tipoArchivo];
+    const usados = adjuntos.filter((a) => a.tipo === tipoArchivo).length;
+    const nombre = pool[Math.min(usados, pool.length - 1)] ?? 'archivo.bin';
+    const pesoKb =
+      tipoArchivo === 'foto'
+        ? Math.round(800 + Math.random() * 1500)
+        : tipoArchivo === 'doc'
+          ? Math.round(150 + Math.random() * 350)
+          : Math.round(5000 + Math.random() * 15000);
+    setAdjuntos((a) => [
+      ...a,
+      {
+        id: `adj-${Date.now()}-${Math.random()}`,
+        nombre,
+        tipo: tipoArchivo,
+        pesoKb,
+        color: colores[tipoArchivo],
+      },
+    ]);
+  }
+
+  function eliminarAdjunto(id: string) {
+    setAdjuntos((a) => a.filter((x) => x.id !== id));
+  }
 
   function aplicarPropuesta(p: PropuestaServicioIA) {
     if (p.tipo) setTipo(p.tipo);
@@ -412,6 +464,120 @@ export default function RegistrarServicio() {
                   placeholder="Detalles del servicio."
                 />
               </div>
+
+              {/* Adjuntos · dropzone + thumbnails */}
+              <div>
+                <Label>Adjuntos (opcional)</Label>
+                <p className="mt-1 text-xs text-slate-500">
+                  Fotos del lugar, parte policial, video del operativo. Suben cifrado al servidor.
+                </p>
+                <div
+                  onDragOver={(e) => {
+                    e.preventDefault();
+                    setArrastrando(true);
+                  }}
+                  onDragLeave={() => setArrastrando(false)}
+                  onDrop={(e) => {
+                    e.preventDefault();
+                    setArrastrando(false);
+                    // Demo: simular subida de la imagen arrastrada
+                    if (e.dataTransfer.files.length > 0) {
+                      agregarAdjuntoDemo('foto');
+                      toast.push({
+                        kind: 'success',
+                        title: 'Foto adjuntada',
+                        description: `${e.dataTransfer.files[0]?.name ?? 'archivo'} cargado`,
+                      });
+                    }
+                  }}
+                  className={cn(
+                    'mt-2 rounded-xl border-2 border-dashed p-4 text-center transition-colors',
+                    arrastrando ? 'border-brand-400 bg-brand-50' : 'border-slate-200 bg-slate-50',
+                  )}
+                >
+                  <Paperclip
+                    size={28}
+                    className={cn('mx-auto', arrastrando ? 'text-brand-600' : 'text-slate-400')}
+                  />
+                  <div className="mt-2 text-sm font-medium text-slate-700">
+                    {arrastrando ? 'Soltá para subir' : 'Arrastrá archivos o tocá un botón'}
+                  </div>
+                  <div className="mt-3 flex flex-wrap items-center justify-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => agregarAdjuntoDemo('foto')}
+                      className="inline-flex h-9 items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 text-xs font-medium text-slate-700 hover:border-slate-300"
+                    >
+                      <Camera size={14} /> Foto
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => agregarAdjuntoDemo('doc')}
+                      className="inline-flex h-9 items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 text-xs font-medium text-slate-700 hover:border-slate-300"
+                    >
+                      <FileImage size={14} /> Documento
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => agregarAdjuntoDemo('video')}
+                      className="inline-flex h-9 items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 text-xs font-medium text-slate-700 hover:border-slate-300"
+                    >
+                      <ImagePlus size={14} /> Video
+                    </button>
+                  </div>
+                </div>
+
+                {adjuntos.length > 0 && (
+                  <div className="mt-3 space-y-2">
+                    <div className="text-xs font-medium text-slate-600">
+                      {adjuntos.length} archivo{adjuntos.length === 1 ? '' : 's'} adjunto
+                      {adjuntos.length === 1 ? '' : 's'}
+                    </div>
+                    <ul className="space-y-1.5">
+                      {adjuntos.map((a) => (
+                        <li
+                          key={a.id}
+                          className="flex items-center gap-2.5 rounded-lg border border-slate-200 bg-white px-2.5 py-2"
+                        >
+                          <div
+                            className={cn(
+                              'grid h-9 w-9 shrink-0 place-items-center rounded-lg',
+                              a.color,
+                            )}
+                          >
+                            {a.tipo === 'foto' ? (
+                              <Camera size={16} />
+                            ) : a.tipo === 'doc' ? (
+                              <FileImage size={16} />
+                            ) : (
+                              <ImagePlus size={16} />
+                            )}
+                          </div>
+                          <div className="min-w-0 flex-1">
+                            <div className="truncate text-sm font-medium text-slate-900">
+                              {a.nombre}
+                            </div>
+                            <div className="text-[11px] text-slate-500">
+                              {a.pesoKb >= 1024
+                                ? (a.pesoKb / 1024).toFixed(1) + ' MB'
+                                : a.pesoKb + ' KB'}{' '}
+                              · subido ✓
+                            </div>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => eliminarAdjunto(a.id)}
+                            className="text-status-risk hover:bg-status-risk-bg/50 grid h-8 w-8 place-items-center rounded-md"
+                            aria-label="Eliminar"
+                          >
+                            <Trash2 size={14} />
+                          </button>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+              </div>
             </div>
           )}
 
@@ -427,6 +593,16 @@ export default function RegistrarServicio() {
                   { k: 'Salida', v: horaSalida },
                   { k: 'Regreso', v: horaRegreso },
                   ...(notas ? [{ k: 'Notas', v: notas }] : []),
+                  ...(adjuntos.length > 0
+                    ? [
+                        {
+                          k: 'Adjuntos',
+                          v: `${adjuntos.length} archivo${adjuntos.length === 1 ? '' : 's'} (${adjuntos
+                            .map((a) => a.tipo)
+                            .join(', ')})`,
+                        },
+                      ]
+                    : []),
                 ].map((f) => (
                   <div key={f.k} className="flex px-3 py-2 text-sm">
                     <div className="w-24 text-slate-500">{f.k}</div>
