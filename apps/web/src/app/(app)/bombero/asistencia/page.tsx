@@ -1,6 +1,6 @@
 'use client';
 
-import { CheckCircle2, Clock, Flame, LogOut, MapPin, Shield } from 'lucide-react';
+import { CheckCircle2, Clock, Flame, LogOut, MapPin, Shield, Target } from 'lucide-react';
 import { useMemo, useState } from 'react';
 
 import type { TipoAsistencia } from '@faro/types';
@@ -9,6 +9,7 @@ import { Badge, Button, Card, CardContent, Kpi, cn, useToast } from '@faro/ui';
 
 import { PageHero } from '../../../../components/shared/page-hero';
 import { FiltersBar, type FilterChip } from '../../../../components/shared/filters-bar';
+import { MapView } from '../../../../components/shared/map-view';
 import { calcularComputoMensual } from '../../../../lib/utils/computo';
 import { fmtFecha, fmtMesPeriodo } from '../../../../lib/utils/date';
 import {
@@ -51,6 +52,8 @@ export default function AsistenciaBombero() {
 
   const [marcado, setMarcado] = useState<{ in?: string; out?: string }>({});
   const [tab, setTab] = useState<TabHist>('todos');
+  // Demo: alternar entre estar adentro y afuera de la geocerca
+  const [adentro, setAdentro] = useState(true);
 
   const propias = useMemo(
     () =>
@@ -96,6 +99,14 @@ export default function AsistenciaBombero() {
   ];
 
   function marcarPresente() {
+    if (!adentro) {
+      toast.push({
+        kind: 'warn',
+        title: 'Fuera de la geocerca',
+        description: 'Estás a más de 200 m del cuartel. Acercate o pedí marca manual a un jefe.',
+      });
+      return;
+    }
     const now = new Date();
     const hora = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
     setMarcado({ in: hora });
@@ -185,6 +196,82 @@ export default function AsistenciaBombero() {
               sincroniza solo.
             </div>
           )}
+        </CardContent>
+      </Card>
+
+      {/* Geocerca · validación por GPS */}
+      <Card className="overflow-hidden">
+        <CardContent className="p-0">
+          <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 px-4 py-3 sm:px-5">
+            <div className="flex items-center gap-2">
+              <Target size={16} className="text-brand-600" />
+              <span className="text-sm font-bold text-slate-900">Geocerca · 200 m del cuartel</span>
+              {adentro ? <Badge intent="ok">Dentro</Badge> : <Badge intent="warn">Fuera</Badge>}
+            </div>
+            <button
+              type="button"
+              onClick={() => setAdentro((a) => !a)}
+              className="text-brand-700 hover:text-brand-900 text-xs font-medium underline-offset-2 hover:underline"
+            >
+              Simular {adentro ? 'salida' : 'entrada'}
+            </button>
+          </div>
+          <MapView
+            center={
+              cuartel ? { lat: cuartel.lat, lng: cuartel.lng } : { lat: -34.5476, lng: -58.5556 }
+            }
+            zoom={16}
+            className="h-[260px]"
+            attribution={false}
+            circle={
+              cuartel
+                ? {
+                    lat: cuartel.lat,
+                    lng: cuartel.lng,
+                    radiusMeters: 200,
+                    fillColor: adentro ? '#10b981' : '#f59e0b',
+                    strokeColor: adentro ? '#059669' : '#d97706',
+                    opacity: 0.15,
+                  }
+                : null
+            }
+            pins={
+              cuartel
+                ? [
+                    {
+                      id: 'cuartel',
+                      lat: cuartel.lat,
+                      lng: cuartel.lng,
+                      color: 'bg-brand-700',
+                      label: '🏠',
+                    },
+                    {
+                      id: 'vos',
+                      // Adentro: a 50m al sur. Afuera: a 350m al sur
+                      lat: cuartel.lat - (adentro ? 0.0005 : 0.0035),
+                      lng: cuartel.lng,
+                      color: adentro ? 'bg-status-ok' : 'bg-status-warn',
+                      label: '👤',
+                      pulse: true,
+                    },
+                  ]
+                : []
+            }
+          />
+          <div className="bg-slate-50 px-4 py-3 text-xs text-slate-600 sm:px-5">
+            {adentro ? (
+              <>
+                <strong className="text-slate-900">Estás a ~55 m del cuartel.</strong> Podés marcar
+                presente. La ubicación se valida con el GPS de tu teléfono al hacer click.
+              </>
+            ) : (
+              <>
+                <strong className="text-status-warn-fg">Estás a ~390 m del cuartel.</strong> Si
+                marcás presente, la app te avisa que estás fuera de la geocerca. Acercate o pedí
+                marca manual a un jefe.
+              </>
+            )}
+          </div>
         </CardContent>
       </Card>
 

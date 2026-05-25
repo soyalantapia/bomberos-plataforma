@@ -17,12 +17,32 @@ export interface MapPin {
   label?: string;
   /** HTML rendered in the popup on click. */
   popup?: string;
+  /** Apply a pulsing animation (for live/moving markers). */
+  pulse?: boolean;
+}
+
+export interface MapCircle {
+  lat: number;
+  lng: number;
+  radiusMeters: number;
+  fillColor?: string;
+  strokeColor?: string;
+  opacity?: number;
+}
+
+export interface MapPolyline {
+  points: Array<{ lat: number; lng: number }>;
+  color?: string;
+  width?: number;
+  dashed?: boolean;
 }
 
 interface Props {
   center: { lat: number; lng: number };
   zoom?: number;
   pins?: MapPin[];
+  circle?: MapCircle | null;
+  polyline?: MapPolyline | null;
   className?: string;
   attribution?: boolean;
 }
@@ -45,14 +65,53 @@ const STYLE: maplibregl.StyleSpecification = {
   layers: [{ id: 'basemap', type: 'raster', source: 'basemap', minzoom: 0, maxzoom: 19 }],
 };
 
+/** Genera un polígono circular alrededor de un punto (lat/lng) con radio en metros. */
+function circlePolygon(
+  center: { lat: number; lng: number },
+  radiusMeters: number,
+  points = 64,
+): Array<[number, number]> {
+  const km = radiusMeters / 1000;
+  const earthRadius = 6371; // km
+  const ret: Array<[number, number]> = [];
+  const lat = (center.lat * Math.PI) / 180;
+  const lng = (center.lng * Math.PI) / 180;
+  for (let i = 0; i < points; i++) {
+    const theta = (i / points) * (2 * Math.PI);
+    const lat2 = Math.asin(
+      Math.sin(lat) * Math.cos(km / earthRadius) +
+        Math.cos(lat) * Math.sin(km / earthRadius) * Math.cos(theta),
+    );
+    const lng2 =
+      lng +
+      Math.atan2(
+        Math.sin(theta) * Math.sin(km / earthRadius) * Math.cos(lat),
+        Math.cos(km / earthRadius) - Math.sin(lat) * Math.sin(lat2),
+      );
+    ret.push([(lng2 * 180) / Math.PI, (lat2 * 180) / Math.PI]);
+  }
+  ret.push(ret[0]!); // cerrar polígono
+  return ret;
+}
+
 /**
  * MapLibre con tiles públicos de OpenStreetMap (sin token).
  * Pins markdown libre — color/label desde Tailwind/HTML.
+ * Soporta también geocercas (círculo en metros) y polilíneas (rutas).
  */
-export function MapView({ center, zoom = 12, pins = [], className, attribution = true }: Props) {
+export function MapView({
+  center,
+  zoom = 12,
+  pins = [],
+  circle = null,
+  polyline = null,
+  className,
+  attribution = true,
+}: Props) {
   const ref = useRef<HTMLDivElement>(null);
   const mapRef = useRef<maplibregl.Map | null>(null);
   const markersRef = useRef<maplibregl.Marker[]>([]);
+  const loadedRef = useRef(false);
 
   useEffect(() => {
     if (!ref.current) return;
@@ -66,6 +125,10 @@ export function MapView({ center, zoom = 12, pins = [], className, attribution =
     });
 
     map.addControl(new maplibregl.NavigationControl({ showCompass: false }), 'top-right');
+
+    map.on('load', () => {
+      loadedRef.current = true;
+    });
 
     mapRef.current = map;
 
@@ -84,6 +147,7 @@ export function MapView({ center, zoom = 12, pins = [], className, attribution =
       markersRef.current = [];
       map.remove();
       mapRef.current = null;
+      loadedRef.current = false;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -95,6 +159,7 @@ export function MapView({ center, zoom = 12, pins = [], className, attribution =
     map.setZoom(zoom);
   }, [center.lat, center.lng, zoom]);
 
+  // Pins
   useEffect(() => {
     const map = mapRef.current;
     if (!map) return;
@@ -106,6 +171,11 @@ export function MapView({ center, zoom = 12, pins = [], className, attribution =
       const el = document.createElement('div');
       el.className = `relative flex h-9 w-9 items-center justify-center rounded-full text-white text-xs font-bold shadow-lg ring-2 ring-white cursor-pointer transition-transform hover:scale-110 ${p.color}`;
       if (p.label) el.textContent = p.label;
+      if (p.pulse) {
+        const ring = document.createElement('div');
+        ring.className = `absolute inset-0 rounded-full ${p.color} opacity-60 animate-ping`;
+        el.appendChild(ring);
+      }
 
       const marker = new maplibregl.Marker({ element: el }).setLngLat([p.lng, p.lat]);
 
@@ -118,6 +188,100 @@ export function MapView({ center, zoom = 12, pins = [], className, attribution =
       markersRef.current.push(marker);
     }
   }, [pins]);
+
+  // Geocerca (círculo)
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map) return;
+
+    const applyCircle = () => {
+      const SOURCE_ID = 'faro-circle';
+      const FILL_ID = 'faro-circle-fill';
+      const LINE_ID = 'faro-circle-stroke';
+
+      // Remove existing
+      if (map.getLayer(FILL_ID)) map.removeLayer(FILL_ID);
+      if (map.getLayer(LINE_ID)) map.removeLayer(LINE_ID);
+      if (map.getSource(SOURCE_ID)) map.removeSource(SOURCE_ID);
+
+      if (!circle) return;
+
+      const ring = circlePolygon({ lat: circle.lat, lng: circle.lng }, circle.radiusMeters);
+      map.addSource(SOURCE_ID, {
+        type: 'geojson',
+        data: {
+          type: 'Feature',
+          properties: {},
+          geometry: { type: 'Polygon', coordinates: [ring] },
+        },
+      });
+      map.addLayer({
+        id: FILL_ID,
+        type: 'fill',
+        source: SOURCE_ID,
+        paint: {
+          'fill-color': circle.fillColor ?? '#10b981',
+          'fill-opacity': circle.opacity ?? 0.15,
+        },
+      });
+      map.addLayer({
+        id: LINE_ID,
+        type: 'line',
+        source: SOURCE_ID,
+        paint: {
+          'line-color': circle.strokeColor ?? circle.fillColor ?? '#10b981',
+          'line-width': 2,
+          'line-dasharray': [2, 2],
+        },
+      });
+    };
+
+    if (loadedRef.current) applyCircle();
+    else map.once('load', applyCircle);
+  }, [circle]);
+
+  // Polilínea (ruta)
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map) return;
+
+    const applyLine = () => {
+      const SOURCE_ID = 'faro-line';
+      const LINE_ID = 'faro-line-stroke';
+
+      if (map.getLayer(LINE_ID)) map.removeLayer(LINE_ID);
+      if (map.getSource(SOURCE_ID)) map.removeSource(SOURCE_ID);
+
+      if (!polyline || polyline.points.length < 2) return;
+
+      map.addSource(SOURCE_ID, {
+        type: 'geojson',
+        data: {
+          type: 'Feature',
+          properties: {},
+          geometry: {
+            type: 'LineString',
+            coordinates: polyline.points.map((p) => [p.lng, p.lat]),
+          },
+        },
+      });
+      map.addLayer({
+        id: LINE_ID,
+        type: 'line',
+        source: SOURCE_ID,
+        layout: { 'line-cap': 'round', 'line-join': 'round' },
+        paint: {
+          'line-color': polyline.color ?? '#dc2626',
+          'line-width': polyline.width ?? 4,
+          'line-opacity': 0.8,
+          ...(polyline.dashed ? { 'line-dasharray': [2, 2] as const } : {}),
+        },
+      });
+    };
+
+    if (loadedRef.current) applyLine();
+    else map.once('load', applyLine);
+  }, [polyline]);
 
   return (
     <div

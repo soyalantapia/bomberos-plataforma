@@ -7,13 +7,17 @@ import {
   Check,
   ChevronDown,
   ChevronUp,
+  Clock,
   Flame,
   LifeBuoy,
   MapPin,
+  Navigation,
+  Radio,
   Trees,
+  Truck,
   Users,
 } from 'lucide-react';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 import type { TipoServicio } from '@faro/types';
 
@@ -61,7 +65,59 @@ export default function OperacionesPage() {
   const [tab, setTab] = useState<TabTipo>('todos');
   const [estado, setEstado] = useState<EstadoFiltro>('todos');
   const [expandido, setExpandido] = useState<string | null>(null);
-  const [vista, setVista] = useState<'lista' | 'mapa'>('lista');
+  const [vista, setVista] = useState<'lista' | 'mapa' | 'vivo'>('lista');
+
+  // ── Animación de móvil en vivo ──
+  // Trayectoria simulada: cuartel → incendio en V. Devoto
+  const RUTA_VIVO = useMemo(
+    () => [
+      { lat: cuartel?.lat ?? -34.5476, lng: cuartel?.lng ?? -58.5556 },
+      { lat: -34.5495, lng: -58.5605 },
+      { lat: -34.5532, lng: -58.5639 },
+      { lat: -34.5571, lng: -58.5658 },
+      { lat: -34.5612, lng: -58.5651 },
+      { lat: -34.5644, lng: -58.561 },
+      { lat: -34.567, lng: -58.5556 }, // destino: incendio
+    ],
+    [cuartel?.lat, cuartel?.lng],
+  );
+  const [vivoIdx, setVivoIdx] = useState(0);
+  const [vivoCorriendo, setVivoCorriendo] = useState(true);
+  const [vivoT, setVivoT] = useState(0); // 0..1 interpolación dentro del segmento
+
+  useEffect(() => {
+    if (vista !== 'vivo' || !vivoCorriendo) return;
+    if (vivoIdx >= RUTA_VIVO.length - 1) return;
+
+    const interval = setInterval(() => {
+      setVivoT((t) => {
+        const next = t + 0.05;
+        if (next >= 1) {
+          setVivoIdx((i) => Math.min(i + 1, RUTA_VIVO.length - 1));
+          return 0;
+        }
+        return next;
+      });
+    }, 200);
+
+    return () => clearInterval(interval);
+  }, [vista, vivoCorriendo, vivoIdx, RUTA_VIVO.length]);
+
+  const vivoActual = useMemo(() => {
+    const a = RUTA_VIVO[vivoIdx];
+    const b = RUTA_VIVO[vivoIdx + 1];
+    if (!a) return RUTA_VIVO[RUTA_VIVO.length - 1] ?? { lat: 0, lng: 0 };
+    if (!b) return a;
+    return {
+      lat: a.lat + (b.lat - a.lat) * vivoT,
+      lng: a.lng + (b.lng - a.lng) * vivoT,
+    };
+  }, [vivoIdx, vivoT, RUTA_VIVO]);
+
+  const vivoLlegado = vivoIdx >= RUTA_VIVO.length - 1;
+  const rutaRecorrida = RUTA_VIVO.slice(0, vivoIdx + 1).concat([vivoActual]);
+  const segundosTranscurridos = vivoIdx * 4 + Math.round(vivoT * 4);
+  const minutosEstimados = Math.max(0, (RUTA_VIVO.length - 1) * 4 - segundosTranscurridos);
 
   const servicios = useMemo(
     () =>
@@ -238,7 +294,7 @@ export default function OperacionesPage() {
         </div>
       </Card>
 
-      <div className="flex gap-2">
+      <div className="flex flex-wrap gap-2">
         <button
           type="button"
           onClick={() => setVista('lista')}
@@ -263,7 +319,185 @@ export default function OperacionesPage() {
         >
           <MapPin size={14} /> Mapa
         </button>
+        <button
+          type="button"
+          onClick={() => {
+            setVista('vivo');
+            setVivoIdx(0);
+            setVivoT(0);
+            setVivoCorriendo(true);
+          }}
+          className={cn(
+            'inline-flex items-center gap-2 rounded-full px-3.5 py-2 text-sm font-medium transition-colors',
+            vista === 'vivo'
+              ? 'bg-fire-600 text-white'
+              : 'bg-white text-slate-700 ring-1 ring-slate-200 hover:bg-slate-50',
+          )}
+        >
+          <Radio size={14} className={vista === 'vivo' ? 'animate-pulse' : ''} />
+          En vivo
+          {vista === 'vivo' && !vivoLlegado && (
+            <span className="ml-1 h-2 w-2 animate-pulse rounded-full bg-white" />
+          )}
+        </button>
       </div>
+
+      {vista === 'vivo' && (
+        <>
+          <Card
+            className={cn(
+              'border-2',
+              vivoLlegado ? 'border-status-ok bg-status-ok-bg/30' : 'border-fire-300 bg-fire-50',
+            )}
+          >
+            <CardContent className="p-4 sm:p-5">
+              <div className="flex flex-wrap items-start gap-3">
+                <div
+                  className={cn(
+                    'grid h-12 w-12 shrink-0 place-items-center rounded-xl text-white',
+                    vivoLlegado ? 'bg-status-ok' : 'bg-fire-600 animate-pulse',
+                  )}
+                >
+                  {vivoLlegado ? <Check size={24} /> : <Truck size={24} />}
+                </div>
+                <div className="min-w-0 flex-1">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <span className="text-lg font-bold text-slate-900">
+                      {vivoLlegado ? 'Móvil BV-3 en sitio' : 'Móvil BV-3 en ruta'}
+                    </span>
+                    {!vivoLlegado && (
+                      <Badge intent="risk">
+                        <Radio size={10} className="mr-1 animate-pulse" /> EN VIVO
+                      </Badge>
+                    )}
+                  </div>
+                  <div className="mt-0.5 text-sm text-slate-700">
+                    Servicio: <strong>Incendio en V. Devoto</strong> · Av. Mosconi 4521
+                  </div>
+                  <div className="mt-2 grid grid-cols-3 gap-2 text-xs">
+                    <div className="rounded-md bg-white/80 px-2 py-1.5">
+                      <div className="text-slate-500">Recorrido</div>
+                      <div className="flex items-center gap-1 font-bold text-slate-900">
+                        <Navigation size={11} />
+                        {Math.round((vivoIdx / (RUTA_VIVO.length - 1)) * 100)}%
+                      </div>
+                    </div>
+                    <div className="rounded-md bg-white/80 px-2 py-1.5">
+                      <div className="text-slate-500">Tiempo</div>
+                      <div className="flex items-center gap-1 font-bold text-slate-900">
+                        <Clock size={11} />
+                        {segundosTranscurridos}s
+                      </div>
+                    </div>
+                    <div className="rounded-md bg-white/80 px-2 py-1.5">
+                      <div className="text-slate-500">{vivoLlegado ? 'Estado' : 'ETA'}</div>
+                      <div className="font-bold text-slate-900">
+                        {vivoLlegado ? 'En lugar' : `~${minutosEstimados}s`}
+                      </div>
+                    </div>
+                  </div>
+                  <div className="mt-3 flex flex-wrap gap-2">
+                    <Button
+                      intent="secondary"
+                      size="sm"
+                      onClick={() => {
+                        setVivoIdx(0);
+                        setVivoT(0);
+                        setVivoCorriendo(true);
+                      }}
+                    >
+                      Reiniciar simulación
+                    </Button>
+                    {!vivoLlegado && (
+                      <Button intent="ghost" size="sm" onClick={() => setVivoCorriendo((r) => !r)}>
+                        {vivoCorriendo ? 'Pausar' : 'Reanudar'}
+                      </Button>
+                    )}
+                  </div>
+                </div>
+                <div className="text-right">
+                  <div className="text-xs text-slate-500">Dotación</div>
+                  <div className="flex -space-x-1.5">
+                    {personas.slice(0, 4).map((p) => (
+                      <div
+                        key={p.id}
+                        className="bg-brand-600 grid h-7 w-7 place-items-center rounded-full text-[10px] font-bold text-white ring-2 ring-white"
+                        title={`${p.nombre} ${p.apellido}`}
+                      >
+                        {p.nombre[0]}
+                        {p.apellido[0]}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="overflow-hidden p-0">
+            <MapView
+              center={
+                cuartel ? { lat: cuartel.lat, lng: cuartel.lng } : { lat: -34.5476, lng: -58.5556 }
+              }
+              zoom={14}
+              pins={[
+                // Cuartel (origen)
+                ...(cuartel
+                  ? [
+                      {
+                        id: 'cuartel',
+                        lat: cuartel.lat,
+                        lng: cuartel.lng,
+                        color: 'bg-brand-700',
+                        label: '🏠',
+                        popup:
+                          '<div style="font-family:system-ui;padding:4px"><strong>' +
+                          cuartel.nombre +
+                          '</strong><div style="font-size:11px;color:#64748b">Origen</div></div>',
+                      },
+                    ]
+                  : []),
+                // Móvil en vivo (animado)
+                {
+                  id: 'movil',
+                  lat: vivoActual.lat,
+                  lng: vivoActual.lng,
+                  color: vivoLlegado ? 'bg-status-ok' : 'bg-fire-600',
+                  label: '🚒',
+                  pulse: !vivoLlegado,
+                },
+                // Destino (incendio)
+                {
+                  id: 'destino',
+                  lat: -34.567,
+                  lng: -58.5556,
+                  color: 'bg-fire-700',
+                  label: '🔥',
+                  popup:
+                    '<div style="font-family:system-ui;padding:4px"><strong>Incendio</strong><div style="font-size:11px;color:#64748b">Av. Mosconi 4521</div></div>',
+                },
+              ]}
+              polyline={{
+                points: rutaRecorrida,
+                color: '#dc2626',
+                width: 4,
+                dashed: false,
+              }}
+            />
+          </Card>
+
+          <Card className="border-slate-200 bg-slate-50">
+            <CardContent className="flex items-start gap-3 p-4 text-sm text-slate-600">
+              <Radio size={18} className="mt-0.5 shrink-0 text-slate-400" />
+              <div>
+                <strong className="text-slate-900">Operativo en vivo:</strong> seguís la posición
+                del móvil con la app del jefe de servicio enviando GPS cada 30 segundos. El
+                historial de la ruta queda registrado y se vincula al servicio cuando se valida.
+              </div>
+            </CardContent>
+          </Card>
+        </>
+      )}
 
       {vista === 'mapa' ? (
         <Card className="overflow-hidden p-0">
