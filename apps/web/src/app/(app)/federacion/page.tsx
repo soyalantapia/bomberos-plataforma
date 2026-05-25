@@ -213,44 +213,48 @@ export default function TableroFederacion() {
             <CardTitle>Ranking del mes</CardTitle>
           </CardHeader>
           <CardContent className="p-0">
-            <table className="w-full text-sm">
-              <thead className="bg-slate-50 text-slate-600">
-                <tr>
-                  <th className="w-12 px-4 py-2.5 text-left">#</th>
-                  <th className="px-4 py-2.5 text-left">Cuartel</th>
-                  <th className="px-4 py-2.5 text-left">Ciudad</th>
-                  <th className="px-4 py-2.5 text-right">Rendición</th>
-                  <th className="px-4 py-2.5 text-right">Estado</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100">
-                {ranking.map((c, idx) => (
-                  <tr key={c.id} className="hover:bg-slate-50">
-                    <td className="px-4 py-3 font-medium text-slate-500">{idx + 1}</td>
-                    <td className="px-4 py-3 font-semibold text-slate-900">{c.nombre}</td>
-                    <td className="px-4 py-3 text-slate-600">{c.ciudad}</td>
-                    <td className="px-4 py-3 text-right tabular-nums">{c.porcentajeRendicion}%</td>
-                    <td className="px-4 py-3 text-right">
-                      <Badge
-                        intent={
-                          c.cumplimiento === 'ok'
-                            ? 'ok'
-                            : c.cumplimiento === 'warn'
-                              ? 'warn'
-                              : 'risk'
-                        }
-                      >
-                        {c.cumplimiento === 'ok'
-                          ? 'En regla'
-                          : c.cumplimiento === 'warn'
-                            ? 'Atención'
-                            : 'En riesgo'}
-                      </Badge>
-                    </td>
+            <div className="overflow-x-auto">
+              <table className="w-full min-w-[500px] text-sm">
+                <thead className="bg-slate-50 text-slate-600">
+                  <tr>
+                    <th className="w-12 px-4 py-2.5 text-left">#</th>
+                    <th className="px-4 py-2.5 text-left">Cuartel</th>
+                    <th className="px-4 py-2.5 text-left">Ciudad</th>
+                    <th className="px-4 py-2.5 text-right">Rendición</th>
+                    <th className="px-4 py-2.5 text-right">Estado</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody className="divide-y divide-slate-100">
+                  {ranking.map((c, idx) => (
+                    <tr key={c.id} className="hover:bg-slate-50">
+                      <td className="px-4 py-3 font-medium text-slate-500">{idx + 1}</td>
+                      <td className="px-4 py-3 font-semibold text-slate-900">{c.nombre}</td>
+                      <td className="px-4 py-3 text-slate-600">{c.ciudad}</td>
+                      <td className="px-4 py-3 text-right tabular-nums">
+                        {c.porcentajeRendicion}%
+                      </td>
+                      <td className="px-4 py-3 text-right">
+                        <Badge
+                          intent={
+                            c.cumplimiento === 'ok'
+                              ? 'ok'
+                              : c.cumplimiento === 'warn'
+                                ? 'warn'
+                                : 'risk'
+                          }
+                        >
+                          {c.cumplimiento === 'ok'
+                            ? 'En regla'
+                            : c.cumplimiento === 'warn'
+                              ? 'Atención'
+                              : 'En riesgo'}
+                        </Badge>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </CardContent>
         </Card>
       </div>

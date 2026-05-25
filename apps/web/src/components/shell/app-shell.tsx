@@ -1,7 +1,7 @@
 'use client';
 
 import { AnimatePresence, motion } from 'framer-motion';
-import { Bell, Flame, LogOut, Menu, Search, X } from 'lucide-react';
+import { Bell, Flame, LayoutGrid, LogOut, Menu, Search, X } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
@@ -147,6 +147,14 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             aria-label="Búsqueda global"
           >
             <Search size={18} />
+          </Link>
+          <Link
+            href="/mapa-app"
+            className="hidden h-9 w-9 place-items-center rounded-lg text-slate-700 hover:bg-slate-100 sm:grid"
+            aria-label="Mapa de pantallas"
+            title="Mapa de la aplicación"
+          >
+            <LayoutGrid size={18} />
           </Link>
           <SyncStatusPill />
           <Link
