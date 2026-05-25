@@ -53,6 +53,12 @@ interface Actions {
   presentarRendicion: (rendicionId: string, mandoId: string) => void;
   marcarNotifLeida: (id: string) => void;
   marcarTodasLeidas: () => void;
+  // ABM Persona
+  crearPersona: (
+    input: Omit<Persona, 'id' | 'avatarUrl' | 'fotoUrl'> & { fotoUrl?: string },
+  ) => Persona;
+  actualizarPersona: (id: string, cambios: Partial<Persona>) => void;
+  archivarPersona: (id: string) => void;
 }
 
 type FaroStore = State & Actions;
@@ -189,6 +195,26 @@ export const useFaroStore = create<FaroStore>()(
       },
       marcarTodasLeidas() {
         set({ notificaciones: get().notificaciones.map((n) => ({ ...n, leida: true })) });
+      },
+      crearPersona(input) {
+        const persona: Persona = {
+          ...input,
+          id: genId('persona'),
+        } as Persona;
+        set({ personas: [...get().personas, persona] });
+        return persona;
+      },
+      actualizarPersona(id, cambios) {
+        set({
+          personas: get().personas.map((p) => (p.id === id ? { ...p, ...cambios } : p)),
+        });
+      },
+      archivarPersona(id) {
+        set({
+          personas: get().personas.map((p) =>
+            p.id === id ? { ...p, estado: 'baja' as Persona['estado'] } : p,
+          ),
+        });
       },
       presentarRendicion(rendicionId, mandoId) {
         const r = get().rendiciones[rendicionId];

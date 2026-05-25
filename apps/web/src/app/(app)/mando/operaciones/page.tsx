@@ -17,6 +17,7 @@ import {
   Truck,
   Users,
 } from 'lucide-react';
+import Link from 'next/link';
 import { useEffect, useMemo, useState } from 'react';
 
 import type { TipoServicio } from '@faro/types';
@@ -589,6 +590,14 @@ export default function OperacionesPage() {
                       </div>
                     </div>
                     <div className="flex shrink-0 items-center gap-2">
+                      <Link
+                        href={`/mando/operaciones/${s.id}` as never}
+                        onClick={(e) => e.stopPropagation()}
+                        className="text-brand-700 hover:bg-brand-50 grid h-8 w-8 place-items-center rounded text-xs font-bold"
+                        aria-label="Ver detalle"
+                      >
+                        →
+                      </Link>
                       {s.estado === 'pendiente_validacion' && (
                         <Button
                           intent="success"

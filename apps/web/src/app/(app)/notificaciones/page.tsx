@@ -8,6 +8,7 @@ import type { Notificacion } from '@faro/types';
 
 import { Badge, Card, CardContent, Kpi, cn, useToast } from '@faro/ui';
 
+import { EmptyState } from '../../../components/shared/empty-state';
 import { PageHero } from '../../../components/shared/page-hero';
 import { FiltersBar, type FilterChip } from '../../../components/shared/filters-bar';
 import { TIPOS_NOTIF } from '../../../data/notificaciones';
@@ -178,16 +179,19 @@ export default function NotificacionesPage() {
       <FiltersBar chips={chips} chipValue={tab} onChipChange={setTab} />
 
       {filtradas.length === 0 ? (
-        <Card>
-          <CardContent className="p-8 text-center">
-            <BellOff size={32} className="mx-auto text-slate-300" />
-            <p className="mt-2 text-sm text-slate-500">
-              {tab === 'sin_leer'
-                ? 'No tenés notificaciones sin leer.'
-                : 'Sin notificaciones de este tipo.'}
-            </p>
-          </CardContent>
-        </Card>
+        <EmptyState
+          icon={<BellOff size={28} />}
+          titulo={tab === 'sin_leer' ? 'Todo al día' : 'Sin notificaciones'}
+          descripcion={
+            tab === 'sin_leer'
+              ? 'No tenés notificaciones sin leer. Volvé más tarde.'
+              : 'Sin notificaciones de este tipo en los últimos 30 días.'
+          }
+          variant={tab === 'sin_leer' ? 'success' : 'default'}
+          accionSecundaria={
+            tab !== 'todas' ? { label: 'Ver todas', onClick: () => setTab('todas') } : undefined
+          }
+        />
       ) : (
         <div className="space-y-2">
           {filtradas.map((n) => {

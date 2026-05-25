@@ -16,12 +16,14 @@ import { useMemo, useState } from 'react';
 
 import { Button, Card, CardContent, Kpi, useToast } from '@faro/ui';
 
+import { EmptyState } from '../../../components/shared/empty-state';
 import { FeaturesGrid } from '../../../components/shared/features-grid';
 import { PageHero } from '../../../components/shared/page-hero';
 import { FiltersBar, type FilterChip } from '../../../components/shared/filters-bar';
 import { useRouter } from 'next/navigation';
 
 import { OCRWizard } from '../../../components/ai/ocr-wizard';
+import { NuevaPersonaDialog } from '../../../components/personal/nueva-persona-dialog';
 import { PersonaCard } from '../../../components/personal/persona-card';
 import {
   clasificarCuerpo,
@@ -50,6 +52,7 @@ export default function PadronPage() {
   const [estado, setEstado] = useState<EstadoFiltro>('todos');
   const [search, setSearch] = useState('');
   const [ocrOpen, setOcrOpen] = useState(false);
+  const [nuevaOpen, setNuevaOpen] = useState(false);
 
   const conteo = useMemo(() => contarPorCuerpo(personas), [personas]);
   const activos = personas.filter((p) => p.estado === 'activo').length;
@@ -134,17 +137,7 @@ export default function PadronPage() {
         }
         acciones={
           <>
-            <Button
-              intent="primary"
-              size="md"
-              onClick={() =>
-                toast.push({
-                  kind: 'info',
-                  title: 'Próximamente',
-                  description: 'Alta nueva con flujo en 3 pasos.',
-                })
-              }
-            >
+            <Button intent="primary" size="md" onClick={() => setNuevaOpen(true)}>
               <UserPlus size={16} /> Nueva persona
             </Button>
             <Button intent="secondary" size="md" onClick={() => setOcrOpen(true)}>
@@ -222,17 +215,24 @@ export default function PadronPage() {
       </div>
 
       {filtradas.length === 0 ? (
-        <Card>
-          <CardContent className="p-8 text-center">
-            <div className="mx-auto grid h-12 w-12 place-items-center rounded-full bg-slate-100 text-slate-400">
-              <Users size={24} />
-            </div>
-            <h3 className="mt-3 font-semibold text-slate-900">Sin resultados</h3>
-            <p className="mt-1 text-sm text-slate-600">
-              Probá quitar algún filtro o cambiar la búsqueda.
-            </p>
-          </CardContent>
-        </Card>
+        <EmptyState
+          icon={<Users size={28} />}
+          titulo="Sin personas con esos filtros"
+          descripcion="Probá quitar algún filtro o cambiar la búsqueda. Si es la primera vez, sumá tu primera persona."
+          accion={{
+            label: 'Nueva persona',
+            icon: <UserPlus size={14} />,
+            onClick: () => setNuevaOpen(true),
+          }}
+          accionSecundaria={{
+            label: 'Limpiar filtros',
+            onClick: () => {
+              setTab('todos');
+              setEstado('todos');
+              setSearch('');
+            },
+          }}
+        />
       ) : (
         <div className="grid gap-3 sm:grid-cols-2">
           {filtradas.map((p) => (
@@ -298,6 +298,11 @@ export default function PadronPage() {
       </Card>
 
       <OCRWizard open={ocrOpen} onClose={() => setOcrOpen(false)} />
+      <NuevaPersonaDialog
+        open={nuevaOpen}
+        onClose={() => setNuevaOpen(false)}
+        onCreated={(p) => router.push(`/administrativo/personas/${p.id}` as never)}
+      />
     </div>
   );
 }

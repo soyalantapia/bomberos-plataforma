@@ -12,6 +12,8 @@ import { useFaroStore, selectCuartelActivo, selectPersonaActual } from '../../st
 import { perfilLabel } from '../../lib/utils/perfil';
 import { fmtJerarquia } from '../../lib/utils/jerarquia';
 
+import { PageSkeleton } from '../shared/page-skeleton';
+
 import { navByPerfil } from './nav-config';
 import { Icon } from './icon';
 import { SyncStatusPill } from './sync-status-pill';
@@ -33,8 +35,22 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
   if (!hidratado || !sesion || !persona) {
     return (
-      <div className="grid min-h-dvh place-items-center bg-slate-50">
-        <div className="border-brand-200 border-t-brand-600 h-8 w-8 animate-spin rounded-full border-4" />
+      <div className="min-h-dvh bg-slate-50">
+        <div className="sticky top-0 z-30 flex items-center gap-2 border-b border-slate-200 bg-white px-4 py-2.5 sm:px-6">
+          <div className="flex items-center gap-2">
+            <div className="bg-fire-600 grid h-7 w-7 place-items-center rounded-md">
+              <Flame size={14} className="text-white" />
+            </div>
+            <div className="font-bold leading-none text-slate-900">Faro</div>
+          </div>
+          <div className="ml-auto flex items-center gap-2 text-sm text-slate-500">
+            <div className="border-brand-200 border-t-brand-600 h-4 w-4 animate-spin rounded-full border-2" />
+            Cargando datos del cuartel...
+          </div>
+        </div>
+        <div className="px-4 py-5 sm:px-6 sm:py-7">
+          <PageSkeleton variant="list" />
+        </div>
       </div>
     );
   }

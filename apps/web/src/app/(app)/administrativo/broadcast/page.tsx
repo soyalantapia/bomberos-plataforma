@@ -19,6 +19,7 @@ import { useState } from 'react';
 import { Avatar, Badge, Button, Card, CardContent, Kpi, cn, useToast } from '@faro/ui';
 
 import { PageHero } from '../../../../components/shared/page-hero';
+import { broadcastSchema, validate } from '../../../../lib/validation/schemas';
 
 type Audiencia = 'todos' | 'operativo' | 'mando' | 'cadetes' | 'administrativo' | 'custom';
 
@@ -87,14 +88,28 @@ export default function BroadcastPage() {
   const [cuerpo, setCuerpo] = useState('');
   const [programar, setProgramar] = useState(false);
   const [fechaProg, setFechaProg] = useState('');
+  const [errors, setErrors] = useState<Record<string, string>>({});
 
   const audienciaSel = AUDIENCIAS.find((a) => a.id === audiencia)!;
 
   function enviar() {
-    if (!titulo.trim() || !cuerpo.trim()) {
-      toast.push({ kind: 'warn', title: 'Faltan título o cuerpo' });
+    const result = validate(broadcastSchema, {
+      audiencia,
+      titulo,
+      cuerpo,
+      fechaProgramada: programar ? fechaProg : undefined,
+    });
+    if (!result.ok) {
+      setErrors(result.errors);
+      const firstError = Object.values(result.errors)[0];
+      toast.push({
+        kind: 'warn',
+        title: 'Revisá el formulario',
+        description: firstError ?? 'Hay campos sin completar',
+      });
       return;
     }
+    setErrors({});
     toast.push({
       kind: 'success',
       title: programar
@@ -168,10 +183,21 @@ export default function BroadcastPage() {
               <input
                 type="text"
                 value={titulo}
-                onChange={(e) => setTitulo(e.target.value)}
+                onChange={(e) => {
+                  setTitulo(e.target.value);
+                  if (errors.titulo) setErrors((e) => ({ ...e, titulo: '' }));
+                }}
                 placeholder="Ej: Asamblea ordinaria del 15/6"
-                className="focus:border-brand-400 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:ring-2"
+                className={cn(
+                  'w-full rounded-lg border px-3 py-2 text-sm outline-none focus:ring-2',
+                  errors.titulo
+                    ? 'border-status-risk focus:border-status-risk focus:ring-status-risk-bg'
+                    : 'focus:border-brand-400 border-slate-200',
+                )}
               />
+              {errors.titulo && (
+                <p className="text-status-risk-fg mt-1 text-xs font-medium">{errors.titulo}</p>
+              )}
             </div>
 
             {/* Toolbar + cuerpo */}
@@ -208,15 +234,25 @@ export default function BroadcastPage() {
                 </div>
                 <textarea
                   value={cuerpo}
-                  onChange={(e) => setCuerpo(e.target.value)}
+                  onChange={(e) => {
+                    setCuerpo(e.target.value);
+                    if (errors.cuerpo) setErrors((er) => ({ ...er, cuerpo: '' }));
+                  }}
                   rows={6}
                   placeholder="Escribí el aviso..."
-                  className="focus:border-brand-400 w-full px-3 py-2 text-sm outline-none"
+                  className={cn(
+                    'w-full px-3 py-2 text-sm outline-none',
+                    errors.cuerpo ? 'border-status-risk border-t-2' : 'focus:border-brand-400',
+                  )}
                 />
               </div>
-              <p className="mt-1 text-xs text-slate-500">
-                {cuerpo.length} caracteres · Markdown soportado
-              </p>
+              {errors.cuerpo ? (
+                <p className="text-status-risk-fg mt-1 text-xs font-medium">{errors.cuerpo}</p>
+              ) : (
+                <p className="mt-1 text-xs text-slate-500">
+                  {cuerpo.length} caracteres · Markdown soportado · mín. 20
+                </p>
+              )}
             </div>
 
             {/* Programar */}
