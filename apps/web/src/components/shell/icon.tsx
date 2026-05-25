@@ -1,11 +1,47 @@
 'use client';
 
 import {
-  Home, Flame, CheckCircle2, User, GraduationCap, MessageSquare,
-  LayoutDashboard, Siren, Calculator, FileCheck2, Users, Truck, ClipboardCheck,
-  Package, CalendarClock, FolderOpen, Calendar,
-  Building2, Scale, ShieldAlert, FileSearch,
-  Globe2, FlagTriangleRight, BarChart3, Megaphone, Plug,
+  Home,
+  Flame,
+  CheckCircle2,
+  User,
+  GraduationCap,
+  MessageSquare,
+  LayoutDashboard,
+  Siren,
+  Calculator,
+  FileCheck2,
+  Users,
+  Truck,
+  ClipboardCheck,
+  Package,
+  CalendarClock,
+  FolderOpen,
+  Calendar,
+  Building2,
+  Scale,
+  ShieldAlert,
+  FileSearch,
+  Globe2,
+  FlagTriangleRight,
+  BarChart3,
+  Megaphone,
+  Plug,
+  // Nuevos iconos para páginas Fase 1-8
+  Radio,
+  Sparkles,
+  FileText,
+  Shield,
+  Stethoscope,
+  Droplets,
+  TrendingUp,
+  FileBarChart,
+  Wand2,
+  Eye,
+  Antenna,
+  Database,
+  Map,
+  Hash,
   type LucideIcon,
 } from 'lucide-react';
 
@@ -36,9 +72,32 @@ const iconMap: Record<string, LucideIcon> = {
   'bar-chart-3': BarChart3,
   megaphone: Megaphone,
   plug: Plug,
+  // Nuevos
+  radio: Radio,
+  sparkles: Sparkles,
+  'file-text': FileText,
+  shield: Shield,
+  stethoscope: Stethoscope,
+  droplets: Droplets,
+  'trending-up': TrendingUp,
+  'file-bar-chart': FileBarChart,
+  'wand-2': Wand2,
+  eye: Eye,
+  antenna: Antenna,
+  database: Database,
+  map: Map,
+  hash: Hash,
 };
 
-export function Icon({ name, size = 20, className }: { name: string; size?: number; className?: string }) {
+export function Icon({
+  name,
+  size = 20,
+  className,
+}: {
+  name: string;
+  size?: number;
+  className?: string;
+}) {
   const C = iconMap[name];
   if (!C) return null;
   return <C size={size} className={className} aria-hidden />;

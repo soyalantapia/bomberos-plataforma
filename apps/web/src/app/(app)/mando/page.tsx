@@ -6,15 +6,20 @@ import {
   AlertTriangle,
   ArrowRight,
   CheckCircle2,
+  Droplets,
+  FileBarChart,
   Flame,
   LayoutDashboard,
+  Moon,
+  Radio,
   ShieldAlert,
+  Sparkles,
+  Sun,
+  Sunset,
   TrendingUp,
   Users,
   Calendar,
-  Sun,
-  Moon,
-  Sunset,
+  Wand2,
 } from 'lucide-react';
 import Link from 'next/link';
 import { useMemo, useState } from 'react';
@@ -33,8 +38,10 @@ import {
   TabsList,
   TabsTrigger,
   cn,
+  useToast,
 } from '@faro/ui';
 
+import { FeaturesGrid } from '../../../components/shared/features-grid';
 import { PageHero } from '../../../components/shared/page-hero';
 import { SemaforoRendicion } from '../../../components/rendicion/semaforo-rendicion';
 import {
@@ -150,6 +157,7 @@ export default function MandoDashboard() {
   const allServicios = useFaroStore((s) => s.servicios);
   const allAsistencias = useFaroStore((s) => s.asistencias);
   const personas = useFaroStore((s) => s.personas);
+  const toast = useToast();
   const [tab, setTab] = useState('resumen');
   const [sevFiltro, setSevFiltro] = useState<'todas' | 'risk' | 'warn' | 'ok'>('todas');
 
@@ -326,6 +334,62 @@ export default function MandoDashboard() {
               </div>
             </CardContent>
           </Card>
+
+          {/* Acceso rápido a features nuevas */}
+          <FeaturesGrid
+            titulo="Herramientas avanzadas"
+            descripcion="Lo nuevo de Faro para tu día a día"
+            cards={[
+              {
+                href: '/mando/avl',
+                icon: <Radio size={18} />,
+                titulo: 'AVL en vivo',
+                descripcion: 'Tracking GPS de tus móviles · NFPA 1710',
+                color: 'bg-fire-600',
+                nuevo: true,
+              },
+              {
+                href: '/mando/asistente-parte',
+                icon: <Wand2 size={18} />,
+                titulo: 'Asistente parte IA',
+                descripcion: 'Dictás · IA transcribe + estructura',
+                color: 'bg-brand-600',
+                nuevo: true,
+              },
+              {
+                href: '/mando/hidrantes',
+                icon: <Droplets size={18} />,
+                titulo: 'Hidrantes',
+                descripcion: '8 hidrantes en jurisdicción · caudal',
+                color: 'bg-blue-600',
+                nuevo: true,
+              },
+              {
+                href: '/mando/predicciones',
+                icon: <TrendingUp size={18} />,
+                titulo: 'Predicciones IA',
+                descripcion: 'Demand forecast 12 meses',
+                color: 'bg-purple-600',
+                nuevo: true,
+              },
+              {
+                href: '/mando/reportes',
+                icon: <FileBarChart size={18} />,
+                titulo: 'Reportes',
+                descripcion: 'PDF firmado para CD/Ministerio/Fed',
+                color: 'bg-slate-700',
+                nuevo: true,
+              },
+              {
+                href: '/mando/personal/skills',
+                icon: <Sparkles size={18} />,
+                titulo: 'Skills Matrix',
+                descripcion: 'Cobertura por especialidad',
+                color: 'bg-status-warn',
+                nuevo: true,
+              },
+            ]}
+          />
         </TabsContent>
 
         {/* ───────── GUARDIAS ───────── */}
@@ -346,7 +410,17 @@ export default function MandoDashboard() {
                     declarada esa franja horaria.
                   </p>
                 </div>
-                <Button intent="primary" size="sm">
+                <Button
+                  intent="primary"
+                  size="sm"
+                  onClick={() =>
+                    toast.push({
+                      kind: 'info',
+                      title: 'Asignar nueva guardia',
+                      description: 'Próximamente: wizard para asignar móvil + dotación',
+                    })
+                  }
+                >
                   Nueva guardia
                 </Button>
               </div>

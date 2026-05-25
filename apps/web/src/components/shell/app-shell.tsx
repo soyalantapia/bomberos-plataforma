@@ -76,25 +76,38 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           </div>
         </Link>
 
-        <nav className="mt-4 flex flex-1 flex-col gap-0.5">
-          {items.map((item) => {
+        <nav className="mt-4 flex flex-1 flex-col gap-0.5 overflow-y-auto pr-1">
+          {items.map((item, idx) => {
             const active =
               item.href === pathname ||
               (item.href !== `/${sesion.perfilActivo}` && pathname.startsWith(`${item.href}/`));
+            const prevSeccion = idx > 0 ? items[idx - 1]?.seccion : undefined;
+            const showSeccion = item.seccion && item.seccion !== prevSeccion;
             return (
-              <Link
-                key={item.href}
-                href={item.href}
-                className={cn(
-                  'flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors',
-                  active
-                    ? 'bg-white/10 text-white'
-                    : 'text-white/70 hover:bg-white/5 hover:text-white',
+              <div key={item.href}>
+                {showSeccion && (
+                  <div className="mb-1 mt-3 px-3 text-[10px] font-bold uppercase tracking-wider text-white/40">
+                    {item.seccion}
+                  </div>
                 )}
-              >
-                <Icon name={item.icon} size={18} />
-                {item.label}
-              </Link>
+                <Link
+                  href={item.href}
+                  className={cn(
+                    'flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors',
+                    active
+                      ? 'bg-white/10 text-white'
+                      : 'text-white/70 hover:bg-white/5 hover:text-white',
+                  )}
+                >
+                  <Icon name={item.icon} size={18} />
+                  <span className="flex-1 truncate">{item.label}</span>
+                  {item.nuevo && (
+                    <span className="bg-fire-600 rounded px-1 py-0.5 text-[9px] font-bold uppercase tracking-wide text-white">
+                      Nuevo
+                    </span>
+                  )}
+                </Link>
+              </div>
             );
           })}
         </nav>
@@ -225,7 +238,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                 <X size={20} />
               </button>
             </div>
-            <nav className="flex flex-col gap-0.5">
+            <nav className="flex flex-col gap-0.5 overflow-y-auto">
               {items.map((it) => (
                 <Link
                   key={it.href}
@@ -234,7 +247,12 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                   className="flex items-center gap-3 rounded-lg px-3 py-3 text-sm text-white/80 hover:bg-white/10 hover:text-white"
                 >
                   <Icon name={it.icon} size={18} />
-                  {it.label}
+                  <span className="flex-1 truncate">{it.label}</span>
+                  {it.nuevo && (
+                    <span className="bg-fire-600 rounded px-1 py-0.5 text-[9px] font-bold uppercase tracking-wide text-white">
+                      Nuevo
+                    </span>
+                  )}
                 </Link>
               ))}
             </nav>

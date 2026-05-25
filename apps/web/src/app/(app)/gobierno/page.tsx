@@ -2,6 +2,8 @@
 
 import {
   ChevronRight,
+  FileSearch,
+  Hash,
   KeyRound,
   Network,
   ScrollText,
@@ -15,6 +17,7 @@ import type { Persona } from '@faro/types';
 
 import { Avatar, Badge, Card, CardContent, Kpi, useToast } from '@faro/ui';
 
+import { FeaturesGrid } from '../../../components/shared/features-grid';
 import { PageHero } from '../../../components/shared/page-hero';
 import { fmtJerarquia } from '../../../lib/utils/jerarquia';
 import { useFaroStore, selectCuartelActivo } from '../../../store/use-faro-store';
@@ -270,6 +273,30 @@ export default function OrdenInterno() {
           )}
         </div>
       </div>
+
+      {/* Acceso rápido a herramientas nuevas */}
+      <FeaturesGrid
+        titulo="Auditoría e integridad"
+        descripcion="Lo nuevo de Faro para verificar datos sin confianza ciega"
+        columnas={2}
+        cards={[
+          {
+            href: '/gobierno/audit',
+            icon: <FileSearch size={18} />,
+            titulo: 'Audit log completo',
+            descripcion: '21 eventos · cifrado AES-256 · diff visual',
+            color: 'bg-brand-700',
+          },
+          {
+            href: '/gobierno/audit/verificador',
+            icon: <Hash size={18} />,
+            titulo: 'Verificador SHA-256',
+            descripcion: 'Probá la cadena · detección de tampering',
+            color: 'bg-status-risk',
+            nuevo: true,
+          },
+        ]}
+      />
     </div>
   );
 }

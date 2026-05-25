@@ -223,7 +223,23 @@ export default function DisponibilidadPage() {
                   Tu cuartel necesita refuerzo en <strong>miércoles mañana (4 voluntarios)</strong>{' '}
                   y <strong>domingo noche (6 voluntarios)</strong>. Si te suma, sumate.
                 </p>
-                <Button intent="secondary" size="sm" className="mt-2">
+                <Button
+                  intent="secondary"
+                  size="sm"
+                  className="mt-2"
+                  onClick={() => {
+                    setDisp((d) => ({
+                      ...d,
+                      mie: { ...d.mie, manana: true },
+                      dom: { ...d.dom, noche: true },
+                    }));
+                    toast.push({
+                      kind: 'success',
+                      title: 'Sumaste 2 turnos a cubrir gaps',
+                      description: 'Mié mañana + Dom noche',
+                    });
+                  }}
+                >
                   Auto-completar gaps de cuartel
                 </Button>
               </div>

@@ -330,16 +330,56 @@ export default function ICSPage() {
                 <span className="text-brand-900 font-bold">Acciones tácticas</span>
               </div>
               <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
-                <Button intent="secondary" size="sm">
+                <Button
+                  intent="secondary"
+                  size="sm"
+                  onClick={() =>
+                    toast.push({
+                      kind: 'info',
+                      title: 'Orden emitida',
+                      description: 'Notificación radio + WhatsApp a 4 operativos',
+                    })
+                  }
+                >
                   <Megaphone size={12} /> Orden a operativos
                 </Button>
-                <Button intent="secondary" size="sm">
+                <Button
+                  intent="secondary"
+                  size="sm"
+                  onClick={() =>
+                    toast.push({
+                      kind: 'success',
+                      title: 'Foto subida',
+                      description: 'Adjunta al parte de servicio',
+                    })
+                  }
+                >
                   <Camera size={12} /> Tomar foto de escena
                 </Button>
-                <Button intent="secondary" size="sm">
+                <Button
+                  intent="secondary"
+                  size="sm"
+                  onClick={() =>
+                    toast.push({
+                      kind: 'warn',
+                      title: 'Refuerzo solicitado',
+                      description: 'Notificado al cuartel vecino San Andrés',
+                    })
+                  }
+                >
                   <Users size={12} /> Pedir refuerzos
                 </Button>
-                <Button intent="secondary" size="sm">
+                <Button
+                  intent="secondary"
+                  size="sm"
+                  onClick={() =>
+                    toast.push({
+                      kind: 'success',
+                      title: 'Incidente cerrado',
+                      description: 'Pasa a estado validación · 12 min en escena',
+                    })
+                  }
+                >
                   <CheckCircle2 size={12} /> Cerrar incidente
                 </Button>
               </div>

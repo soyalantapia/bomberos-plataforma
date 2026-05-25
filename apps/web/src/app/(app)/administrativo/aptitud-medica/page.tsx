@@ -15,7 +15,7 @@ import {
 import Link from 'next/link';
 import { useMemo, useState } from 'react';
 
-import { Avatar, Badge, Button, Card, CardContent, Kpi, cn } from '@faro/ui';
+import { Avatar, Badge, Button, Card, CardContent, Kpi, cn, useToast } from '@faro/ui';
 
 import { PageHero } from '../../../../components/shared/page-hero';
 import { useFaroStore } from '../../../../store/use-faro-store';
@@ -139,6 +139,7 @@ function getAptitud(personaId: string): AptitudMedica {
 }
 
 export default function AptitudMedicaPage() {
+  const toast = useToast();
   const personas = useFaroStore((s) => s.personas);
   const activas = personas.filter((p) => p.estado === 'activo');
   const [filtro, setFiltro] = useState<'todos' | AptitudMedica['estado']>('todos');
@@ -355,7 +356,17 @@ export default function AptitudMedicaPage() {
 
                       {aptitud.estado !== 'vigente' && (
                         <div className="mt-3 flex flex-wrap gap-2">
-                          <Button intent="primary" size="sm">
+                          <Button
+                            intent="primary"
+                            size="sm"
+                            onClick={() =>
+                              toast.push({
+                                kind: 'success',
+                                title: `Turno solicitado para ${persona.nombre}`,
+                                description: 'Notificado a la persona vía WhatsApp + email',
+                              })
+                            }
+                          >
                             <Calendar size={12} /> Agendar turno
                           </Button>
                           {aptitud.estado === 'vencida' && (

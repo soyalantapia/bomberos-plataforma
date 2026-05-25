@@ -1,10 +1,11 @@
 'use client';
 
-import { AlertTriangle, Flag, MapPin, TrendingUp, Users } from 'lucide-react';
+import { AlertTriangle, Flag, Map, MapPin, TrendingUp, Users } from 'lucide-react';
 import { useState } from 'react';
 
 import { Badge, Card, CardContent, CardHeader, CardTitle, cn, Kpi, StatusPill } from '@faro/ui';
 
+import { FeaturesGrid } from '../../../components/shared/features-grid';
 import { MapView } from '../../../components/shared/map-view';
 import { PageHero } from '../../../components/shared/page-hero';
 import { useFaroStore } from '../../../store/use-faro-store';
@@ -271,6 +272,30 @@ export default function TableroFederacion() {
           </div>
         </CardContent>
       </Card>
+
+      {/* Acceso rápido a herramientas nuevas */}
+      <FeaturesGrid
+        titulo="Análisis federacional"
+        descripcion="Lo nuevo de Faro para ver todo el conurbano"
+        columnas={2}
+        cards={[
+          {
+            href: '/federacion/mapa',
+            icon: <Map size={18} />,
+            titulo: 'Mapa provincial',
+            descripcion: '10 cuarteles · ranking · export PDF firmado',
+            color: 'bg-brand-700',
+            nuevo: true,
+          },
+          {
+            href: '/federacion/consolidados',
+            icon: <TrendingUp size={18} />,
+            titulo: 'Consolidados regionales',
+            descripcion: 'KPIs operativos consolidados',
+            color: 'bg-status-ok',
+          },
+        ]}
+      />
     </div>
   );
 }

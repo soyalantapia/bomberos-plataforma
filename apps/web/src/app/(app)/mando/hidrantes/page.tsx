@@ -413,7 +413,18 @@ export default function HidrantesPage() {
                               <Wrench size={12} /> Reclamar a {h.proveedor}
                             </Button>
                           )}
-                          <Button intent="secondary" size="sm">
+                          <Button
+                            intent="secondary"
+                            size="sm"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              toast.push({
+                                kind: 'success',
+                                title: `${h.codigo} testeado`,
+                                description: `${h.caudal} L/m · ${h.presion} bar registrado`,
+                              });
+                            }}
+                          >
                             <CheckCircle2 size={12} /> Marcar tested
                           </Button>
                         </div>

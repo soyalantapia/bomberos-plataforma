@@ -449,10 +449,30 @@ export default function ParteNFIRSPage() {
                   Hash SHA-256 · {parte.numero} · {new Date().toLocaleString('es-AR')}
                 </p>
                 <div className="mt-3 flex flex-wrap gap-2">
-                  <Button intent="secondary" size="sm">
+                  <Button
+                    intent="secondary"
+                    size="sm"
+                    onClick={() =>
+                      toast.push({
+                        kind: 'success',
+                        title: 'PDF descargado',
+                        description: `Parte ${parte.numero} · 4 páginas · firmado`,
+                      })
+                    }
+                  >
                     <Save size={14} /> Exportar PDF
                   </Button>
-                  <Button intent="secondary" size="sm">
+                  <Button
+                    intent="secondary"
+                    size="sm"
+                    onClick={() =>
+                      toast.push({
+                        kind: 'success',
+                        title: 'Sumado al cómputo',
+                        description: '+1.5 hs accidental para la dotación',
+                      })
+                    }
+                  >
                     <Flame size={14} /> Sumar a cómputo
                   </Button>
                   <Badge intent="ok">

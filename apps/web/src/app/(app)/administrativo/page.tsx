@@ -1,10 +1,22 @@
 'use client';
 
-import { Download, FileSearch, Plus, ScanLine, UserPlus, Users } from 'lucide-react';
+import {
+  Database,
+  Download,
+  FileSearch,
+  Megaphone,
+  MessageCircle,
+  Plus,
+  ScanLine,
+  Stethoscope,
+  UserPlus,
+  Users,
+} from 'lucide-react';
 import { useMemo, useState } from 'react';
 
 import { Button, Card, CardContent, Kpi, useToast } from '@faro/ui';
 
+import { FeaturesGrid } from '../../../components/shared/features-grid';
 import { PageHero } from '../../../components/shared/page-hero';
 import { FiltersBar, type FilterChip } from '../../../components/shared/filters-bar';
 import { useRouter } from 'next/navigation';
@@ -232,6 +244,46 @@ export default function PadronPage() {
           ))}
         </div>
       )}
+
+      {/* Acceso rápido a nuevas funcionalidades */}
+      <FeaturesGrid
+        titulo="Lo nuevo en Administrativo"
+        descripcion="Herramientas que reemplazan el trabajo manual"
+        cards={[
+          {
+            href: '/administrativo/aptitud-medica',
+            icon: <Stethoscope size={18} />,
+            titulo: 'Aptitud médica NFPA 1582',
+            descripcion: 'Vencimientos · VO₂ max · EKG · cancer screening',
+            color: 'bg-status-risk',
+            nuevo: true,
+          },
+          {
+            href: '/administrativo/sync-ruba',
+            icon: <Database size={18} />,
+            titulo: 'Sync RUBA',
+            descripcion: 'Sin doble carga · diff visual + audit log',
+            color: 'bg-brand-700',
+            nuevo: true,
+          },
+          {
+            href: '/administrativo/whatsapp',
+            icon: <MessageCircle size={18} />,
+            titulo: 'WhatsApp Business',
+            descripcion: 'Plantillas oficiales · voy/no voy + GPS',
+            color: 'bg-status-ok',
+            nuevo: true,
+          },
+          {
+            href: '/administrativo/broadcast',
+            icon: <Megaphone size={18} />,
+            titulo: 'Broadcast',
+            descripcion: 'Composer rich-text · 6 audiencias',
+            color: 'bg-status-warn',
+            nuevo: true,
+          },
+        ]}
+      />
 
       <Card className="border-slate-200 bg-slate-50">
         <CardContent className="flex items-start gap-3 p-4 text-sm text-slate-600">

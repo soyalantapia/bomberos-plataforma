@@ -9,6 +9,7 @@ import {
   Flame,
   GraduationCap,
   MessageSquare,
+  Shield,
   Sun,
   TrendingUp,
 } from 'lucide-react';
@@ -28,6 +29,7 @@ import {
   cn,
 } from '@faro/ui';
 
+import { FeaturesGrid } from '../../../components/shared/features-grid';
 import { PageHero } from '../../../components/shared/page-hero';
 import { calcularComputoMensual } from '../../../lib/utils/computo';
 import { detectarAlertasPersona } from '../../../lib/utils/cuerpo';
@@ -304,6 +306,31 @@ export default function BomberoInicio() {
               </CardContent>
             </Card>
           )}
+
+          {/* Acceso rápido a herramientas nuevas */}
+          <FeaturesGrid
+            titulo="Tus nuevas herramientas"
+            descripcion="Faro 2026 · sumá tu información para mejorar el cuartel"
+            columnas={2}
+            cards={[
+              {
+                href: '/bombero/equipo',
+                icon: <Shield size={18} />,
+                titulo: 'Mi equipo (EPP)',
+                descripcion: '8 items con vencimientos NFPA 1851 + QR',
+                color: 'bg-fire-700',
+                nuevo: true,
+              },
+              {
+                href: '/bombero/disponibilidad',
+                icon: <Calendar size={18} />,
+                titulo: 'Disponibilidad semanal',
+                descripcion: 'Declarás cuándo estás · IA cubre gaps',
+                color: 'bg-brand-600',
+                nuevo: true,
+              },
+            ]}
+          />
         </TabsContent>
 
         <TabsContent value="proximas">
