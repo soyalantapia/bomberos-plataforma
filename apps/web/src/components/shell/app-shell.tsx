@@ -14,6 +14,7 @@ import { fmtJerarquia } from '../../lib/utils/jerarquia';
 
 import { navByPerfil } from './nav-config';
 import { Icon } from './icon';
+import { SyncStatusPill } from './sync-status-pill';
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const router = useRouter();
@@ -134,6 +135,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           >
             <Search size={18} />
           </Link>
+          <SyncStatusPill />
           <Link
             href="/notificaciones"
             className="relative grid h-9 w-9 place-items-center rounded-lg text-slate-700 hover:bg-slate-100"
