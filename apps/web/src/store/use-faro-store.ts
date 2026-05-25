@@ -59,6 +59,9 @@ interface Actions {
   ) => Persona;
   actualizarPersona: (id: string, cambios: Partial<Persona>) => void;
   archivarPersona: (id: string) => void;
+  // ABM Móvil
+  crearMovil: (input: Omit<Movil, 'id'>) => Movil;
+  actualizarMovil: (id: string, cambios: Partial<Movil>) => void;
 }
 
 type FaroStore = State & Actions;
@@ -214,6 +217,16 @@ export const useFaroStore = create<FaroStore>()(
           personas: get().personas.map((p) =>
             p.id === id ? { ...p, estado: 'baja' as Persona['estado'] } : p,
           ),
+        });
+      },
+      crearMovil(input) {
+        const movil: Movil = { ...input, id: genId('movil') };
+        set({ moviles: [...get().moviles, movil] });
+        return movil;
+      },
+      actualizarMovil(id, cambios) {
+        set({
+          moviles: get().moviles.map((m) => (m.id === id ? { ...m, ...cambios } : m)),
         });
       },
       presentarRendicion(rendicionId, mandoId) {

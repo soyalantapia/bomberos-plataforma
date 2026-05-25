@@ -1,9 +1,12 @@
 'use client';
 
 import { AlertTriangle, Calendar, Sparkles, Truck, Wrench } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { useState } from 'react';
 
 import { Badge, Card, CardContent, Kpi, StatusPill, cn } from '@faro/ui';
 
+import { NuevoMovilDialog } from '../../../../components/automotores/nuevo-movil-dialog';
 import { PageHero } from '../../../../components/shared/page-hero';
 import { fmtFechaCorta } from '../../../../lib/utils/date';
 import { useFaroStore, selectCuartelActivo } from '../../../../store/use-faro-store';
@@ -30,6 +33,8 @@ export default function AutomotoresPage() {
   const cuartel = useFaroStore(selectCuartelActivo);
   const allMoviles = useFaroStore((s) => s.moviles);
   const moviles = allMoviles.filter((m) => m.cuartelId === cuartel?.id);
+  const router = useRouter();
+  const [nuevoOpen, setNuevoOpen] = useState(false);
 
   const enServicio = moviles.filter((m) => m.enServicio).length;
   const porVencer = moviles.filter((m) => {
@@ -59,6 +64,15 @@ export default function AutomotoresPage() {
             />
             <Kpi label="Horas flota" value={horasTotales} hint="acumuladas" intent="neutral" />
           </div>
+        }
+        acciones={
+          <button
+            type="button"
+            onClick={() => setNuevoOpen(true)}
+            className="bg-brand-600 hover:bg-brand-700 inline-flex h-10 items-center gap-1.5 rounded-lg px-3 text-sm font-medium text-white"
+          >
+            <Truck size={14} /> Nuevo móvil
+          </button>
         }
       />
 
@@ -128,6 +142,12 @@ export default function AutomotoresPage() {
           </CardContent>
         </Card>
       )}
+
+      <NuevoMovilDialog
+        open={nuevoOpen}
+        onClose={() => setNuevoOpen(false)}
+        onCreated={(m) => router.push(`/mando/automotores/${m.id}` as never)}
+      />
     </div>
   );
 }

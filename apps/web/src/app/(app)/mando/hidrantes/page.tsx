@@ -14,6 +14,7 @@ import { useMemo, useState } from 'react';
 
 import { Badge, Button, Card, CardContent, Kpi, cn, useToast } from '@faro/ui';
 
+import { NuevoHidranteDialog } from '../../../../components/hidrantes/nuevo-hidrante-dialog';
 import { PageHero } from '../../../../components/shared/page-hero';
 import { MapView } from '../../../../components/shared/map-view';
 import { selectCuartelActivo, useFaroStore } from '../../../../store/use-faro-store';
@@ -186,6 +187,7 @@ export default function HidrantesPage() {
   const [filtro, setFiltro] = useState<'todos' | EstadoHidrante>('todos');
   const [search, setSearch] = useState('');
   const [seleccionado, setSeleccionado] = useState<string | null>(null);
+  const [nuevoOpen, setNuevoOpen] = useState(false);
 
   const filtrados = useMemo(() => {
     return HIDRANTES_MOCK.filter((h) => {
@@ -235,6 +237,15 @@ export default function HidrantesPage() {
               intent={conteo.fuera_servicio > 0 ? 'risk' : 'ok'}
             />
           </div>
+        }
+        acciones={
+          <button
+            type="button"
+            onClick={() => setNuevoOpen(true)}
+            className="bg-brand-600 hover:bg-brand-700 inline-flex h-10 items-center gap-1.5 rounded-lg px-3 text-sm font-medium text-white"
+          >
+            <Droplets size={14} /> Nuevo hidrante
+          </button>
         }
       />
 
@@ -466,6 +477,8 @@ export default function HidrantesPage() {
           </div>
         </CardContent>
       </Card>
+
+      <NuevoHidranteDialog open={nuevoOpen} onClose={() => setNuevoOpen(false)} />
     </div>
   );
 }

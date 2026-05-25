@@ -11,9 +11,11 @@ import {
   Sparkles,
   Users2,
 } from 'lucide-react';
+import { useState } from 'react';
 
 import { Badge, Card, CardContent, Kpi, cn, useToast } from '@faro/ui';
 
+import { NuevoCursoDialog } from '../../../../components/capacitacion/nuevo-curso-dialog';
 import { PageHero } from '../../../../components/shared/page-hero';
 
 interface Curso {
@@ -92,6 +94,7 @@ const CAT_COLOR: Record<Curso['categoria'], string> = {
 
 export default function CapacitacionGestion() {
   const toast = useToast();
+  const [nuevoCursoOpen, setNuevoCursoOpen] = useState(false);
 
   return (
     <div className="mx-auto max-w-6xl space-y-5">
@@ -128,6 +131,15 @@ export default function CapacitacionGestion() {
               icon={<ScrollText size={16} />}
             />
           </div>
+        }
+        acciones={
+          <button
+            type="button"
+            onClick={() => setNuevoCursoOpen(true)}
+            className="bg-brand-600 hover:bg-brand-700 inline-flex h-10 items-center gap-1.5 rounded-lg px-3 text-sm font-medium text-white"
+          >
+            <GraduationCap size={14} /> Nuevo curso
+          </button>
         }
       />
 
@@ -304,6 +316,8 @@ export default function CapacitacionGestion() {
           ))}
         </div>
       </section>
+
+      <NuevoCursoDialog open={nuevoCursoOpen} onClose={() => setNuevoCursoOpen(false)} />
     </div>
   );
 }
