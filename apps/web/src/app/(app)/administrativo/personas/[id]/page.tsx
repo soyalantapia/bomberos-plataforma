@@ -37,6 +37,7 @@ import {
   useToast,
 } from '@faro/ui';
 
+import { OCRWizard } from '../../../../../components/ai/ocr-wizard';
 import { PageHero } from '../../../../../components/shared/page-hero';
 import { calcularComputoMensual } from '../../../../../lib/utils/computo';
 import {
@@ -63,6 +64,7 @@ export default function FichaPersona() {
   const persona = personas.find((p) => p.id === id);
   const toast = useToast();
   const [tab, setTab] = useState('datos');
+  const [ocrOpen, setOcrOpen] = useState(false);
 
   if (!persona) return notFound();
 
@@ -110,17 +112,7 @@ export default function FichaPersona() {
         }
         acciones={
           <>
-            <Button
-              intent="secondary"
-              size="md"
-              onClick={() =>
-                toast.push({
-                  kind: 'info',
-                  title: 'OCR documento',
-                  description: 'Subí DNI o licencia y la IA extrae los datos a esta ficha.',
-                })
-              }
-            >
+            <Button intent="secondary" size="md" onClick={() => setOcrOpen(true)}>
               <ScanLine size={14} /> Actualizar con OCR
             </Button>
             <Button intent="primary" size="md" onClick={() => solicitar('múltiples campos')}>
@@ -627,6 +619,12 @@ export default function FichaPersona() {
           </div>
         </CardContent>
       </Card>
+
+      <OCRWizard
+        open={ocrOpen}
+        onClose={() => setOcrOpen(false)}
+        persona={{ nombre: persona.nombre, apellido: persona.apellido, legajo: persona.legajo }}
+      />
     </div>
   );
 }

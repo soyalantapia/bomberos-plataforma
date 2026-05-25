@@ -9,6 +9,7 @@ import { PageHero } from '../../../components/shared/page-hero';
 import { FiltersBar, type FilterChip } from '../../../components/shared/filters-bar';
 import { useRouter } from 'next/navigation';
 
+import { OCRWizard } from '../../../components/ai/ocr-wizard';
 import { PersonaCard } from '../../../components/personal/persona-card';
 import {
   clasificarCuerpo,
@@ -36,6 +37,7 @@ export default function PadronPage() {
   const [tab, setTab] = useState<TabCuerpo>('todos');
   const [estado, setEstado] = useState<EstadoFiltro>('todos');
   const [search, setSearch] = useState('');
+  const [ocrOpen, setOcrOpen] = useState(false);
 
   const conteo = useMemo(() => contarPorCuerpo(personas), [personas]);
   const activos = personas.filter((p) => p.estado === 'activo').length;
@@ -133,17 +135,7 @@ export default function PadronPage() {
             >
               <UserPlus size={16} /> Nueva persona
             </Button>
-            <Button
-              intent="secondary"
-              size="md"
-              onClick={() =>
-                toast.push({
-                  kind: 'info',
-                  title: 'OCR de documento (IA)',
-                  description: 'Subí una foto de DNI o licencia y se extraen los datos.',
-                })
-              }
-            >
+            <Button intent="secondary" size="md" onClick={() => setOcrOpen(true)}>
               <ScanLine size={16} /> OCR documento
             </Button>
           </>
@@ -252,6 +244,8 @@ export default function PadronPage() {
           </div>
         </CardContent>
       </Card>
+
+      <OCRWizard open={ocrOpen} onClose={() => setOcrOpen(false)} />
     </div>
   );
 }
