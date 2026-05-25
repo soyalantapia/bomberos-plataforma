@@ -157,16 +157,18 @@ export default function RendicionPage() {
                       ? `Presentada el ${new Date(rendicion.presentadaEn!).toLocaleString('es-AR')}.`
                       : 'Cuando todo esté en verde, presentamos al Fondo con tu confirmación.'}
                   </p>
-                  {presentable && (
-                    <Button
-                      intent="success"
-                      size="lg"
-                      className="mt-3"
-                      onClick={() => setConfirmaOpen(true)}
-                    >
-                      <ShieldCheck size={20} /> Presentar al Fondo
-                    </Button>
-                  )}
+                  <div className="mt-3 flex flex-wrap gap-2">
+                    {presentable && (
+                      <Button intent="success" size="lg" onClick={() => setConfirmaOpen(true)}>
+                        <ShieldCheck size={20} /> Presentar al Fondo
+                      </Button>
+                    )}
+                    <Link href="/mando/rendicion/presentar">
+                      <Button intent="secondary" size="lg">
+                        Abrir wizard guiado
+                      </Button>
+                    </Link>
+                  </div>
                 </div>
               </div>
             </CardContent>

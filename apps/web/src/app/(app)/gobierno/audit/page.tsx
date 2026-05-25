@@ -1,6 +1,7 @@
 'use client';
 
 import { Activity, AlertOctagon, Eye, FileLock2, ScrollText, Sparkles } from 'lucide-react';
+import Link from 'next/link';
 import { useMemo, useState } from 'react';
 
 import type { AuditEvent } from '@faro/types';
@@ -294,6 +295,16 @@ export default function AuditLogPage() {
         titulo="Quién cambió qué y cuándo"
         descripcion="Registro inmutable que cumple Ley 25.326. Todo lo sensible queda acá: alta, baja, edición, rendición, denuncias, aprobaciones."
         icono={<ScrollText size={26} />}
+        acciones={
+          <Link href="/gobierno/audit/verificador">
+            <button
+              type="button"
+              className="bg-brand-600 hover:bg-brand-700 inline-flex h-10 items-center gap-1.5 rounded-lg px-3 text-sm font-medium text-white"
+            >
+              <FileLock2 size={14} /> Verificar cadena
+            </button>
+          </Link>
+        }
         meta={
           <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
             <Kpi
