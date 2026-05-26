@@ -131,7 +131,7 @@ export default function AutomotoresPage() {
             </div>
             <div>
               <div className="text-status-warn-fg flex items-center gap-2 font-semibold">
-                <AlertTriangle size={14} /> Alertas predictivas (IA)
+                <AlertTriangle size={14} /> Vencimientos próximos
               </div>
               <p className="mt-1 text-sm text-slate-700">
                 Hay {porVencer} VTV próxima{porVencer === 1 ? '' : 's'} a vencer. Sin VTV vigente el

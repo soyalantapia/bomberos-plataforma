@@ -47,19 +47,19 @@ const ESTADO_CONFIG: Record<
     pulse: false,
   },
   en_ruta: {
-    label: 'En ruta',
+    label: 'Yendo al lugar',
     color: 'bg-fire-600',
     bg: 'bg-fire-50',
     pulse: true,
   },
   en_escena: {
-    label: 'En escena',
+    label: 'En el lugar',
     color: 'bg-status-risk',
     bg: 'bg-status-risk-bg/30',
     pulse: true,
   },
   regresando: {
-    label: 'Regresando',
+    label: 'Volviendo al cuartel',
     color: 'bg-brand-600',
     bg: 'bg-brand-50',
     pulse: false,
@@ -169,13 +169,13 @@ export default function AVLPage() {
   return (
     <div className="mx-auto max-w-7xl space-y-5">
       <PageHero
-        objetivo="Vista Mando · AVL en vivo"
+        objetivo="Vista Mando · Móviles en vivo"
         titulo={
           en_emergencia > 0
             ? `${en_emergencia} móvil${en_emergencia === 1 ? '' : 'es'} en emergencia`
             : 'Flota lista para despacho'
         }
-        descripcion="Automatic Vehicle Location con tracking GPS · Cumplimiento NFPA 1710 (turnout ≤60s, on-scene ≤4min al 90%)."
+        descripcion="Seguimiento de móviles por GPS en tiempo real. Tiempo de salida del cuartel (objetivo: 1 min) y tiempo de viaje hasta llegar (objetivo: 4 min al 90% de los servicios)."
         icono={<Radio size={26} className={en_emergencia > 0 ? 'animate-pulse' : ''} />}
         variant={en_emergencia > 0 ? 'critical' : 'default'}
         meta={
@@ -364,7 +364,7 @@ export default function AVLPage() {
                             : 'bg-status-risk-bg/30',
                       )}
                     >
-                      <div className="text-slate-500">NFPA 1710 · Turnout</div>
+                      <div className="text-slate-500">Tiempo de salida del cuartel</div>
                       <div className="flex items-center justify-between font-bold">
                         <span
                           className={cn(
@@ -375,19 +375,22 @@ export default function AVLPage() {
                                 : 'text-status-risk-fg',
                           )}
                         >
-                          {movilSel.turnoutSec}s
+                          {movilSel.turnoutSec} seg
                         </span>
-                        <span className="text-[10px] text-slate-500">meta ≤60s</span>
+                        <span className="text-[10px] text-slate-500">meta 1 min</span>
                       </div>
                     </div>
                   )}
 
                   {movilSel.travelSec !== undefined && (
                     <div className="bg-fire-50 rounded-md p-2">
-                      <div className="text-slate-500">Tiempo en ruta</div>
+                      <div className="text-slate-500">Tiempo de viaje hasta el lugar</div>
                       <div className="text-fire-700 flex items-center justify-between font-bold">
-                        <span>{movilSel.travelSec}s</span>
-                        <span className="text-[10px] text-slate-500">meta ≤240s al 90%</span>
+                        <span>
+                          {Math.floor(movilSel.travelSec / 60)}:
+                          {(movilSel.travelSec % 60).toString().padStart(2, '0')} min
+                        </span>
+                        <span className="text-[10px] text-slate-500">meta 4 min</span>
                       </div>
                     </div>
                   )}
@@ -409,9 +412,9 @@ export default function AVLPage() {
         <CardContent className="flex items-start gap-3 p-4 text-sm text-slate-600">
           <Activity size={18} className="mt-0.5 shrink-0 text-slate-400" />
           <div>
-            <strong className="text-slate-900">AVL en vivo:</strong> los móviles reportan su
-            posición GPS cada 30 segundos vía la app del jefe de servicio. Los estados se
-            transicionan automáticamente al pasar geofences (cuartel → ruta → escena → regreso).
+            <strong className="text-slate-900">¿Cómo funciona?</strong> Los móviles mandan su
+            ubicación cada 30 segundos desde el celular del jefe de servicio. El estado cambia solo
+            cuando el móvil sale del cuartel, llega al lugar y vuelve.
           </div>
         </CardContent>
       </Card>

@@ -58,7 +58,7 @@ const misCursos: CursoMio[] = [
   {
     id: 'c-2',
     nombre: 'Primeros auxilios',
-    centro: 'CEPROS Norte',
+    centro: 'Centro de práctica Norte',
     vencimiento: '22/5/2026',
     diasRestantes: -2,
     progreso: 100,
@@ -80,7 +80,7 @@ const disponibles: CursoDisponible[] = [
   {
     id: 'd-2',
     nombre: 'Manejo víctimas múltiples',
-    centro: 'CEPROS Norte',
+    centro: 'Centro de práctica Norte',
     inicio: '20 jun 2026',
     inscriptos: 14,
     cupos: 24,
@@ -89,7 +89,7 @@ const disponibles: CursoDisponible[] = [
   {
     id: 'd-3',
     nombre: 'Incendios estructurales II',
-    centro: 'CEPROS Norte',
+    centro: 'Centro de práctica Norte',
     inicio: '5 jul 2026',
     inscriptos: 5,
     cupos: 18,

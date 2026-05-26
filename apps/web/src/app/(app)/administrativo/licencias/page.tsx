@@ -148,7 +148,7 @@ export default function LicenciasNovedades() {
             ? `${pendientes.length} solicitud${pendientes.length === 1 ? '' : 'es'} esperan resolución`
             : 'Sin pendientes'
         }
-        descripcion="Recibís solicitudes, las pasás al Mando para que decida (doble check), y sincronizás con Aquarii."
+        descripcion="Recibís solicitudes, las pasás al Mando para que decida (doble check), y actualizás con Aquarii."
         icono={<CalendarCheck size={26} />}
         variant={pendientes.length > 0 ? 'default' : 'success'}
         meta={
@@ -162,7 +162,7 @@ export default function LicenciasNovedades() {
             <Kpi label="Otorgadas mes" value={aprobadas.length} intent="ok" />
             <Kpi label="Rechazadas" value={rechazadas.length} intent="neutral" />
             <Kpi
-              label="Sync Aquarii"
+              label="Actualización Aquarii"
               value="21/5 03:00"
               hint="OK"
               intent="brand"
@@ -195,7 +195,7 @@ export default function LicenciasNovedades() {
               : 'bg-white text-slate-700 ring-1 ring-slate-200 hover:bg-slate-50',
           )}
         >
-          <RefreshCw size={14} /> Importación externa
+          <RefreshCw size={14} /> Importar desde Aquarii
         </button>
       </div>
 
@@ -304,13 +304,13 @@ export default function LicenciasNovedades() {
         <Card>
           <CardContent className="p-5">
             <div className="mb-4 flex items-center justify-between">
-              <h3 className="font-bold text-slate-900">Sincronización con Aquarii</h3>
+              <h3 className="font-bold text-slate-900">Actualización con Aquarii</h3>
               <Badge intent="ok">Conectado</Badge>
             </div>
 
             <div className="grid gap-3 sm:grid-cols-3">
               <div className="rounded-xl bg-slate-50 p-4">
-                <div className="text-xs text-slate-500">Última sync</div>
+                <div className="text-xs text-slate-500">Última actualización</div>
                 <div className="mt-1 text-xl font-bold text-slate-900">21/5 03:00</div>
                 <div className="mt-1 text-[11px] text-slate-500">automática diaria</div>
               </div>
@@ -320,7 +320,7 @@ export default function LicenciasNovedades() {
                 <div className="mt-1 text-[11px] text-slate-500">en mayo</div>
               </div>
               <div className="bg-brand-50 rounded-xl p-4">
-                <div className="text-xs text-slate-500">Próxima sync</div>
+                <div className="text-xs text-slate-500">Próxima actualización</div>
                 <div className="text-brand-700 mt-1 text-xl font-bold">Hoy 23:00</div>
                 <div className="mt-1 text-[11px] text-slate-500">automática</div>
               </div>
@@ -329,26 +329,26 @@ export default function LicenciasNovedades() {
             <div className="mt-5 flex flex-wrap gap-2">
               <button
                 type="button"
-                onClick={() => toast.push({ kind: 'info', title: 'Sincronizando con Aquarii...' })}
+                onClick={() => toast.push({ kind: 'info', title: 'Actualizando con Aquarii...' })}
                 className="bg-brand-600 hover:bg-brand-700 inline-flex items-center gap-1.5 rounded-md px-3 py-2 text-sm font-semibold text-white"
               >
-                <RefreshCw size={14} /> Sincronizar ahora
+                <RefreshCw size={14} /> Actualizar ahora
               </button>
               <button
                 type="button"
-                onClick={() => toast.push({ kind: 'info', title: 'Descargando log' })}
+                onClick={() => toast.push({ kind: 'info', title: 'Descargando registro' })}
                 className="inline-flex items-center gap-1.5 rounded-md border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-700 hover:border-slate-300"
               >
-                <Download size={14} /> Log de imports
+                <Download size={14} /> Registro de importaciones
               </button>
               <button
                 type="button"
                 onClick={() =>
-                  toast.push({ kind: 'info', title: 'Enviando feedback al equipo Aquarii' })
+                  toast.push({ kind: 'info', title: 'Enviando comentario al equipo Aquarii' })
                 }
                 className="inline-flex items-center gap-1.5 rounded-md border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-700 hover:border-slate-300"
               >
-                <Send size={14} /> Reportar issue
+                <Send size={14} /> Reportar problema
               </button>
             </div>
           </CardContent>

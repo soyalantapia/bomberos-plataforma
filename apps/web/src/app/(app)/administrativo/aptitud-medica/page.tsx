@@ -168,9 +168,9 @@ export default function AptitudMedicaPage() {
   return (
     <div className="mx-auto max-w-6xl space-y-5">
       <PageHero
-        objetivo="Vista Administrativo · Salud"
-        titulo="Aptitud médica NFPA 1582"
-        descripcion="Examen anual obligatorio · VO₂ max, EKG, audiometría, oftalmología, lab básico, screening cáncer. Sin aptitud vigente, las horas no se computan al subsidio."
+        objetivo="Administrativo · Salud"
+        titulo="Aptitud médica anual"
+        descripcion="Examen anual obligatorio · capacidad física, electrocardiograma, audiometría, oftalmología, laboratorio, screening cáncer. Sin aptitud vigente, las horas no suman al subsidio."
         icono={<Stethoscope size={26} />}
         meta={
           <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
@@ -313,7 +313,7 @@ export default function AptitudMedicaPage() {
                           <div className="flex items-center justify-between">
                             <span className="text-slate-600">
                               <Activity size={11} className="mr-1 inline" />
-                              VO₂ max
+                              Capacidad física
                             </span>
                             <span
                               className={cn(
@@ -370,7 +370,7 @@ export default function AptitudMedicaPage() {
                             <Calendar size={12} /> Agendar turno
                           </Button>
                           {aptitud.estado === 'vencida' && (
-                            <Badge intent="risk">SUSPENDIDA · no computa horas</Badge>
+                            <Badge intent="risk">Suspendida · las horas no suman</Badge>
                           )}
                         </div>
                       )}
@@ -383,19 +383,19 @@ export default function AptitudMedicaPage() {
         })}
       </div>
 
-      {/* Pista NFPA 1582 */}
+      {/* Detalle del examen anual */}
       <Card className="bg-brand-50/40 border-brand-100">
         <CardContent className="flex items-start gap-3 p-4">
           <div className="bg-brand-600 grid h-10 w-10 shrink-0 place-items-center rounded-xl text-white">
             <TrendingUp size={18} />
           </div>
           <div className="flex-1 text-sm">
-            <div className="text-brand-900 font-semibold">NFPA 1582 · Examen anual obligatorio</div>
+            <div className="text-brand-900 font-semibold">Examen anual obligatorio</div>
             <p className="text-brand-900/80 mt-0.5">
-              Incluye: examen físico completo, lab básico (hemograma, lípidos, glucemia), VO₂ max
-              (cinta o cicloergómetro), EKG con stress test, audiometría, oftalmología,
+              Incluye: examen físico completo, laboratorio (hemograma, lípidos, glucemia), capacidad
+              física (cinta o bicicleta), electrocardiograma de esfuerzo, audiometría, oftalmología,
               espirometría, screening cáncer de piel/tiroides/colon (según edad), salud mental. Sin
-              esto, las horas operativas no se computan al subsidio del SNBV.
+              esto, las horas operativas no suman al subsidio.
             </p>
           </div>
         </CardContent>

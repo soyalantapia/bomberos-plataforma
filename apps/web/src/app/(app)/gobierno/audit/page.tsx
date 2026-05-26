@@ -291,9 +291,9 @@ export default function AuditLogPage() {
   return (
     <div className="mx-auto max-w-6xl space-y-5">
       <PageHero
-        objetivo="Gobierno interno · Audit"
+        objetivo="Gobierno interno · Registro permanente"
         titulo="Quién cambió qué y cuándo"
-        descripcion="Registro inmutable que cumple Ley 25.326. Todo lo sensible queda acá: alta, baja, edición, rendición, denuncias, aprobaciones."
+        descripcion="Registro que no se puede modificar y cumple Ley 25.326. Todo lo sensible queda acá: alta, baja, edición, rendición, denuncias, aprobaciones."
         icono={<ScrollText size={26} />}
         acciones={
           <Link href="/gobierno/audit/verificador">
@@ -301,7 +301,7 @@ export default function AuditLogPage() {
               type="button"
               className="bg-brand-600 hover:bg-brand-700 inline-flex h-10 items-center gap-1.5 rounded-lg px-3 text-sm font-medium text-white"
             >
-              <FileLock2 size={14} /> Verificar cadena
+              <FileLock2 size={14} /> Verificar integridad
             </button>
           </Link>
         }
@@ -310,21 +310,21 @@ export default function AuditLogPage() {
             <Kpi
               label="Eventos"
               value={audit.length}
-              hint="últimos 30d"
+              hint="últimos 30 días"
               intent="brand"
               icon={<Activity size={16} />}
             />
             <Kpi
-              label="Anomalías IA"
+              label="Cosas raras detectadas"
               value={anomalias.length}
               hint="para revisar"
               intent={anomalias.length > 0 ? 'warn' : 'ok'}
               icon={<AlertOctagon size={16} />}
             />
-            <Kpi label="Trazabilidad" value="100%" hint="cumplimiento Ley 25.326" intent="ok" />
+            <Kpi label="Para revisar después" value="100%" hint="cumple Ley 25.326" intent="ok" />
             <Kpi
-              label="Cifrado"
-              value="AES-256"
+              label="Encriptado"
+              value="Sí"
               hint="campos sensibles"
               intent="ok"
               icon={<FileLock2 size={16} />}
@@ -339,11 +339,11 @@ export default function AuditLogPage() {
             <Sparkles size={20} />
           </div>
           <div className="flex-1">
-            <div className="text-brand-900 font-semibold">Detección de anomalías (IA)</div>
+            <div className="text-brand-900 font-semibold">Detección de cosas raras</div>
             <p className="text-brand-900/80 text-sm">
-              La IA escanea el log cada hora buscando patrones inusuales: ediciones masivas a un
-              legajo, cambios fuera de horario, mismo actor modificando varias entidades sensibles.
-              Te muestra lo que vale la pena revisar.
+              Cada hora revisamos el registro buscando patrones extraños: ediciones masivas a un
+              legajo, cambios fuera de horario, una misma persona modificando varias cosas
+              sensibles. Te mostramos lo que vale la pena revisar.
             </p>
           </div>
           <button
@@ -358,7 +358,7 @@ export default function AuditLogPage() {
           >
             {soloAnomalias
               ? 'Ver todos'
-              : `Ver ${anomalias.length} anomalía${anomalias.length === 1 ? '' : 's'}`}
+              : `Ver ${anomalias.length} cosa${anomalias.length === 1 ? '' : 's'} rara${anomalias.length === 1 ? '' : 's'}`}
           </button>
         </CardContent>
       </Card>
@@ -406,7 +406,7 @@ export default function AuditLogPage() {
                         <Badge intent={ACCION_INTENT[e.action] ?? 'neutral'}>{e.action}</Badge>
                         {isAnomalia && (
                           <span className="bg-status-warn-bg text-status-warn-fg inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-semibold">
-                            <Sparkles size={10} /> Marcada por IA
+                            <Sparkles size={10} /> Para revisar
                           </span>
                         )}
                       </div>
@@ -444,9 +444,9 @@ export default function AuditLogPage() {
 
       <Card className="border-slate-200 bg-slate-50">
         <CardContent className="p-4 text-sm text-slate-600">
-          <strong className="text-slate-900">El audit log es inmutable.</strong> No se puede editar
-          ni borrar ningún evento. Si necesitás exportar para una auditoría externa, usá{' '}
-          <em>Exportar a CSV firmado</em> — incluye hash SHA-256 del bloque.
+          <strong className="text-slate-900">Este registro no se puede modificar.</strong> No se
+          puede editar ni borrar ningún evento. Si necesitás exportar para una auditoría externa,
+          usá <em>Exportar a CSV firmado</em> — incluye comprobante único para verificar.
         </CardContent>
       </Card>
     </div>

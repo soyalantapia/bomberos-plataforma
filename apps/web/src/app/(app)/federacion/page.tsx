@@ -29,13 +29,13 @@ export default function TableroFederacion() {
   return (
     <div className="mx-auto max-w-6xl space-y-5">
       <PageHero
-        objetivo="Vista Federación · Norte GBA"
+        objetivo="Federación · Norte GBA"
         titulo={
           enRiesgo.length > 0
             ? `${enRiesgo.length} cuartel${enRiesgo.length === 1 ? '' : 'es'} en riesgo`
             : `Región al ${promedio}%`
         }
-        descripcion="Estado del mes y los cuarteles que necesitan acción. Tocá un cuartel para abrirlo y disparar recordatorios."
+        descripcion="Estado del mes y los cuarteles que necesitan acción. Tocá un cuartel para abrirlo y mandar recordatorios."
         icono={<Flag size={26} />}
         variant={enRiesgo.length > 0 ? 'critical' : promedio >= 90 ? 'success' : 'default'}
         meta={
@@ -279,15 +279,15 @@ export default function TableroFederacion() {
 
       {/* Acceso rápido a herramientas nuevas */}
       <FeaturesGrid
-        titulo="Análisis federacional"
-        descripcion="Lo nuevo de Faro para ver todo el conurbano"
+        titulo="Análisis regional"
+        descripcion="Para ver todo el conurbano de un vistazo"
         columnas={2}
         cards={[
           {
             href: '/federacion/mapa',
             icon: <Map size={18} />,
             titulo: 'Mapa provincial',
-            descripcion: '10 cuarteles · ranking · export PDF firmado',
+            descripcion: '10 cuarteles · ranking · exportar PDF',
             color: 'bg-brand-700',
             nuevo: true,
           },
@@ -295,7 +295,7 @@ export default function TableroFederacion() {
             href: '/federacion/consolidados',
             icon: <TrendingUp size={18} />,
             titulo: 'Consolidados regionales',
-            descripcion: 'KPIs operativos consolidados',
+            descripcion: 'Indicadores operativos consolidados',
             color: 'bg-status-ok',
           },
         ]}

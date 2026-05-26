@@ -164,7 +164,7 @@ export default function RegistrarServicio() {
       aplicarPropuesta(json.propuesta);
       toast.push({
         kind: 'success',
-        title: 'IA llenó los campos',
+        title: 'Se llenaron los campos solos',
         description: `Confianza ${Math.round((json.propuesta.confianza ?? 0.6) * 100)}%. Revisá antes de confirmar.`,
       });
     } catch (err) {
@@ -237,7 +237,7 @@ export default function RegistrarServicio() {
               <Button intent="secondary" onClick={() => router.push('/bombero')}>
                 Volver al inicio
               </Button>
-              <Button onClick={() => router.push('/mando')}>Ver dashboard mando</Button>
+              <Button onClick={() => router.push('/mando')}>Ver inicio del Mando</Button>
             </div>
           </div>
         </Card>
@@ -267,9 +267,9 @@ export default function RegistrarServicio() {
               <Sparkles size={20} />
             </div>
             <div className="flex-1">
-              <div className="font-semibold text-slate-900">Cargar por voz · IA copiloto</div>
+              <div className="font-semibold text-slate-900">Cargar por voz</div>
               <p className="mt-0.5 text-sm text-slate-600">
-                Dictás el parte (o lo tipeás) y la IA llena los campos. Vos revisás y confirmás.
+                Dictás el parte (o lo tipeás) y se llenan los campos solos. Vos revisás y confirmás.
               </p>
               <div className="mt-3">
                 <Textarea
@@ -282,7 +282,7 @@ export default function RegistrarServicio() {
               </div>
               <div className="mt-3 flex flex-wrap items-center gap-2">
                 <Button intent="primary" size="md" onClick={probarVoz} disabled={iaCargando}>
-                  <Mic size={18} /> {iaCargando ? 'Procesando...' : 'Probar con IA'}
+                  <Mic size={18} /> {iaCargando ? 'Procesando...' : 'Probar carga por voz'}
                 </Button>
               </div>
             </div>
@@ -294,7 +294,7 @@ export default function RegistrarServicio() {
         <div className="bg-brand-50 border-brand-100 flex items-center gap-2 rounded-lg border p-3 text-sm">
           <Sparkles size={16} className="text-brand-700" />
           <span className="text-brand-900 flex-1">
-            La IA propuso una versión. Revisá y ajustá lo que haga falta.
+            Se llenaron los campos. Revisá y ajustá lo que haga falta.
           </span>
           {iaConfianza !== null && (
             <span className="bg-brand-100 text-brand-800 rounded-full px-2 py-0.5 text-xs font-semibold">
@@ -469,7 +469,7 @@ export default function RegistrarServicio() {
               <div>
                 <Label>Adjuntos (opcional)</Label>
                 <p className="mt-1 text-xs text-slate-500">
-                  Fotos del lugar, parte policial, video del operativo. Suben cifrado al servidor.
+                  Fotos del lugar, parte policial, video del operativo. Suben encriptados.
                 </p>
                 <div
                   onDragOver={(e) => {

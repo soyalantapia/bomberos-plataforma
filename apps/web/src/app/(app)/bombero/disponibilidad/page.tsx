@@ -83,9 +83,9 @@ export default function DisponibilidadPage() {
   return (
     <div className="mx-auto max-w-5xl space-y-5">
       <PageHero
-        objetivo="Vista Bombero · Disponibilidad"
+        objetivo="Bombero · Disponibilidad"
         titulo="Declará tu disponibilidad semanal"
-        descripcion="Lo que cargues acá usa la IA para sugerir tu nombre cuando falta cobertura. Podés cambiar cuando quieras. Hacer click en una celda alterna disponible/no disponible."
+        descripcion="Lo que cargues acá sirve para sugerir tu nombre cuando falta cobertura. Podés cambiar cuando quieras. Click en una celda alterna disponible/no disponible."
         icono={<Calendar size={26} />}
         meta={
           <div className="grid grid-cols-3 gap-2 sm:grid-cols-4">
@@ -117,7 +117,7 @@ export default function DisponibilidadPage() {
             size="sm"
             onClick={() => setVista('cuartel')}
           >
-            Heatmap del cuartel
+            Mapa de cobertura del cuartel
           </Button>
         </CardContent>
       </Card>
@@ -218,7 +218,7 @@ export default function DisponibilidadPage() {
                 <Sparkles size={18} />
               </div>
               <div className="flex-1 text-sm">
-                <div className="text-brand-900 font-semibold">Sugerencia IA</div>
+                <div className="text-brand-900 font-semibold">Sugerencia</div>
                 <p className="text-brand-900/80 mt-0.5">
                   Tu cuartel necesita refuerzo en <strong>miércoles mañana (4 voluntarios)</strong>{' '}
                   y <strong>domingo noche (6 voluntarios)</strong>. Si te suma, sumate.
@@ -235,12 +235,12 @@ export default function DisponibilidadPage() {
                     }));
                     toast.push({
                       kind: 'success',
-                      title: 'Sumaste 2 turnos a cubrir gaps',
+                      title: 'Sumaste 2 turnos para cubrir los huecos',
                       description: 'Mié mañana + Dom noche',
                     });
                   }}
                 >
-                  Auto-completar gaps de cuartel
+                  Completar huecos del cuartel
                 </Button>
               </div>
             </div>

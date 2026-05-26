@@ -115,7 +115,7 @@ export default function ComputoPage() {
               intent="neutral"
               icon={<TrendingUp size={16} />}
             />
-            <Kpi label="vs GIB" value="instantáneo" hint="GIB: 26 seg" intent="ok" />
+            <Kpi label="Cálculo" value="instantáneo" hint="en tiempo real" intent="ok" />
           </div>
         }
         acciones={

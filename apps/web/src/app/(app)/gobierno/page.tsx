@@ -101,7 +101,7 @@ export default function OrdenInterno() {
       <PageHero
         objetivo="Gobierno interno"
         titulo="Estructura del cuartel"
-        descripcion="Secciones, roles y tareas semanales. Las claves se resetean por OTP (Faro nunca las muestra en texto plano, a diferencia de GIB)."
+        descripcion="Secciones, roles y tareas semanales. Las claves se resetean enviando un código al celular del usuario (nadie las ve en texto plano)."
         icono={<Network size={26} />}
         meta={
           <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
@@ -120,8 +120,8 @@ export default function OrdenInterno() {
               icon={<Settings size={16} />}
             />
             <Kpi
-              label="Login"
-              value="OTP"
+              label="Acceso"
+              value="Código al celular"
               hint="sin texto plano"
               intent="ok"
               icon={<KeyRound size={16} />}
@@ -135,13 +135,13 @@ export default function OrdenInterno() {
           <ShieldCheck size={20} className="text-status-ok-fg mt-0.5 shrink-0" />
           <div className="flex-1 text-sm">
             <div className="text-status-ok-fg font-semibold">
-              Reseteo de claves: solo por OTP, nunca a texto plano
+              Reseteo de claves: con código al celular, nunca a texto plano
             </div>
             <p className="mt-1 text-slate-700">
-              En GIB el blanqueo dejaba la contraseña visible. En Faro el integrante recibe un OTP
-              por SMS/WhatsApp/email y define la nueva clave él mismo. Todo queda en{' '}
+              El integrante recibe un código por SMS, WhatsApp o email y define su nueva clave él
+              mismo. Nadie ve la contraseña. Todo queda en el{' '}
               <a href="/gobierno/audit" className="text-brand-700 hover:text-brand-900 font-medium">
-                Audit log
+                Registro permanente
               </a>
               .
             </p>
@@ -242,12 +242,12 @@ export default function OrdenInterno() {
                               kind: 'info',
                               title: `Reseteo de clave para ${p.nombre}`,
                               description:
-                                'Se envió un OTP al canal configurado. El integrante define su nueva clave. Queda en audit log.',
+                                'Se envió un código al canal configurado. El integrante define su nueva clave. Queda registrado.',
                             })
                           }
                           className="text-brand-700 hover:bg-brand-50 hover:text-brand-900 rounded-md px-2 py-1 text-xs"
                         >
-                          Resetear clave (OTP)
+                          Resetear clave
                         </button>
                       </li>
                     );
@@ -277,21 +277,21 @@ export default function OrdenInterno() {
       {/* Acceso rápido a herramientas nuevas */}
       <FeaturesGrid
         titulo="Auditoría e integridad"
-        descripcion="Lo nuevo de Faro para verificar datos sin confianza ciega"
+        descripcion="Lo nuevo de Faro para verificar datos"
         columnas={2}
         cards={[
           {
             href: '/gobierno/audit',
             icon: <FileSearch size={18} />,
-            titulo: 'Audit log completo',
-            descripcion: '21 eventos · cifrado AES-256 · diff visual',
+            titulo: 'Registro permanente',
+            descripcion: '21 eventos · encriptado · ves qué cambió',
             color: 'bg-brand-700',
           },
           {
             href: '/gobierno/audit/verificador',
             icon: <Hash size={18} />,
-            titulo: 'Verificador SHA-256',
-            descripcion: 'Probá la cadena · detección de tampering',
+            titulo: 'Verificador de integridad',
+            descripcion: 'Probá la cadena · detecta modificaciones',
             color: 'bg-status-risk',
             nuevo: true,
           },

@@ -45,31 +45,31 @@ const RECOMENDACIONES = [
   {
     titulo: 'Pico de demanda en diciembre',
     detalle:
-      'Modelo predice 48 servicios (+14% vs hist) por temporada de incendios forestales. Recomendado: reforzar forestal con 4 cursos adicionales en Q4.',
+      'Se estiman 48 servicios (+14% vs el año pasado) por temporada de incendios forestales. Recomendado: reforzar forestal con 4 cursos adicionales en el último trimestre.',
     accion: 'Programar capacitación',
     icon: <Flame size={16} />,
     intent: 'warn' as const,
   },
   {
-    titulo: 'Gap de cobertura · Domingo noche',
+    titulo: 'Falta cobertura · Domingo noche',
     detalle:
-      'Pred. 8 servicios prom dom 22-04 hs. Disponibilidad declarada: 6 voluntarios. Recomendado: incentivar 4 voluntarios adicionales en franja.',
+      'Estimación: 8 servicios promedio domingo 22-04 hs. Disponibles: 6 voluntarios. Recomendado: sumar 4 voluntarios más en esa franja.',
     accion: 'Notificar a voluntarios',
     icon: <Users size={16} />,
     intent: 'risk' as const,
   },
   {
-    titulo: 'HAZMAT subutilizado',
+    titulo: 'Materiales peligrosos subutilizado',
     detalle:
-      '12 voluntarios certificados, sólo 3 activos en operativos HAZMAT. Recomendado: rotación obligatoria para mantener skills frescos.',
+      '12 voluntarios capacitados, sólo 3 activos en operativos de materiales peligrosos. Recomendado: rotación obligatoria para mantener la práctica.',
     accion: 'Ajustar guardias',
     icon: <GraduationCap size={16} />,
     intent: 'brand' as const,
   },
   {
-    titulo: 'Reducción servicios rescate vehicular -8%',
+    titulo: 'Bajaron los rescates vehiculares -8%',
     detalle:
-      'Tendencia a la baja por construcción autopista. Posible reasignación de presupuesto a equipamiento estructural.',
+      'Tendencia a la baja por la construcción de la autopista. Se puede reasignar presupuesto a equipamiento estructural.',
     accion: 'Revisar inversión',
     icon: <TrendingDown size={16} />,
     intent: 'brand' as const,
@@ -99,9 +99,9 @@ export default function PrediccionesPage() {
   return (
     <div className="mx-auto max-w-6xl space-y-5">
       <PageHero
-        objetivo="Vista Mando · Predictive Analytics"
-        titulo="Predicciones y demand forecasting"
-        descripcion="Modelo ML entrenado con tu historial. Predice volumen de servicios, gaps de cobertura y recomienda acciones."
+        objetivo="Vista Mando · Predicciones"
+        titulo="Predicciones y estimación a futuro"
+        descripcion="Análisis automático sobre tu historial. Estima volumen de servicios, faltantes de cobertura y recomienda acciones."
         icono={<Sparkles size={26} />}
         meta={
           <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
@@ -113,7 +113,7 @@ export default function PrediccionesPage() {
               hint={`${hotMax} serv/sem`}
               intent="risk"
             />
-            <Kpi label="Confianza modelo" value="87%" intent="ok" />
+            <Kpi label="Precisión" value="87%" intent="ok" />
           </div>
         }
       />
@@ -123,10 +123,10 @@ export default function PrediccionesPage() {
         <CardContent className="p-0">
           <div className="border-b border-slate-100 px-5 py-3">
             <h3 className="font-bold text-slate-900">
-              Heatmap predictivo · Servicios por hora del día y día de la semana
+              Mapa de calor · Servicios por hora del día y día de la semana
             </h3>
             <p className="mt-0.5 text-xs text-slate-500">
-              Más oscuro = más servicios estimados. Click para detalle.
+              Más oscuro = más servicios estimados. Tocá para detalle.
             </p>
           </div>
           <div className="overflow-x-auto p-4">
@@ -177,7 +177,7 @@ export default function PrediccionesPage() {
         <CardContent className="p-5">
           <h3 className="mb-3 flex items-center gap-2 font-bold text-slate-900">
             <TrendingUp size={18} className="text-brand-700" />
-            Forecast 12 meses · servicios mensuales
+            Estimación a 12 meses · servicios por mes
           </h3>
           <div className="overflow-x-auto">
             <div className="flex min-w-[500px] items-end gap-2" style={{ height: 200 }}>
@@ -211,7 +211,7 @@ export default function PrediccionesPage() {
             </div>
             <div className="flex items-center gap-1.5">
               <span className="bg-fire-600 h-3 w-3 rounded" />
-              <span>Predicho (modelo ML)</span>
+              <span>Estimado (análisis automático)</span>
             </div>
           </div>
         </CardContent>
@@ -272,10 +272,10 @@ export default function PrediccionesPage() {
         <CardContent className="flex items-start gap-3 p-4 text-sm text-slate-600">
           <AlertCircle size={18} className="mt-0.5 shrink-0 text-slate-400" />
           <div>
-            <strong className="text-slate-900">Modelo:</strong> Random Forest entrenado con 36 meses
-            de tu historial de servicios + datos meteorológicos del SMN + calendario de eventos
-            locales. Se reentrena cada 30 días. Las predicciones son orientativas y siempre se
-            validan con criterio humano del jefe del cuartel.
+            <strong className="text-slate-900">Cómo se hacen las estimaciones:</strong> el sistema
+            analiza 36 meses de tu historial de servicios, datos del clima y calendario de eventos
+            locales. Se actualiza cada 30 días. Las estimaciones son orientativas y siempre las
+            valida el jefe del cuartel.
           </div>
         </CardContent>
       </Card>

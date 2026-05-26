@@ -155,7 +155,7 @@ export default function AgendaPage() {
               toast.push({
                 kind: 'info',
                 title: 'Nuevo evento',
-                description: 'Próximamente: arrastrar y soltar al día como CEFEB.',
+                description: 'Elegí el día en el calendario.',
               })
             }
           >

@@ -55,7 +55,7 @@ const expedientes: Expediente[] = [
       {
         fecha: '17/5',
         titulo: 'Notificación al involucrado',
-        detalle: 'Citación por OTP firmada',
+        detalle: 'Citación firmada con código al celular',
         estado: 'completado',
         porQuien: 'Sistema',
       },
@@ -142,7 +142,7 @@ export default function EticaPage() {
             ? `${expedientes.filter((e) => e.estado === 'activo').length} expediente activo`
             : 'Sin expedientes activos'
         }
-        descripcion="Cada movimiento queda cifrado a nivel campo. Solo Referente de Ética, Comandante y Federación tienen acceso."
+        descripcion="Cada movimiento queda encriptado. Solo el Referente de Ética, el Comandante y Federación tienen acceso."
         icono={<Gavel size={26} />}
         variant="critical"
         meta={
@@ -156,8 +156,8 @@ export default function EticaPage() {
             <Kpi label="Cerrados año" value={8} intent="ok" icon={<ShieldCheck size={16} />} />
             <Kpi label="Órdenes vigentes" value={ordenes.length} icon={<Gavel size={16} />} />
             <Kpi
-              label="Cifrado"
-              value="AES-256"
+              label="Encriptado"
+              value="Sí"
               hint="campo a campo"
               intent="ok"
               icon={<FileLock2 size={16} />}
@@ -170,11 +170,13 @@ export default function EticaPage() {
         <CardContent className="flex items-start gap-3 p-4">
           <ShieldCheck size={20} className="text-status-warn-fg mt-0.5 shrink-0" />
           <div className="text-sm">
-            <div className="text-status-warn-fg font-semibold">Acceso restringido y trazable</div>
+            <div className="text-status-warn-fg font-semibold">
+              Acceso restringido y queda registrado
+            </div>
             <p className="mt-1 text-slate-700">
-              Todo lo que abrís acá queda con tu nombre, fecha y campo accedido en{' '}
+              Todo lo que abrís acá queda con tu nombre, fecha y campo accedido en el{' '}
               <a href="/gobierno/audit" className="text-brand-700 hover:text-brand-900 font-medium">
-                Audit log
+                Registro permanente
               </a>
               . Datos personales del involucrado y del denunciante se muestran con sus iniciales por
               defecto.

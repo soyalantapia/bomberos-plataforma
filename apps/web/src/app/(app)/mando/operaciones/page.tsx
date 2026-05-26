@@ -161,7 +161,7 @@ export default function OperacionesPage() {
     { value: 'todos', label: 'Cualquier estado' },
     {
       value: 'pendientes',
-      label: 'Esperan validación',
+      label: 'Falta tu firma',
       count: pendientes.length,
       intent: 'warn',
     },
@@ -204,7 +204,7 @@ export default function OperacionesPage() {
               icon={<Flame size={16} />}
             />
             <Kpi
-              label="Esperan validación"
+              label="Falta tu firma"
               value={pendientes.length}
               intent={pendientes.length > 0 ? 'warn' : 'ok'}
             />
@@ -391,29 +391,11 @@ export default function OperacionesPage() {
                       </div>
                     </div>
                     <div className="rounded-md bg-white/80 px-2 py-1.5">
-                      <div className="text-slate-500">{vivoLlegado ? 'Estado' : 'ETA'}</div>
+                      <div className="text-slate-500">{vivoLlegado ? 'Estado' : 'Llega en'}</div>
                       <div className="font-bold text-slate-900">
-                        {vivoLlegado ? 'En lugar' : `~${minutosEstimados}s`}
+                        {vivoLlegado ? 'En el lugar' : `~${Math.ceil(minutosEstimados / 60)} min`}
                       </div>
                     </div>
-                  </div>
-                  <div className="mt-3 flex flex-wrap gap-2">
-                    <Button
-                      intent="secondary"
-                      size="sm"
-                      onClick={() => {
-                        setVivoIdx(0);
-                        setVivoT(0);
-                        setVivoCorriendo(true);
-                      }}
-                    >
-                      Reiniciar simulación
-                    </Button>
-                    {!vivoLlegado && (
-                      <Button intent="ghost" size="sm" onClick={() => setVivoCorriendo((r) => !r)}>
-                        {vivoCorriendo ? 'Pausar' : 'Reanudar'}
-                      </Button>
-                    )}
                   </div>
                 </div>
                 <div className="text-right">
@@ -575,7 +557,7 @@ export default function OperacionesPage() {
                           {s.origen === 'app' ? 'vía app' : 'manual'}
                         </Badge>
                         {s.estado === 'pendiente_validacion' && (
-                          <Badge intent="warn">Sin validar</Badge>
+                          <Badge intent="warn">Falta firma</Badge>
                         )}
                         {s.estado === 'validado' && <Badge intent="ok">Validado</Badge>}
                       </div>

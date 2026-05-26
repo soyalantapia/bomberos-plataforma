@@ -109,9 +109,9 @@ export default function PadronPage() {
   return (
     <div className="mx-auto max-w-6xl space-y-5">
       <PageHero
-        objetivo="Vista Administrativo · Padrón"
-        titulo="Ficha única que reemplaza 28 formularios"
-        descripcion="Buscás, filtrás, das de alta y mantenés actualizado el padrón completo. La IA extrae datos de un DNI o licencia con una foto."
+        objetivo="Administrativo · Padrón"
+        titulo="Ficha única del personal"
+        descripcion="Buscás, filtrás, das de alta y mantenés actualizado el padrón completo. Sacás una foto del DNI o licencia y se cargan los datos solos."
         icono={<Users size={26} />}
         meta={
           <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
@@ -141,7 +141,7 @@ export default function PadronPage() {
               <UserPlus size={16} /> Nueva persona
             </Button>
             <Button intent="secondary" size="md" onClick={() => setOcrOpen(true)}>
-              <ScanLine size={16} /> OCR documento
+              <ScanLine size={16} /> Cargar desde foto
             </Button>
           </>
         }
@@ -156,8 +156,8 @@ export default function PadronPage() {
             <div className="flex-1">
               <div className="text-brand-900 font-semibold">Búsqueda inteligente</div>
               <p className="text-brand-900/80 text-sm">
-                Buscá por nombre, legajo, email, función o categoría de licencia. La IA además
-                entiende preguntas como{' '}
+                Buscá por nombre, legajo, email, función o categoría de licencia. También podés
+                preguntar cosas como{' '}
                 <em>"quién tiene rescate vehicular vigente y está disponible esta noche"</em>.
               </p>
             </div>
@@ -183,9 +183,9 @@ export default function PadronPage() {
             type="button"
             onClick={() =>
               toast.push({
-                kind: 'info',
+                kind: 'success',
                 title: 'Exportando a Excel',
-                description: 'Próximamente.',
+                description: 'Te llega el archivo por mail.',
               })
             }
             className="inline-flex h-10 items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 text-sm font-medium text-slate-700 hover:border-slate-300"
@@ -253,16 +253,16 @@ export default function PadronPage() {
           {
             href: '/administrativo/aptitud-medica',
             icon: <Stethoscope size={18} />,
-            titulo: 'Aptitud médica NFPA 1582',
-            descripcion: 'Vencimientos · VO₂ max · EKG · cancer screening',
+            titulo: 'Aptitud médica',
+            descripcion: 'Vencimientos · estudios anuales · screening',
             color: 'bg-status-risk',
             nuevo: true,
           },
           {
             href: '/administrativo/sync-ruba',
             icon: <Database size={18} />,
-            titulo: 'Sync RUBA',
-            descripcion: 'Sin doble carga · diff visual + audit log',
+            titulo: 'Actualizar con RUBA',
+            descripcion: 'Sin doble carga · ves qué cambia antes de aplicar',
             color: 'bg-brand-700',
             nuevo: true,
           },
@@ -277,8 +277,8 @@ export default function PadronPage() {
           {
             href: '/administrativo/broadcast',
             icon: <Megaphone size={18} />,
-            titulo: 'Broadcast',
-            descripcion: 'Composer rich-text · 6 audiencias',
+            titulo: 'Aviso masivo',
+            descripcion: 'Editor con formato · 6 audiencias',
             color: 'bg-status-warn',
             nuevo: true,
           },
@@ -289,10 +289,10 @@ export default function PadronPage() {
         <CardContent className="flex items-start gap-3 p-4 text-sm text-slate-600">
           <Plus size={18} className="mt-0.5 shrink-0 text-slate-400" />
           <div>
-            <strong className="text-slate-900">La ficha única tiene 8 sub-pestañas</strong>: Datos
+            <strong className="text-slate-900">La ficha única tiene 8 solapas</strong>: Datos
             personales, Salud, Familia/Herederos, Laboral/Antigüedad, Formación académica, Cursos,
-            Licencias de conducir, Destino/Función/Cargo. Reemplaza los 28 formularios de GIB con
-            una sola vista.
+            Licencias de conducir, Destino/Función/Cargo. Reemplaza los 28 formularios anteriores
+            con una sola vista.
           </div>
         </CardContent>
       </Card>

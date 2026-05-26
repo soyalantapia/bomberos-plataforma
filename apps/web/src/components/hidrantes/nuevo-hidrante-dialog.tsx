@@ -107,7 +107,18 @@ export function NuevoHidranteDialog({ open, onClose, onCreated }: Props) {
       open={open}
       onClose={close}
       title="Nuevo hidrante"
-      description="Datos del hidrante a sumar al mapa de jurisdicción"
+      description="Datos del hidrante para sumarlo al mapa del cuartel"
+      size="lg"
+      footer={
+        <div className="flex justify-end gap-2">
+          <Button intent="ghost" onClick={close}>
+            Cancelar
+          </Button>
+          <Button intent="primary" onClick={guardar}>
+            <Droplets size={14} /> Crear hidrante
+          </Button>
+        </div>
+      }
     >
       <div className="space-y-3">
         <div className="grid grid-cols-2 gap-3">
@@ -227,18 +238,9 @@ export function NuevoHidranteDialog({ open, onClose, onCreated }: Props) {
         </div>
 
         <div className="bg-brand-50 text-brand-900 rounded-lg p-3 text-xs">
-          <strong>Pista NFPA 291:</strong> al cargar el caudal, el color del hidrante se asigna
-          automáticamente al estándar internacional.
+          <strong>Pista:</strong> al cargar el caudal, el color del hidrante se elige solo según el
+          estándar internacional.
         </div>
-      </div>
-
-      <div className="mt-5 flex justify-end gap-2 border-t border-slate-100 pt-4">
-        <Button intent="ghost" onClick={close}>
-          Cancelar
-        </Button>
-        <Button intent="primary" onClick={guardar}>
-          <Droplets size={14} /> Crear hidrante
-        </Button>
       </div>
     </Dialog>
   );

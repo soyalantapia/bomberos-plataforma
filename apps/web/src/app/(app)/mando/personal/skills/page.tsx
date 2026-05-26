@@ -36,49 +36,49 @@ const ESPECIALIDADES: Especialidad[] = [
     id: 'rescate_veh',
     label: 'Rescate vehicular',
     icon: <Truck size={14} />,
-    cursoOficial: 'ANB · 80h',
+    cursoOficial: 'Curso oficial · 80 hs',
   },
   {
     id: 'forestal',
     label: 'Combate forestal',
     icon: <Flame size={14} />,
-    cursoOficial: 'SNMF · 120h',
+    cursoOficial: 'Curso oficial · 120 hs',
   },
   {
     id: 'hazmat',
-    label: 'HAZMAT',
+    label: 'Materiales peligrosos',
     icon: <AlertTriangle size={14} />,
-    cursoOficial: 'IFSAC · 160h',
+    cursoOficial: 'Curso oficial · 160 hs',
   },
   {
     id: 'usar',
-    label: 'USAR',
+    label: 'Búsqueda y rescate urbano',
     icon: <MountainSnow size={14} />,
-    cursoOficial: 'INSARAG light · 200h',
+    cursoOficial: 'Curso oficial · 200 hs',
   },
   {
     id: 'acuatico',
     label: 'Rescate acuático',
     icon: <Waves size={14} />,
-    cursoOficial: 'CEPROS · 60h',
+    cursoOficial: 'Curso oficial · 60 hs',
   },
   {
     id: 'vertical',
     label: 'Rescate vertical',
     icon: <LifeBuoy size={14} />,
-    cursoOficial: 'ANB · 40h',
+    cursoOficial: 'Curso oficial · 40 hs',
   },
   {
     id: 'epp_era',
-    label: 'EPP/ERA',
+    label: 'Equipos de protección y respiración',
     icon: <Award size={14} />,
-    cursoOficial: 'ANB obligatorio',
+    cursoOficial: 'Obligatorio',
   },
   {
     id: 'cem',
-    label: 'CEM (manejo emergencia)',
+    label: 'Manejo de emergencias',
     icon: <GraduationCap size={14} />,
-    cursoOficial: 'ANB · 40h',
+    cursoOficial: 'Curso oficial · 40 hs',
   },
 ];
 
@@ -96,7 +96,7 @@ const ESTADO_CONFIG: Record<EstadoCert, { color: string; label: string; icon: Re
   vigente: { color: 'bg-status-ok text-white', label: 'Vigente', icon: <Check size={10} /> },
   por_vencer: {
     color: 'bg-status-warn text-white',
-    label: '<60d',
+    label: 'Por vencer',
     icon: <AlertTriangle size={10} />,
   },
   vencido: { color: 'bg-status-risk text-white', label: 'Vencido', icon: <X size={10} /> },
@@ -150,9 +150,9 @@ export default function SkillsMatrixPage() {
   return (
     <div className="mx-auto max-w-7xl space-y-5">
       <PageHero
-        objetivo="Vista Mando · Personal · Skills Matrix"
-        titulo="Skills Matrix · cobertura por especialidad"
-        descripcion="Quién tiene qué certificación vigente. Cruza ANB + CEPROS + IFSAC con tu padrón. Detectá gaps de cobertura antes de un operativo."
+        objetivo="Vista Mando · Cursos y especialidades"
+        titulo="¿Quién tiene qué curso?"
+        descripcion="Para cada bombero, qué especialidades tiene certificadas y cuáles le faltan. Te avisa si la cobertura para un tipo de operativo está floja."
         icono={<Sparkles size={26} />}
         meta={
           <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
@@ -164,7 +164,7 @@ export default function SkillsMatrixPage() {
               hint="cobertura <50%"
               intent={gaps > 0 ? 'risk' : 'ok'}
             />
-            <Kpi label="Mejor cubierta" value="EPP/ERA" hint="98%" intent="ok" />
+            <Kpi label="Mejor cubierta" value="Equipos" hint="98%" intent="ok" />
           </div>
         }
         acciones={
@@ -242,7 +242,7 @@ export default function SkillsMatrixPage() {
               onChange={(e) => setSoloGaps(e.target.checked)}
               className="h-4 w-4"
             />
-            <span className="text-slate-700">Solo personas con gaps</span>
+            <span className="text-slate-700">Solo personas con cursos faltantes</span>
           </label>
           {filtroEsp !== 'todas' && (
             <Badge intent="brand">{ESPECIALIDADES.find((e) => e.id === filtroEsp)?.label}</Badge>
@@ -329,8 +329,8 @@ export default function SkillsMatrixPage() {
               <div className="text-brand-900 font-semibold">Recomendaciones IA</div>
               <ul className="text-brand-900/80 mt-1 list-disc space-y-1 pl-5 text-sm">
                 <li>
-                  <strong>USAR está en 28% de cobertura.</strong> Sugerencia: inscribir 6
-                  voluntarios al próximo curso INSARAG light (próxima fecha: 18/06).
+                  <strong>Búsqueda y rescate urbano está al 28% de cobertura.</strong> Conviene
+                  inscribir 6 voluntarios al próximo curso (18/06).
                 </li>
                 <li>
                   <strong>3 personas tienen Rescate vehicular por vencer en &lt;60 días.</strong>{' '}

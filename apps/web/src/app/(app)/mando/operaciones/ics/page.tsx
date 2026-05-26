@@ -58,7 +58,7 @@ const ROLES_ICS: Record<RolICS, RolConfig> = {
   },
   seguridad: {
     label: 'Oficial de Seguridad',
-    descripcion: 'Riesgos, IDLH, evacuación',
+    descripcion: 'Riesgos, evacuación, zonas peligrosas',
     icon: <ShieldAlert size={18} />,
     color: 'bg-status-warn',
     obligatorio: true,
@@ -133,7 +133,7 @@ export default function ICSPage() {
       id: 'e-4',
       ts: '14:48',
       tipo: 'orden',
-      descripcion: 'Operaciones: dotación 1 ingresa por flanco norte',
+      descripcion: 'Operaciones: la primera dotación ingresa por el lado norte',
     },
   ]);
 
@@ -178,13 +178,13 @@ export default function ICSPage() {
       id: `e-${Date.now()}`,
       ts,
       tipo: 'par',
-      descripcion: `PAR ${asignados} bomberos confirmados. Todos OK.`,
+      descripcion: `Control de personal: ${asignados} bomberos confirmados. Todos OK.`,
     };
     setEventos((e) => [...e, nuevo]);
     setParSec(0);
     toast.push({
       kind: 'success',
-      title: 'PAR confirmado',
+      title: 'Control confirmado',
       description: `${asignados} bomberos verificados.`,
     });
   }
@@ -206,21 +206,21 @@ export default function ICSPage() {
       </div>
 
       <PageHero
-        objetivo="Vista Mando · ICS (Incident Command System)"
+        objetivo="Vista Mando · Comando de incidente"
         titulo="Incendio · Av. Mosconi 4521 · V. Devoto"
-        descripcion="Sistema de Comando de Incidentes activo · NFPA 1561 · ICS-100 compliant. Cada decisión queda en audit log."
+        descripcion="Sistema de Comando de Incidentes activo. Cada decisión queda registrada."
         icono={<ShieldCheck size={26} />}
         variant="critical"
         meta={
           <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
             <Kpi
-              label="Roles ICS"
+              label="Roles asignados"
               value={`${rolesAsignados}/6`}
               hint={rolesObligatorios ? 'todos asignados' : 'faltan obligatorios'}
               intent={rolesObligatorios ? 'ok' : 'warn'}
             />
             <Kpi
-              label="PAR próximo"
+              label="Próximo control"
               value={`${parMin}:${parSeg.toString().padStart(2, '0')}`}
               hint="cada 20 min"
               intent={parCritico ? 'risk' : 'brand'}
@@ -236,7 +236,7 @@ export default function ICSPage() {
         }
         acciones={
           <Button intent={parCritico ? 'primary' : 'secondary'} onClick={ejecutarPAR}>
-            <ClipboardCheck size={14} /> Ejecutar PAR ahora
+            <ClipboardCheck size={14} /> Controlar bomberos
           </Button>
         }
       />
@@ -337,7 +337,7 @@ export default function ICSPage() {
                     toast.push({
                       kind: 'info',
                       title: 'Orden emitida',
-                      description: 'Notificación radio + WhatsApp a 4 operativos',
+                      description: 'Notificación por radio y WhatsApp a 4 operativos',
                     })
                   }
                 >
@@ -395,7 +395,7 @@ export default function ICSPage() {
                 <Clock size={14} className="text-brand-700" />
                 <span className="font-bold text-slate-900">Línea de tiempo</span>
               </div>
-              <div className="mt-0.5 text-[11px] text-slate-500">Todo en audit log inmutable</div>
+              <div className="mt-0.5 text-[11px] text-slate-500">Queda guardado para siempre</div>
             </div>
             <ul className="divide-y divide-slate-100">
               {eventos.map((e) => (
@@ -412,7 +412,15 @@ export default function ICSPage() {
                         e.tipo === 'par' ? 'ok' : e.tipo === 'rol_asignado' ? 'brand' : 'neutral'
                       }
                     >
-                      {e.tipo.replace('_', ' ')}
+                      {e.tipo === 'par'
+                        ? 'Control'
+                        : e.tipo === 'rol_asignado'
+                          ? 'Rol asignado'
+                          : e.tipo === 'rol_cambiado'
+                            ? 'Rol cambiado'
+                            : e.tipo === 'cambio_mando'
+                              ? 'Cambio de mando'
+                              : 'Orden'}
                     </Badge>
                   </div>
                   <p className="mt-1 text-xs text-slate-700">{e.descripcion}</p>
@@ -429,12 +437,10 @@ export default function ICSPage() {
             <CardContent className="flex items-start gap-3 p-4">
               <AlertCircle size={20} className="text-status-risk-fg shrink-0 animate-pulse" />
               <div className="flex-1">
-                <strong className="text-status-risk-fg">
-                  PAR (Personnel Accountability Report)
-                </strong>
+                <strong className="text-status-risk-fg">Control de personal</strong>
                 <p className="text-status-risk-fg/80 text-sm">
-                  En {parSeg}s se debe ejecutar PAR · todos los bomberos en escena deben confirmar
-                  estado. Tocá el botón "Ejecutar PAR ahora" arriba.
+                  En {parSeg}s se debe hacer el control · todos los bomberos en escena deben
+                  confirmar estado. Tocá el botón "Controlar bomberos" arriba.
                 </p>
               </div>
             </CardContent>

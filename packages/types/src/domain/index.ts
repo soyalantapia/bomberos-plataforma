@@ -1,9 +1,4 @@
-export type Perfil =
-  | 'bombero'
-  | 'mando'
-  | 'administrativo'
-  | 'gobierno'
-  | 'federacion';
+export type Perfil = 'bombero' | 'mando' | 'administrativo' | 'gobierno' | 'federacion';
 
 export type PrioridadFaro = 'operativa' | 'minima';
 
@@ -84,12 +79,7 @@ export interface Movil {
   horasServicio: number;
 }
 
-export type TipoServicio =
-  | 'incendio'
-  | 'rescate'
-  | 'accidente'
-  | 'forestal'
-  | 'otro';
+export type TipoServicio = 'incendio' | 'rescate' | 'accidente' | 'forestal' | 'otro';
 
 export interface Servicio {
   id: string;
@@ -175,13 +165,7 @@ export interface Rendicion {
   presentadaPor?: string;
 }
 
-export type TipoAlerta =
-  | 'vtv'
-  | 'curso'
-  | 'aptitud'
-  | 'dotacion'
-  | 'rendicion'
-  | 'aprobacion';
+export type TipoAlerta = 'vtv' | 'curso' | 'aptitud' | 'dotacion' | 'rendicion' | 'aprobacion';
 
 export interface Alerta {
   id: string;
@@ -244,4 +228,185 @@ export interface ItemCopilotoRendicion {
   acciones: string[];
   importanciaTexto: string;
   textoRedactado?: string;
+}
+
+// ============================================================
+// FINANZAS — módulo contable / tesorería para asociaciones
+// civiles de bomberos voluntarios. Cubre Ley 25.054 (rendición
+// 70% personal rentado), DPPJ (libros obligatorios) y AFIP
+// (DDJJ, exención ganancias).
+// ============================================================
+
+/** Tipo contable raíz según plan de cuentas estándar */
+export type TipoCuentaContable = 'activo' | 'pasivo' | 'patrimonio' | 'ingreso' | 'egreso';
+
+/** Subtipo de ingreso para reportes (Ley 25.054 separa subsidios) */
+export type CategoriaIngreso =
+  | 'subsidio_nacional'
+  | 'subsidio_provincial'
+  | 'subsidio_municipal'
+  | 'cuota_social'
+  | 'donacion'
+  | 'servicio_facturado'
+  | 'rifa_evento'
+  | 'rendimiento_financiero'
+  | 'otro_ingreso';
+
+/** Subtipo de egreso — el 70% obligatorio Ley 25.054 es 'personal_rentado' */
+export type CategoriaEgreso =
+  | 'personal_rentado'
+  | 'combustible'
+  | 'mantenimiento_movil'
+  | 'epp_equipamiento'
+  | 'capacitacion'
+  | 'servicios_publicos'
+  | 'seguros'
+  | 'insumos_medicos'
+  | 'administrativo'
+  | 'impuestos_tasas'
+  | 'inversion_bienes_uso'
+  | 'otro_egreso';
+
+export type MedioPago =
+  | 'efectivo'
+  | 'transferencia'
+  | 'cheque'
+  | 'tarjeta_debito'
+  | 'tarjeta_credito'
+  | 'mercadopago'
+  | 'debito_automatico';
+
+export type EstadoMovimiento = 'borrador' | 'conciliado' | 'rechazado' | 'anulado';
+
+export type TipoCaja =
+  | 'caja_chica'
+  | 'caja_principal'
+  | 'banco_cc'
+  | 'banco_ca'
+  | 'mercadopago'
+  | 'plazo_fijo';
+
+export interface CuentaContable {
+  id: string;
+  /** Código jerárquico tipo "5.1.01" (Egresos · Personal · Sueldos) */
+  codigo: string;
+  nombre: string;
+  tipo: TipoCuentaContable;
+  /** Subcategoría operativa (mapea a CategoriaIngreso o CategoriaEgreso) */
+  categoria?: CategoriaIngreso | CategoriaEgreso;
+  parentId?: string;
+  /** Presupuesto mensual estimado en ARS */
+  presupuestoMensual?: number;
+  /** Presupuesto anual estimado en ARS */
+  presupuestoAnual?: number;
+  /** Si es cuenta operable (true) o agrupadora */
+  operable: boolean;
+  cuartelId: string;
+  notas?: string;
+}
+
+export interface Caja {
+  id: string;
+  cuartelId: string;
+  nombre: string;
+  tipo: TipoCaja;
+  /** Nombre del banco si es cuenta bancaria */
+  banco?: string;
+  cbu?: string;
+  alias?: string;
+  numeroCuenta?: string;
+  saldoActual: number;
+  /** Último saldo conciliado contra extracto bancario */
+  saldoConciliado?: number;
+  fechaUltimaConciliacion?: string;
+  responsableId?: string;
+  moneda: 'ARS' | 'USD';
+  activa: boolean;
+}
+
+export interface MovimientoFinanciero {
+  id: string;
+  cuartelId: string;
+  tipo: 'ingreso' | 'egreso' | 'transferencia';
+  fecha: string;
+  monto: number;
+  cuentaId: string;
+  cajaOrigenId?: string;
+  /** Si es transferencia, la caja destino */
+  cajaDestinoId?: string;
+  medio: MedioPago;
+  descripcion: string;
+  /** Proveedor (egreso) o donante/cliente (ingreso) */
+  contraparte?: string;
+  cuitContraparte?: string;
+  /** Tipo y número de comprobante (FA-A-0001-00012345) */
+  comprobanteTipo?: 'FA-A' | 'FA-B' | 'FA-C' | 'NC' | 'ND' | 'Recibo' | 'Ticket' | 'Otro';
+  comprobanteNumero?: string;
+  /** Foto/PDF del comprobante en storage */
+  comprobanteUrl?: string;
+  estado: EstadoMovimiento;
+  /** Si el movimiento se aplicó a una rendición Ley 25.054 */
+  rendicionId?: string;
+  /** Si vincula a un incidente (egreso operativo) */
+  servicioId?: string;
+  /** Si vincula a un móvil (combustible/mantenimiento) */
+  movilId?: string;
+  /** Si es sueldo, persona */
+  personaId?: string;
+  cargadoPor: string;
+  cargadoEn: string;
+  /** Hash SHA-256 del movimiento al conciliar (inmutable) */
+  hashAudit?: string;
+  notas?: string;
+}
+
+export interface CuotaSocial {
+  id: string;
+  cuartelId: string;
+  /** ID del socio (referencia a Persona si es bombero, o socio independiente) */
+  socioId: string;
+  socioNombre: string;
+  periodo: string;
+  monto: number;
+  vencimiento: string;
+  estado: 'pendiente' | 'pagada' | 'vencida' | 'condonada';
+  pagadoEn?: string;
+  medio?: MedioPago;
+  movimientoId?: string;
+  cargoRecargo?: number;
+}
+
+export interface PresupuestoAnual {
+  id: string;
+  cuartelId: string;
+  anio: number;
+  /** Estado del presupuesto: borrador / aprobado / cerrado */
+  estado: 'borrador' | 'aprobado' | 'cerrado';
+  aprobadoPor?: string;
+  aprobadoEn?: string;
+  /** Total proyectado de ingresos */
+  totalIngresos: number;
+  /** Total proyectado de egresos */
+  totalEgresos: number;
+  /** Líneas por cuenta */
+  lineas: Array<{
+    cuentaId: string;
+    montoAnual: number;
+    distribucionMensual?: number[];
+  }>;
+}
+
+export interface ConciliacionBancaria {
+  id: string;
+  cuartelId: string;
+  cajaId: string;
+  periodo: string;
+  saldoSistema: number;
+  saldoExtracto: number;
+  diferencia: number;
+  movimientosConciliados: string[];
+  movimientosPendientes: string[];
+  ajustes: Array<{ descripcion: string; monto: number }>;
+  estado: 'pendiente' | 'conciliada' | 'con_diferencias';
+  hashConciliacion?: string;
 }

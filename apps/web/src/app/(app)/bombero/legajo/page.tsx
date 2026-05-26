@@ -273,7 +273,7 @@ export default function MiLegajo() {
           <Card className="mt-3 border-slate-200 bg-slate-50">
             <CardContent className="p-4 text-sm text-slate-700">
               Estas horas se calculan en vivo desde tus asistencias y servicios. El cómputo completo
-              del cuartel lo ve el Mando en su Dashboard.
+              del cuartel lo ve el Mando en su panel de inicio.
             </CardContent>
           </Card>
         </TabsContent>
@@ -321,7 +321,7 @@ export default function MiLegajo() {
 
               <p className="mt-3 text-xs text-slate-500">
                 Los datos de salud son sensibles. Solo Administrativo, Gobierno Interno y vos los
-                ven. Toda modificación queda en el audit log.
+                ven. Cada modificación queda registrada.
               </p>
             </CardContent>
           </Card>

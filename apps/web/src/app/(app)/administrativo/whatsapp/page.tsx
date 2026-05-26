@@ -129,7 +129,7 @@ export default function WhatsAppPage() {
     toast.push({
       kind: 'success',
       title: `Enviado a ${destinatarios} voluntarios`,
-      description: 'WhatsApp Business API · entrega en segundos.',
+      description: 'WhatsApp Business · entrega en segundos.',
     });
   }
 
@@ -139,9 +139,9 @@ export default function WhatsAppPage() {
   return (
     <div className="mx-auto max-w-6xl space-y-5">
       <PageHero
-        objetivo="Vista Administrativo · Integraciones · WhatsApp Business"
+        objetivo="Administrativo · WhatsApp Business"
         titulo="WhatsApp como canal oficial"
-        descripcion="Plantillas oficiales aprobadas por Meta. Respuestas voy/no-voy con geolocalización. Sin Whatsapp informal."
+        descripcion="Plantillas oficiales aprobadas. Respuestas voy/no-voy con ubicación. Sin WhatsApp informal."
         icono={<MessageCircle size={26} />}
         meta={
           <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
@@ -295,7 +295,7 @@ export default function WhatsAppPage() {
             </CardContent>
           </Card>
 
-          {/* IA Insight */}
+          {/* Tip de uso */}
           <Card className="bg-brand-50/40 border-brand-100">
             <CardContent className="flex items-start gap-3 p-4">
               <div className="bg-brand-600 grid h-10 w-10 shrink-0 place-items-center rounded-xl text-white">
@@ -304,22 +304,22 @@ export default function WhatsAppPage() {
               <div className="flex-1 text-sm">
                 <div className="text-brand-900 font-semibold">Tip de uso</div>
                 <p className="text-brand-900/80 mt-0.5">
-                  El uso de plantillas oficiales mantiene la tasa de entrega en 98%+ y respeta la
-                  política de Meta Business. Mensajes informales fuera de plantilla pueden bloquear
-                  el número.
+                  Usar las plantillas oficiales mantiene la tasa de entrega arriba del 98% y respeta
+                  las reglas de WhatsApp Business. Mensajes informales fuera de plantilla pueden
+                  bloquear el número.
                 </p>
               </div>
             </CardContent>
           </Card>
 
-          {/* Compliance */}
+          {/* Privacidad */}
           <Card className="border-slate-200 bg-slate-50">
             <CardContent className="flex items-start gap-3 p-4 text-sm text-slate-600">
               <AlertCircle size={18} className="mt-0.5 shrink-0 text-slate-400" />
               <div>
                 <strong className="text-slate-900">Privacidad:</strong> el WhatsApp del voluntario
-                se almacena cifrado. Cada despacho tiene opt-out automático con "STOP". El audit log
-                registra todos los envíos y respuestas.
+                se guarda encriptado. Cada despacho permite responder "STOP" para no recibir más.
+                Quedan registrados todos los envíos y respuestas.
               </div>
             </CardContent>
           </Card>

@@ -25,7 +25,7 @@ const TIPO_LABEL: Record<TipoAsistencia, string> = {
   obligatorio: 'Obligatorio',
   guardia: 'Guardia',
   jefatura: 'Jefatura',
-  orden_interno: 'Orden Interno',
+  orden_interno: 'Orden interno',
   licencia: 'Licencia',
   sancion: 'Sanción',
 };
@@ -93,7 +93,7 @@ export default function AsistenciaBombero() {
     },
     {
       value: 'orden_interno',
-      label: 'O. Interno',
+      label: 'Orden Interno',
       count: propias.filter((a) => a.tipo === 'orden_interno').length,
     },
   ];
@@ -102,7 +102,7 @@ export default function AsistenciaBombero() {
     if (!adentro) {
       toast.push({
         kind: 'warn',
-        title: 'Fuera de la geocerca',
+        title: 'Fuera de la zona del cuartel',
         description: 'Estás a más de 200 m del cuartel. Acercate o pedí marca manual a un jefe.',
       });
       return;
@@ -113,7 +113,7 @@ export default function AsistenciaBombero() {
     toast.push({
       kind: 'success',
       title: '¡Presente!',
-      description: `Check-in registrado a las ${hora}. Geocerca: dentro del cuartel.`,
+      description: `Entrada registrada a las ${hora}. Dentro de la zona del cuartel.`,
     });
   }
 
@@ -121,7 +121,7 @@ export default function AsistenciaBombero() {
     const now = new Date();
     const hora = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
     setMarcado((m) => ({ ...m, out: hora }));
-    toast.push({ kind: 'success', title: 'Check-out registrado', description: `Salida ${hora}.` });
+    toast.push({ kind: 'success', title: 'Salida registrada', description: `Salida ${hora}.` });
   }
 
   return (
@@ -175,7 +175,8 @@ export default function AsistenciaBombero() {
                       : 'Listo para marcar presente'}
                 </div>
                 <div className="mt-0.5 text-sm text-slate-600">
-                  <MapPin size={12} className="inline" /> {cuartel?.nombre} · Geocerca activa
+                  <MapPin size={12} className="inline" /> {cuartel?.nombre} · Zona del cuartel
+                  activa
                 </div>
               </div>
             </div>
@@ -192,20 +193,20 @@ export default function AsistenciaBombero() {
           </div>
           {marcado.in && (
             <div className="mt-3 rounded-md bg-white/60 px-3 py-2 text-xs text-slate-700">
-              Tu check-in se guarda offline si te quedás sin señal. Cuando vuelva la conexión se
-              sincroniza solo.
+              Tu entrada se guarda en el celular si te quedás sin señal. Cuando vuelva la conexión
+              se sube sola.
             </div>
           )}
         </CardContent>
       </Card>
 
-      {/* Geocerca · validación por GPS */}
+      {/* Zona del cuartel · validación por GPS */}
       <Card className="overflow-hidden">
         <CardContent className="p-0">
           <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 px-4 py-3 sm:px-5">
             <div className="flex items-center gap-2">
               <Target size={16} className="text-brand-600" />
-              <span className="text-sm font-bold text-slate-900">Geocerca · 200 m del cuartel</span>
+              <span className="text-sm font-bold text-slate-900">Zona del cuartel · 200 m</span>
               {adentro ? <Badge intent="ok">Dentro</Badge> : <Badge intent="warn">Fuera</Badge>}
             </div>
             <button
@@ -267,8 +268,8 @@ export default function AsistenciaBombero() {
             ) : (
               <>
                 <strong className="text-status-warn-fg">Estás a ~390 m del cuartel.</strong> Si
-                marcás presente, la app te avisa que estás fuera de la geocerca. Acercate o pedí
-                marca manual a un jefe.
+                marcás presente, la app te avisa que estás fuera de la zona. Acercate o pedí marca
+                manual a un jefe.
               </>
             )}
           </div>

@@ -38,7 +38,7 @@ const cursos: Curso[] = [
   },
   {
     nombre: 'Manejo víctimas múltiples',
-    centro: 'CEPROS Norte',
+    centro: 'Centro de práctica Norte',
     inicio: '20 jun',
     inscriptos: 14,
     cupos: 24,
@@ -46,7 +46,7 @@ const cursos: Curso[] = [
   },
   {
     nombre: 'Incendios estructurales II',
-    centro: 'CEPROS Norte',
+    centro: 'Centro de práctica Norte',
     inicio: '5 jul',
     inscriptos: 5,
     cupos: 18,
@@ -56,13 +56,19 @@ const cursos: Curso[] = [
 
 const cepros = [
   {
-    nombre: 'CEPROS Norte GBA',
+    nombre: 'Centro de práctica Norte GBA',
     ciudad: 'San Martín',
     capacidad: 32,
     ocupacion: 24,
     instructores: 4,
   },
-  { nombre: 'CEPROS Tigre', ciudad: 'Tigre', capacidad: 24, ocupacion: 12, instructores: 3 },
+  {
+    nombre: 'Centro de práctica Tigre',
+    ciudad: 'Tigre',
+    capacidad: 24,
+    ocupacion: 12,
+    instructores: 3,
+  },
 ];
 
 const categorias = [
@@ -101,7 +107,7 @@ export default function CapacitacionGestion() {
       <PageHero
         objetivo="Administrativo · Capacitación"
         titulo="31 inscriptos en 3 cursos · 2 folios este trimestre"
-        descripcion="Catálogo de cursos abiertos, centros de práctica, taxonomía de categorías y folios de acreditación que firman desde Federación."
+        descripcion="Catálogo de cursos abiertos, centros de práctica, categorías y folios de acreditación que firman desde Federación."
         icono={<GraduationCap size={26} />}
         meta={
           <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
@@ -117,12 +123,7 @@ export default function CapacitacionGestion() {
               intent="ok"
               icon={<Users2 size={16} />}
             />
-            <Kpi
-              label="CEPROS"
-              value={cepros.length}
-              hint="centros"
-              icon={<Building2 size={16} />}
-            />
+            <Kpi label="Centros de práctica" value={cepros.length} icon={<Building2 size={16} />} />
             <Kpi
               label="Folios mes"
               value={folios.length}
@@ -214,7 +215,7 @@ export default function CapacitacionGestion() {
         <Card>
           <CardContent className="p-5">
             <h3 className="mb-4 flex items-center gap-2 font-bold text-slate-900">
-              <Building2 size={18} className="text-slate-700" /> Centros de práctica (CEPROS)
+              <Building2 size={18} className="text-slate-700" /> Centros de práctica
             </h3>
             <div className="space-y-3">
               {cepros.map((c) => {
@@ -254,7 +255,7 @@ export default function CapacitacionGestion() {
         <Card>
           <CardContent className="p-5">
             <h3 className="mb-4 flex items-center gap-2 font-bold text-slate-900">
-              <Layers size={18} className="text-slate-700" /> Taxonomía de categorías
+              <Layers size={18} className="text-slate-700" /> Categorías de cursos
             </h3>
             <div className="space-y-2">
               {categorias.map((c) => (
@@ -310,7 +311,7 @@ export default function CapacitacionGestion() {
                 onClick={() => toast.push({ kind: 'info', title: 'Descargando folio firmado' })}
                 className="text-brand-700 hover:text-brand-900 mt-3 inline-flex items-center gap-1 text-sm font-medium"
               >
-                Descargar PDF firmado <ChevronRight size={14} />
+                Descargar PDF con firma <ChevronRight size={14} />
               </button>
             </div>
           ))}

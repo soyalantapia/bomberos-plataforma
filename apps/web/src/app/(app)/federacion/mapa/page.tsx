@@ -165,9 +165,9 @@ export default function MapaFederacionPage() {
   return (
     <div className="mx-auto max-w-7xl space-y-5">
       <PageHero
-        objetivo="Vista Federación · Consolidados regionales"
+        objetivo="Federación · Consolidados regionales"
         titulo={`${total} cuarteles · ${voluntariosTotal} voluntarios`}
-        descripcion="Federación Bonaerense Conurbano Norte · datos en vivo desde Faro. Sin pedir Excel a cada cuartel."
+        descripcion="Federación Bonaerense Conurbano Norte · datos en vivo. Sin pedir Excel a cada cuartel."
         icono={<MapIcon size={26} />}
         meta={
           <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
@@ -378,7 +378,7 @@ export default function MapaFederacionPage() {
             <div className="text-brand-900 font-semibold">Tip Federación</div>
             <p className="text-brand-900/80 mt-0.5">
               Para los cuarteles en estado crítico, podés ofrecer apoyo logístico desde la
-              federación: capacitación, intercambio de personal, préstamo de equipo. Click en el
+              Federación: capacitación, intercambio de personal, préstamo de equipo. Click en el
               cuartel para abrir su ficha y proponer acciones.
             </p>
           </div>

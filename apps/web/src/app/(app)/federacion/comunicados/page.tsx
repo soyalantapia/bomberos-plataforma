@@ -53,7 +53,7 @@ const enviados: Comunicado[] = [
   {
     id: 'c3',
     asunto: 'Capacitación regional · 12 de junio',
-    cuerpo: 'Rescate vehicular avanzado · CEPROS Norte · cupos limitados.',
+    cuerpo: 'Rescate vehicular avanzado · Centro de práctica Norte · cupos limitados.',
     enviado: '2/5/2026',
     destinatarios: 4,
     leidos: 4,
@@ -84,6 +84,12 @@ const plantillas = [
   { nombre: 'Alerta vencimientos', icon: '⚠️' },
   { nombre: 'Felicitaciones aniversario', icon: '🎉' },
 ];
+
+const CANAL_LABEL: Record<string, string> = {
+  email: 'Email',
+  whatsapp: 'WhatsApp',
+  push: 'Notificación',
+};
 
 const CANAL_ICON: Record<string, React.ReactNode> = {
   email: <AtSign size={11} />,
@@ -125,7 +131,7 @@ export default function ComunicadosFed() {
       <PageHero
         objetivo="Federación · Comunicados"
         titulo="Hablás con 4 cuarteles a la vez"
-        descripcion="Email, WhatsApp y push de la app en un solo envío. Confirmás recepción y tasa de lectura."
+        descripcion="Email, WhatsApp y notificación de la app en un solo envío. Confirmás recepción y tasa de lectura."
         icono={<Megaphone size={26} />}
         meta={
           <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
@@ -210,13 +216,13 @@ export default function ComunicadosFed() {
                         type="button"
                         onClick={() => toggleCanal(c)}
                         className={cn(
-                          'inline-flex flex-1 items-center justify-center gap-2 rounded-lg border-2 px-3 py-2 text-sm font-semibold capitalize transition-colors',
+                          'inline-flex flex-1 items-center justify-center gap-2 rounded-lg border-2 px-3 py-2 text-sm font-semibold transition-colors',
                           active
                             ? 'border-brand-600 bg-brand-50 text-brand-700'
                             : 'border-slate-200 bg-white text-slate-500',
                         )}
                       >
-                        {CANAL_ICON[c]} {c}
+                        {CANAL_ICON[c]} {CANAL_LABEL[c]}
                       </button>
                     );
                   })}

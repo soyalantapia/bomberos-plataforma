@@ -125,7 +125,29 @@ export function NuevaPersonaDialog({ open, onClose, onCreated }: Props) {
   }
 
   return (
-    <Dialog open={open} onClose={close} title="Nueva persona" description={`Paso ${paso} de 3`}>
+    <Dialog
+      open={open}
+      onClose={close}
+      title="Nueva persona"
+      description={`Paso ${paso} de 3`}
+      size="lg"
+      footer={
+        <div className="flex items-center justify-between">
+          <Button intent="ghost" onClick={anterior} disabled={paso === 1}>
+            Anterior
+          </Button>
+          {paso < 3 ? (
+            <Button intent="primary" onClick={siguiente}>
+              Siguiente <ChevronRight size={16} />
+            </Button>
+          ) : (
+            <Button intent="success" onClick={guardar}>
+              <UserPlus size={16} /> Crear persona
+            </Button>
+          )}
+        </div>
+      }
+    >
       {/* Stepper */}
       <div className="mb-5 flex items-center gap-2">
         {[1, 2, 3].map((p) => (
@@ -292,27 +314,11 @@ export function NuevaPersonaDialog({ open, onClose, onCreated }: Props) {
             </dl>
           </div>
           <div className="bg-brand-50 text-brand-900 rounded-lg p-3 text-xs">
-            <strong>Tip:</strong> al guardar, la persona queda como Activo. Después podés cargar su
+            <strong>Tip:</strong> al guardar, la persona queda como Activa. Después podés cargar
             salud, familia, herederos, formación y cursos desde su ficha.
           </div>
         </div>
       )}
-
-      {/* Footer navigation */}
-      <div className="mt-5 flex items-center justify-between border-t border-slate-100 pt-4">
-        <Button intent="ghost" onClick={anterior} disabled={paso === 1}>
-          Anterior
-        </Button>
-        {paso < 3 ? (
-          <Button intent="primary" onClick={siguiente}>
-            Siguiente <ChevronRight size={16} />
-          </Button>
-        ) : (
-          <Button intent="success" onClick={guardar}>
-            <UserPlus size={16} /> Crear persona
-          </Button>
-        )}
-      </div>
     </Dialog>
   );
 }

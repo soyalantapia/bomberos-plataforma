@@ -67,7 +67,7 @@ const PASOS_PROCESAMIENTO = [
   { label: 'Subiendo imagen', delay: 600 },
   { label: 'Detectando tipo de documento', delay: 700 },
   { label: 'Identificando: DNI argentino', delay: 600 },
-  { label: 'Extrayendo campos con Claude Vision', delay: 1200 },
+  { label: 'Leyendo los campos del documento', delay: 1200 },
   { label: 'Validando contra padrón', delay: 700 },
 ];
 
@@ -120,7 +120,7 @@ export function OCRWizard({ open, onClose, persona, onAplicar }: Props) {
     toast.push({
       kind: 'success',
       title: `${aplicados.length} campos actualizados`,
-      description: 'Cambios firmados en audit log.',
+      description: 'Cambios registrados con tu firma.',
     });
     setTimeout(handleClose, 1800);
   }
@@ -133,8 +133,8 @@ export function OCRWizard({ open, onClose, persona, onAplicar }: Props) {
     <Dialog
       open={open}
       onClose={handleClose}
-      title="OCR de documento"
-      description="La IA extrae los datos. Vos confirmás (doble validación)."
+      title="Cargar datos desde una foto"
+      description="Extraemos los datos del documento. Vos confirmás (doble validación)."
     >
       <div className="space-y-4">
         <AnimatePresence mode="wait">
@@ -184,8 +184,8 @@ export function OCRWizard({ open, onClose, persona, onAplicar }: Props) {
 
               <div className="rounded-lg bg-slate-50 p-3 text-xs text-slate-600">
                 <strong className="text-slate-900">Privacidad:</strong> la imagen se procesa, los
-                campos se aplican al padrón con doble validación humana, y la foto se borra del
-                servidor. Queda solo el hash en audit log.
+                campos se aplican al padrón con doble validación humana y la foto se borra del
+                servidor. Solo queda el comprobante único en el registro.
               </div>
             </motion.div>
           )}
@@ -209,7 +209,7 @@ export function OCRWizard({ open, onClose, persona, onAplicar }: Props) {
                   <div className="min-w-0 flex-1">
                     <div className="truncate font-medium text-slate-900">{archivo.name}</div>
                     <div className="text-xs text-slate-500">
-                      {(archivo.size / 1024).toFixed(0)} KB · procesando con IA
+                      {(archivo.size / 1024).toFixed(0)} KB · procesando
                     </div>
                   </div>
                   <Loader2 size={20} className="text-brand-600 shrink-0 animate-spin" />
@@ -265,9 +265,7 @@ export function OCRWizard({ open, onClose, persona, onAplicar }: Props) {
 
               <div className="bg-brand-50 text-brand-900 flex items-center gap-2 rounded-md p-3 text-xs">
                 <Sparkles size={14} className="shrink-0" />
-                <span>
-                  Claude Vision analizando 12 campos posibles · típicamente toma 2-4 segundos
-                </span>
+                <span>Analizando 12 campos posibles · suele tardar 2 a 4 segundos</span>
               </div>
             </motion.div>
           )}
@@ -366,8 +364,8 @@ export function OCRWizard({ open, onClose, persona, onAplicar }: Props) {
               <div className="bg-status-warn-bg/40 text-status-warn-fg flex items-start gap-2 rounded-md p-2.5 text-xs">
                 <AlertCircle size={14} className="mt-0.5 shrink-0" />
                 <span>
-                  Cambios sensibles (fecha de nacimiento, domicilio) requieren OTP del titular antes
-                  de impactar el padrón.
+                  Cambios sensibles (fecha de nacimiento, domicilio) requieren un código al celular
+                  del titular antes de impactar el padrón.
                 </span>
               </div>
             </motion.div>
@@ -389,12 +387,12 @@ export function OCRWizard({ open, onClose, persona, onAplicar }: Props) {
               </div>
               <h3 className="mt-4 text-lg font-bold text-slate-900">Datos actualizados</h3>
               <p className="mt-1 text-sm text-slate-600">
-                Los cambios quedaron firmados en{' '}
+                Los cambios quedaron firmados en el{' '}
                 <a
                   href="/gobierno/audit"
                   className="text-brand-700 hover:text-brand-900 font-medium"
                 >
-                  Audit log
+                  Registro permanente
                 </a>
               </p>
               <motion.div
@@ -403,7 +401,7 @@ export function OCRWizard({ open, onClose, persona, onAplicar }: Props) {
                 transition={{ delay: 0.1, type: 'spring', stiffness: 200 }}
                 className="bg-brand-50 text-brand-700 mt-4 inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-semibold"
               >
-                <ScanLine size={12} /> OCR completado en 3.8 s
+                <ScanLine size={12} /> Carga completada en 3.8 segundos
               </motion.div>
             </motion.div>
           )}

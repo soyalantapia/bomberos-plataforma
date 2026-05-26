@@ -115,13 +115,13 @@ export default function VerificadorPage() {
       if (verif.valid) {
         toast.push({
           kind: 'success',
-          title: 'Cadena íntegra',
-          description: `${chain.length} eventos verificados con SHA-256.`,
+          title: 'Registro íntegro',
+          description: `${chain.length} eventos verificados con comprobante único.`,
         });
       } else {
         toast.push({
           kind: 'error',
-          title: 'Cadena adulterada',
+          title: 'Registro modificado',
           description: `Se rompió en el evento ${verif.brokenAt}.`,
         });
       }
@@ -135,14 +135,14 @@ export default function VerificadorPage() {
           href="/gobierno/audit"
           className="hover:text-brand-700 inline-flex items-center gap-1"
         >
-          <ArrowLeft size={14} /> Volver al audit log
+          <ArrowLeft size={14} /> Volver al registro permanente
         </Link>
       </div>
 
       <PageHero
-        objetivo="Vista Gobierno · Auditoría"
-        titulo="Verificador de cadena hash-chain"
-        descripcion="Cualquier auditor externo puede validar la integridad del audit log con SHA-256 puro. No hace falta confiar en Faro."
+        objetivo="Gobierno · Auditoría"
+        titulo="Verificador de integridad del registro"
+        descripcion="Cualquier auditor externo puede validar la integridad del registro permanente. No hace falta confiar en Faro."
         icono={<FileSearch size={26} />}
         meta={
           resultado ? (
@@ -150,11 +150,11 @@ export default function VerificadorPage() {
               <Kpi label="Eventos" value={resultado.chain.length} intent="brand" />
               <Kpi
                 label="Estado"
-                value={resultado.valid ? 'Íntegra' : 'Adulterada'}
+                value={resultado.valid ? 'Íntegro' : 'Modificado'}
                 intent={resultado.valid ? 'ok' : 'risk'}
               />
-              <Kpi label="Algoritmo" value="SHA-256" intent="neutral" />
-              <Kpi label="Genesis" value="0×0000..." hint="prevHash inicial" intent="neutral" />
+              <Kpi label="Verificación" value="Comprobante único" intent="neutral" />
+              <Kpi label="Comienzo" value="0×0000..." hint="comprobante inicial" intent="neutral" />
             </div>
           ) : undefined
         }
@@ -169,9 +169,10 @@ export default function VerificadorPage() {
             <div className="flex-1">
               <div className="text-brand-900 font-semibold">¿Cómo funciona?</div>
               <p className="text-brand-900/80 mt-0.5 text-sm">
-                Cada evento incluye el hash SHA-256 del evento anterior + sus campos. Si alguien
-                altera un evento histórico, su hash cambia y los hashes siguientes ya no coinciden.
-                La cadena entera se rompe matemáticamente: <strong>tamper-evident</strong>.
+                Cada evento incluye el comprobante único del evento anterior más sus campos. Si
+                alguien modifica un evento del pasado, su comprobante cambia y los comprobantes
+                siguientes ya no coinciden. La cadena entera se rompe matemáticamente:{' '}
+                <strong>cualquier modificación se detecta</strong>.
               </p>
               <p className="text-brand-900/80 mt-2 text-xs">
                 Esto cumple con el Registro Nacional de Entidades 2026 sin necesidad de blockchain
@@ -188,17 +189,17 @@ export default function VerificadorPage() {
           <div className="space-y-3">
             <div>
               <label className="mb-1 block text-xs font-semibold uppercase text-slate-500">
-                Hash del último evento (opcional)
+                Comprobante del último evento (opcional)
               </label>
               <input
                 type="text"
                 value={hashInput}
                 onChange={(e) => setHashInput(e.target.value)}
-                placeholder="Pegá el hash que querés validar..."
+                placeholder="Pegá el comprobante que querés validar..."
                 className="focus:border-brand-400 focus:ring-brand-100 w-full rounded-lg border border-slate-200 px-3 py-2 font-mono text-xs outline-none focus:ring-2"
               />
               <p className="mt-1 text-[11px] text-slate-500">
-                Si lo dejás vacío, verifica la cadena actual entera.
+                Si lo dejás vacío, verifica el registro actual entero.
               </p>
             </div>
 
@@ -210,8 +211,8 @@ export default function VerificadorPage() {
                 className="mt-0.5 h-4 w-4"
               />
               <span>
-                <strong>Modo demo:</strong> simular adulteración del evento #3 (cambia el actor)
-                para ver cómo el verificador detecta el tampering.
+                <strong>Probar:</strong> simular una modificación al evento #3 (cambia el actor)
+                para ver cómo el verificador detecta el cambio.
               </span>
             </label>
 
@@ -222,7 +223,7 @@ export default function VerificadorPage() {
                 </>
               ) : (
                 <>
-                  <ShieldCheck size={14} /> Verificar cadena
+                  <ShieldCheck size={14} /> Verificar integridad
                 </>
               )}
             </Button>
@@ -261,12 +262,12 @@ export default function VerificadorPage() {
                       resultado.valid ? 'text-status-ok-fg' : 'text-status-risk-fg',
                     )}
                   >
-                    {resultado.valid ? 'Cadena íntegra' : 'Cadena adulterada'}
+                    {resultado.valid ? 'Registro íntegro' : 'Registro modificado'}
                   </h3>
                   <p className="mt-1 text-sm text-slate-700">
                     {resultado.valid
-                      ? `Se validaron ${resultado.chain.length} eventos con SHA-256. Ningún hash fue modificado desde su creación.`
-                      : `Se detectó al menos un evento alterado. La cadena se rompió en la posición ${resultado.brokenAt}.`}
+                      ? `Se validaron ${resultado.chain.length} eventos. Ningún comprobante fue modificado desde su creación.`
+                      : `Se detectó al menos un evento alterado. El registro se rompió en la posición ${resultado.brokenAt}.`}
                   </p>
                   {!resultado.valid && resultado.errors[0] && (
                     <code className="bg-status-risk-bg/60 text-status-risk-fg mt-2 block rounded p-2 text-xs">
@@ -282,9 +283,9 @@ export default function VerificadorPage() {
           <Card>
             <CardContent className="p-0">
               <div className="border-b border-slate-100 px-5 py-3">
-                <h3 className="font-bold text-slate-900">Cadena verificada</h3>
+                <h3 className="font-bold text-slate-900">Registro verificado</h3>
                 <p className="mt-0.5 text-xs text-slate-500">
-                  Cada eslabón contiene su hash + el prevHash del anterior.
+                  Cada eslabón contiene su comprobante + el comprobante del anterior.
                 </p>
               </div>
               <ul className="divide-y divide-slate-100">
@@ -315,7 +316,7 @@ export default function VerificadorPage() {
                           </div>
                           <div className="mt-2 grid grid-cols-1 gap-1 font-mono text-[10px]">
                             <div className="break-all rounded bg-slate-100 px-2 py-1">
-                              <span className="text-slate-500">prev:</span>{' '}
+                              <span className="text-slate-500">anterior:</span>{' '}
                               <span className="text-slate-700">{entry.prevHash}</span>
                             </div>
                             <div
@@ -326,12 +327,12 @@ export default function VerificadorPage() {
                                   : 'bg-brand-50 text-brand-700',
                               )}
                             >
-                              <span className="text-slate-500">hash:</span> {entry.hash}
+                              <span className="text-slate-500">actual:</span> {entry.hash}
                             </div>
                           </div>
                           {broken && (
                             <div className="text-status-risk-fg mt-2 text-xs font-medium">
-                              ⚠ Hash no coincide con el contenido. Adulteración detectada.
+                              ⚠ El comprobante no coincide con el contenido. Modificación detectada.
                             </div>
                           )}
                         </div>
@@ -349,9 +350,9 @@ export default function VerificadorPage() {
         <CardContent className="flex items-start gap-3 p-4 text-sm text-slate-600">
           <ShieldCheck size={18} className="mt-0.5 shrink-0 text-slate-400" />
           <div>
-            <strong className="text-slate-900">Auditoría reproducible:</strong> esta página corre el
-            algoritmo SHA-256 en tu navegador (Web Crypto API). No hay servidor. Podés descargar el
-            código fuente y validarlo offline en cualquier auditor externo.
+            <strong className="text-slate-900">Auditoría reproducible:</strong> esta página calcula
+            los comprobantes en tu navegador. No hay servidor. Podés descargar el código fuente y
+            validarlo sin conexión con cualquier auditor externo.
           </div>
         </CardContent>
       </Card>

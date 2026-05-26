@@ -52,7 +52,7 @@ const PLANTILLAS: PlantillaReporte[] = [
   {
     id: 'fed-trimestral',
     titulo: 'Trimestral a Federación',
-    descripcion: 'KPIs operativos para consolidado federal',
+    descripcion: 'Indicadores operativos para consolidado federal',
     destinatario: 'Federación Bonaerense',
     formato: 'Excel',
     paginas: '12-15 hojas',
@@ -62,7 +62,7 @@ const PLANTILLAS: PlantillaReporte[] = [
   {
     id: 'judicial',
     titulo: 'Reporte por solicitud judicial',
-    descripcion: 'Datos específicos de un incidente con audit log firmado',
+    descripcion: 'Datos específicos de un incidente con firma y registro',
     destinatario: 'Juzgado / Fiscalía',
     formato: 'PDF firmado',
     paginas: 'Variable',
@@ -81,9 +81,9 @@ const PLANTILLAS: PlantillaReporte[] = [
   },
   {
     id: 'fondo-rendicion',
-    titulo: 'Histórico de rendiciones SNBV',
+    titulo: 'Histórico de rendiciones al Fondo',
     descripcion: 'Todas las rendiciones del año con comprobantes',
-    destinatario: 'Auditor SNBV',
+    destinatario: 'Auditor del sistema nacional',
     formato: 'PDF + XML',
     paginas: '60+ páginas',
     icon: <ShieldCheck size={18} />,
@@ -123,14 +123,14 @@ export default function ReportesPage() {
       <PageHero
         objetivo="Vista Mando · Reportes ejecutivos"
         titulo="Generador de reportes oficiales"
-        descripcion="Plantillas pre-configuradas según destinatario. PDF firmado digitalmente + audit log. Disponible en segundos."
+        descripcion="Plantillas pre-configuradas según destinatario. PDF firmado digitalmente y registrado. Disponible en segundos."
         icono={<FileBarChart size={26} />}
         meta={
           <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
             <Kpi label="Plantillas" value={PLANTILLAS.length} intent="brand" />
             <Kpi label="Generados año" value={47} intent="neutral" />
-            <Kpi label="Promedio" value="3.2s" hint="tiempo gen." intent="ok" />
-            <Kpi label="Firmados" value="100%" hint="cumplimiento" intent="ok" />
+            <Kpi label="Firmados" value="100%" hint="al día" intent="ok" />
+            <Kpi label="Recientes" value={RECIENTES.length} intent="brand" />
           </div>
         }
       />

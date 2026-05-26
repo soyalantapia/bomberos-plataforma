@@ -49,7 +49,7 @@ export default function ConsolidadosFed() {
       <PageHero
         objetivo="Federación · Consolidados"
         titulo="Norte GBA en números"
-        descripcion="Lo que en GIB hay que armar manualmente cuartel por cuartel, acá ya está sumado en gráficos comparativos."
+        descripcion="Lo que antes había que armar manualmente cuartel por cuartel, acá ya está sumado en gráficos comparativos."
         icono={<BarChart3 size={26} />}
         meta={
           <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">

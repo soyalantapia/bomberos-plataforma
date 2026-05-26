@@ -74,7 +74,7 @@ export default function RendicionPage() {
       console.error('[copiloto]', err);
       toast.push({
         kind: 'error',
-        title: 'No se pudo cargar el copiloto',
+        title: 'No se pudo cargar el asistente',
         description: 'Mostramos la guía base.',
       });
     } finally {
@@ -118,7 +118,7 @@ export default function RendicionPage() {
         description={`${cuartel?.nombre} · ${fmtMesPeriodo(rendicion.periodo)}`}
         actions={
           <Button intent="secondary" onClick={abrirCopiloto}>
-            <Sparkles size={16} /> Copiloto IA
+            <Sparkles size={16} /> Asistente IA
           </Button>
         }
       />
@@ -165,7 +165,7 @@ export default function RendicionPage() {
                     )}
                     <Link href="/mando/rendicion/presentar">
                       <Button intent="secondary" size="lg">
-                        Abrir wizard guiado
+                        Abrir paso a paso
                       </Button>
                     </Link>
                   </div>
@@ -380,8 +380,8 @@ export default function RendicionPage() {
       <Dialog
         open={copilotoOpen}
         onClose={() => setCopilotoOpen(false)}
-        title="Copiloto de rendición"
-        description="La IA propone. Vos confirmás. (Doble validación)"
+        title="Asistente de rendición"
+        description="La IA propone. Vos confirmás. (Doble revisión)"
       >
         <div className="max-h-[60vh] space-y-3 overflow-y-auto">
           {copilotoCargando && (
@@ -480,7 +480,7 @@ export default function RendicionPage() {
         open={confirmaOpen}
         onClose={() => setConfirmaOpen(false)}
         title="Confirmar presentación"
-        description="Doble validación. Queda en el audit log."
+        description="Doble revisión. Queda guardada para siempre."
       >
         <div className="space-y-3">
           <div className="bg-status-warn-bg border-status-warn rounded-lg border p-3 text-sm">

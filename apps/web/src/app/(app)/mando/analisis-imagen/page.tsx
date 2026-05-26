@@ -38,7 +38,7 @@ const DETECCIONES_DEMO: Deteccion[] = [
   { label: 'Sin daños estructurales graves', confianza: 0.93, categoria: 'daño' },
 ];
 
-const NARRATIVA_IA = `Análisis Claude Vision de 4 fotografías del incidente:
+const NARRATIVA_IA = `Análisis de las fotos del incidente:
 
 PROPIEDAD: Vivienda unifamiliar de planta baja, ambiente cocina-comedor de aprox. 18m². Pared norte presenta ennegrecimiento por hollín, sin compromiso estructural (97% confianza).
 
@@ -78,18 +78,23 @@ export default function AnalisisImagenPage() {
   return (
     <div className="mx-auto max-w-6xl space-y-5">
       <PageHero
-        objetivo="Vista Mando · Asistente IA · Análisis imágenes"
-        titulo="Claude Vision analiza fotos del incidente"
-        descripcion="Detecta propiedad, daños, objetos, causa probable. Genera narrativa para el parte. Disclosure obligatorio."
+        objetivo="Vista Mando · Análisis de fotos"
+        titulo="La IA analiza las fotos del incidente"
+        descripcion="Subí las fotos y la inteligencia artificial detecta el tipo de propiedad, los daños, los objetos y la causa probable. Genera un texto listo para el parte."
         icono={<Eye size={26} />}
         meta={
-          <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
-            <Kpi label="Imágenes" value={imagenes} intent="brand" />
-            <Kpi label="Detecciones" value={detecciones.length} intent="brand" />
-            <Kpi label="Tiempo" value={paso === 'resultado' ? '2.4s' : '—'} intent="ok" />
+          <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+            <Kpi label="Fotos analizadas" value={imagenes} intent="brand" />
+            <Kpi label="Cosas detectadas" value={detecciones.length} intent="brand" />
             <Kpi
               label="Estado"
-              value={paso === 'subir' ? 'Listo' : paso === 'analizando' ? 'Analizando' : 'Listo'}
+              value={
+                paso === 'subir'
+                  ? 'Listo para empezar'
+                  : paso === 'analizando'
+                    ? 'Analizando'
+                    : 'Listo'
+              }
               intent={paso === 'resultado' ? 'ok' : 'brand'}
             />
           </div>
@@ -104,8 +109,8 @@ export default function AnalisisImagenPage() {
             </div>
             <h2 className="mt-3 text-xl font-bold text-slate-900">Subí fotos del incidente</h2>
             <p className="mx-auto mt-1 max-w-md text-sm text-slate-600">
-              Claude Vision analiza tipo de propiedad, alcance de daños, objetos relevantes y causa
-              probable. JPG, PNG. Máx 8MB por imagen.
+              La IA detecta tipo de propiedad, daños, objetos importantes y causa probable.
+              Cualquier foto sirve (hasta 8MB cada una).
             </p>
             <Button intent="primary" size="lg" onClick={subir} className="mt-4">
               <Camera size={16} /> Subir 4 fotos de muestra

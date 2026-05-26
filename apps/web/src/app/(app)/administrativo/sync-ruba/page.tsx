@@ -120,8 +120,8 @@ export default function SyncRubaPage() {
       setEstado('exito');
       toast.push({
         kind: 'success',
-        title: `${seleccionados.size} registros sincronizados`,
-        description: 'Quedó en audit log con tu firma.',
+        title: `${seleccionados.size} registros actualizados`,
+        description: 'Queda registrado con tu firma.',
       });
     }, 1600);
   }
@@ -134,9 +134,9 @@ export default function SyncRubaPage() {
   return (
     <div className="mx-auto max-w-5xl space-y-5">
       <PageHero
-        objetivo="Vista Administrativo · Integraciones"
-        titulo="Sincronización con RUBA"
-        descripcion="Importa el padrón vigente del Registro Único de Bomberos Argentinos sin duplicar carga. Vos elegís qué se aplica."
+        objetivo="Administrativo · Integraciones"
+        titulo="Actualizar con RUBA"
+        descripcion="Trae el padrón vigente del Registro Único de Bomberos Argentinos sin duplicar carga. Vos elegís qué se aplica."
         icono={<Database size={26} />}
         meta={
           estado !== 'idle' && estado !== 'comparando' ? (
@@ -158,17 +158,17 @@ export default function SyncRubaPage() {
               <Database size={28} />
             </div>
             <h2 className="mt-3 text-xl font-bold text-slate-900">
-              Listo para sincronizar con RUBA
+              Listo para actualizar con RUBA
             </h2>
             <p className="mx-auto mt-1 max-w-md text-sm text-slate-600">
-              Esta operación trae todos los registros del padrón en RUBA y los compara con tu padrón
-              en Faro. Vos decidís qué aplicar.
+              Trae todos los registros del padrón en RUBA y los compara con tu padrón en Faro. Vos
+              decidís qué aplicar.
             </p>
             <Button intent="primary" size="lg" onClick={comparar} className="mt-4">
               <RefreshCw size={18} /> Comparar con RUBA
             </Button>
             <p className="mt-3 text-xs text-slate-500">
-              Última sincronización: nunca (esta es la primera)
+              Última actualización: nunca (es la primera vez)
             </p>
           </CardContent>
         </Card>
@@ -185,9 +185,9 @@ export default function SyncRubaPage() {
             </p>
             <div className="mx-auto mt-4 max-w-xs space-y-1.5 text-left">
               {[
-                'Autenticación con API RUBA 2.0',
-                'Descargando padrón vigente',
-                'Comparando con Faro local',
+                'Conectando con RUBA',
+                'Bajando el padrón vigente',
+                'Comparando con tu padrón',
                 'Detectando conflictos',
               ].map((step, idx) => (
                 <motion.div
@@ -215,13 +215,13 @@ export default function SyncRubaPage() {
                 <div>
                   <h2 className="text-lg font-bold text-slate-900">
                     {estado === 'exito'
-                      ? `${aplicados.size} registros sincronizados`
+                      ? `${aplicados.size} registros actualizados`
                       : `${items.length} registros comparados`}
                   </h2>
                   <p className="mt-0.5 text-sm text-slate-600">
                     {estado === 'preview' &&
-                      'Revisá los cambios antes de aplicar. Los conflictos requieren tu validación manual.'}
-                    {estado === 'aplicando' && 'Aplicando cambios al padrón Faro...'}
+                      'Revisá los cambios antes de aplicar. Los conflictos los resolvés a mano.'}
+                    {estado === 'aplicando' && 'Aplicando cambios al padrón...'}
                     {estado === 'exito' && 'Aplicado el ' + new Date().toLocaleString('es-AR')}
                   </p>
                 </div>
@@ -330,10 +330,10 @@ export default function SyncRubaPage() {
               <CardContent className="flex items-start gap-3 p-4 text-sm">
                 <ShieldCheck size={18} className="text-status-ok-fg mt-0.5 shrink-0" />
                 <div>
-                  <strong className="text-status-ok-fg">Sincronización completa.</strong>
+                  <strong className="text-status-ok-fg">Actualización completa.</strong>
                   <p className="mt-0.5 text-slate-700">
-                    Todos los cambios quedaron en el audit log con tu firma y la fuente origen (RUBA
-                    2.0). Próxima sincronización sugerida: en 30 días.
+                    Todos los cambios quedaron registrados con tu firma y la fuente (RUBA). Próxima
+                    actualización sugerida: en 30 días.
                   </p>
                 </div>
               </CardContent>
@@ -348,7 +348,7 @@ export default function SyncRubaPage() {
           <Database size={18} className="mt-0.5 shrink-0 text-slate-400" />
           <div>
             <strong className="text-slate-900">Por qué es importante:</strong> RUBA es el registro
-            reconocido por el Art. 9 de la Ley 25.054. Sin sincronizar, los datos críticos
+            reconocido por el Art. 9 de la Ley 25.054. Si no actualizás, los datos críticos
             (jerarquías, vencimientos, altas) quedan desactualizados y los subsidios del Fondo se
             pueden demorar o rechazar.
           </div>

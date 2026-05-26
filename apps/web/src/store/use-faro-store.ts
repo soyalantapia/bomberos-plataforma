@@ -7,11 +7,17 @@ import type {
   Alerta,
   Asistencia,
   AuditEvent,
+  Caja,
+  ConciliacionBancaria,
   Cuartel,
+  CuentaContable,
+  CuotaSocial,
+  MovimientoFinanciero,
   Movil,
   Notificacion,
   Perfil,
   Persona,
+  PresupuestoAnual,
   Rendicion,
   Servicio,
   SesionUsuario,
@@ -20,10 +26,16 @@ import type {
 import {
   alertasMock,
   asistenciasMock,
+  cajasMock,
+  conciliacionesMock,
   cuartelesMock,
+  cuentasMock,
+  cuotasMock,
+  movimientosMock,
   movilesMock,
   notificacionesMock,
   personasMock,
+  presupuestoMock,
   rendicionMayoMock,
   serviciosMock,
 } from '../data';
@@ -41,6 +53,13 @@ interface State {
   rendiciones: Record<string, Rendicion>;
   audit: AuditEvent[];
   notificaciones: Notificacion[];
+  // FINANZAS
+  cuentas: CuentaContable[];
+  cajas: Caja[];
+  movimientos: MovimientoFinanciero[];
+  cuotas: CuotaSocial[];
+  presupuestos: PresupuestoAnual[];
+  conciliaciones: ConciliacionBancaria[];
 }
 
 interface Actions {
@@ -62,6 +81,24 @@ interface Actions {
   // ABM Móvil
   crearMovil: (input: Omit<Movil, 'id'>) => Movil;
   actualizarMovil: (id: string, cambios: Partial<Movil>) => void;
+  // FINANZAS
+  crearMovimiento: (
+    input: Omit<MovimientoFinanciero, 'id' | 'cargadoEn' | 'cargadoPor' | 'estado'> & {
+      estado?: MovimientoFinanciero['estado'];
+    },
+  ) => MovimientoFinanciero;
+  actualizarMovimiento: (id: string, cambios: Partial<MovimientoFinanciero>) => void;
+  conciliarMovimiento: (id: string) => void;
+  anularMovimiento: (id: string, motivo: string) => void;
+  crearCaja: (input: Omit<Caja, 'id'>) => Caja;
+  actualizarCaja: (id: string, cambios: Partial<Caja>) => void;
+  transferirEntreCajas: (
+    origen: string,
+    destino: string,
+    monto: number,
+    descripcion: string,
+  ) => void;
+  cobrarCuota: (id: string, medio: MovimientoFinanciero['medio'], cajaId: string) => void;
 }
 
 type FaroStore = State & Actions;
@@ -78,6 +115,13 @@ const initialState: State = {
   rendiciones: { [rendicionMayoMock.id]: rendicionMayoMock },
   audit: [],
   notificaciones: notificacionesMock,
+  // FINANZAS
+  cuentas: cuentasMock,
+  cajas: cajasMock,
+  movimientos: movimientosMock,
+  cuotas: cuotasMock,
+  presupuestos: [presupuestoMock],
+  conciliaciones: conciliacionesMock,
 };
 
 function recalcularRendicion(state: State, cuartelId: string): State {
@@ -229,6 +273,148 @@ export const useFaroStore = create<FaroStore>()(
           moviles: get().moviles.map((m) => (m.id === id ? { ...m, ...cambios } : m)),
         });
       },
+      // ====== FINANZAS ======
+      crearMovimiento(input) {
+        const personaId = get().sesion?.personaId ?? 'sistema';
+        const mov: MovimientoFinanciero = {
+          ...input,
+          id: genId('mov'),
+          cargadoEn: new Date().toISOString(),
+          cargadoPor: personaId,
+          estado: input.estado ?? 'borrador',
+        };
+        // Actualizar saldos
+        let cajas = get().cajas;
+        if (mov.tipo === 'ingreso' && mov.cajaOrigenId) {
+          cajas = cajas.map((c) =>
+            c.id === mov.cajaOrigenId ? { ...c, saldoActual: c.saldoActual + mov.monto } : c,
+          );
+        } else if (mov.tipo === 'egreso' && mov.cajaOrigenId) {
+          cajas = cajas.map((c) =>
+            c.id === mov.cajaOrigenId ? { ...c, saldoActual: c.saldoActual - mov.monto } : c,
+          );
+        } else if (mov.tipo === 'transferencia' && mov.cajaOrigenId && mov.cajaDestinoId) {
+          cajas = cajas.map((c) => {
+            if (c.id === mov.cajaOrigenId) return { ...c, saldoActual: c.saldoActual - mov.monto };
+            if (c.id === mov.cajaDestinoId) return { ...c, saldoActual: c.saldoActual + mov.monto };
+            return c;
+          });
+        }
+        set({
+          movimientos: [mov, ...get().movimientos],
+          cajas,
+        });
+        return mov;
+      },
+      actualizarMovimiento(id, cambios) {
+        set({
+          movimientos: get().movimientos.map((m) => (m.id === id ? { ...m, ...cambios } : m)),
+        });
+      },
+      conciliarMovimiento(id) {
+        set({
+          movimientos: get().movimientos.map((m) =>
+            m.id === id ? { ...m, estado: 'conciliado' as const } : m,
+          ),
+        });
+      },
+      anularMovimiento(id, motivo) {
+        const mov = get().movimientos.find((m) => m.id === id);
+        if (!mov) return;
+        // Revertir saldo
+        let cajas = get().cajas;
+        if (mov.tipo === 'ingreso' && mov.cajaOrigenId) {
+          cajas = cajas.map((c) =>
+            c.id === mov.cajaOrigenId ? { ...c, saldoActual: c.saldoActual - mov.monto } : c,
+          );
+        } else if (mov.tipo === 'egreso' && mov.cajaOrigenId) {
+          cajas = cajas.map((c) =>
+            c.id === mov.cajaOrigenId ? { ...c, saldoActual: c.saldoActual + mov.monto } : c,
+          );
+        }
+        set({
+          movimientos: get().movimientos.map((m) =>
+            m.id === id
+              ? { ...m, estado: 'anulado' as const, notas: `${m.notas ?? ''}\n[Anulado] ${motivo}` }
+              : m,
+          ),
+          cajas,
+        });
+      },
+      crearCaja(input) {
+        const caja: Caja = { ...input, id: genId('caja') };
+        set({ cajas: [...get().cajas, caja] });
+        return caja;
+      },
+      actualizarCaja(id, cambios) {
+        set({
+          cajas: get().cajas.map((c) => (c.id === id ? { ...c, ...cambios } : c)),
+        });
+      },
+      transferirEntreCajas(origenId, destinoId, monto, descripcion) {
+        const personaId = get().sesion?.personaId ?? 'sistema';
+        const cuartelId = get().sesion?.cuartelId ?? cuartelesMock[0]!.id;
+        const mov: MovimientoFinanciero = {
+          id: genId('mov'),
+          cuartelId,
+          tipo: 'transferencia',
+          fecha: new Date().toISOString(),
+          monto,
+          cuentaId: 'c-1-1', // disponibilidades
+          cajaOrigenId: origenId,
+          cajaDestinoId: destinoId,
+          medio: 'transferencia',
+          descripcion: descripcion || 'Transferencia interna',
+          estado: 'conciliado',
+          cargadoPor: personaId,
+          cargadoEn: new Date().toISOString(),
+        };
+        const cajas = get().cajas.map((c) => {
+          if (c.id === origenId) return { ...c, saldoActual: c.saldoActual - monto };
+          if (c.id === destinoId) return { ...c, saldoActual: c.saldoActual + monto };
+          return c;
+        });
+        set({ movimientos: [mov, ...get().movimientos], cajas });
+      },
+      cobrarCuota(id, medio, cajaId) {
+        const cuota = get().cuotas.find((c) => c.id === id);
+        if (!cuota) return;
+        const personaId = get().sesion?.personaId ?? 'sistema';
+        const totalACobrar = cuota.monto + (cuota.cargoRecargo ?? 0);
+        const mov: MovimientoFinanciero = {
+          id: genId('mov'),
+          cuartelId: cuota.cuartelId,
+          tipo: 'ingreso',
+          fecha: new Date().toISOString(),
+          monto: totalACobrar,
+          cuentaId: 'c-4-2-01',
+          cajaOrigenId: cajaId,
+          medio,
+          descripcion: `Cuota social ${cuota.periodo} · ${cuota.socioNombre}`,
+          contraparte: cuota.socioNombre,
+          estado: 'conciliado',
+          cargadoPor: personaId,
+          cargadoEn: new Date().toISOString(),
+        };
+        const cajas = get().cajas.map((c) =>
+          c.id === cajaId ? { ...c, saldoActual: c.saldoActual + totalACobrar } : c,
+        );
+        set({
+          movimientos: [mov, ...get().movimientos],
+          cuotas: get().cuotas.map((c) =>
+            c.id === id
+              ? {
+                  ...c,
+                  estado: 'pagada' as const,
+                  pagadoEn: new Date().toISOString(),
+                  medio,
+                  movimientoId: mov.id,
+                }
+              : c,
+          ),
+          cajas,
+        });
+      },
       presentarRendicion(rendicionId, mandoId) {
         const r = get().rendiciones[rendicionId];
         if (!r) return;
@@ -251,8 +437,11 @@ export const useFaroStore = create<FaroStore>()(
     }),
     {
       name: 'faro-store',
-      version: 3,
+      version: 5,
       storage: createJSONStorage(() => localStorage),
+      // Solo persistimos lo esencial. Movimientos/cajas/cuotas son mocks
+      // que viven en memoria — persistirlos hace serializar/deserializar
+      // localStorage en cada nav, lo cual es lento.
       partialize: (s) => ({
         sesion: s.sesion,
         servicios: s.servicios,

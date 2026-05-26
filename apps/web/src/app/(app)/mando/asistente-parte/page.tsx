@@ -101,34 +101,29 @@ export default function AsistenteParteAIPage() {
     toast.push({
       kind: 'success',
       title: 'Parte firmado y archivado',
-      description: 'Audit log inmutable · disclosure IA documentado',
+      description: 'Queda registrado que la IA ayudó a completarlo',
     });
   }
 
   return (
     <div className="mx-auto max-w-5xl space-y-5">
       <PageHero
-        objetivo="Vista Mando · Asistente IA"
-        titulo="Asistente para parte de servicio"
-        descripcion="Hablás, la IA transcribe (Whisper), estructura (Claude), sugiere códigos NFPA y vos firmás. Disclosure automático para defensibilidad legal."
+        objetivo="Vista Mando · Asistente con voz"
+        titulo="Cargá el parte hablando"
+        descripcion="Dictás lo que pasó, la inteligencia artificial completa el parte automáticamente y vos firmás. Queda registrado que la IA te ayudó."
         icono={<Wand2 size={26} />}
         meta={
           <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
-            <Kpi label="Campos extraídos" value={campos.length} intent="brand" />
+            <Kpi label="Datos detectados" value={campos.length} intent="brand" />
             <Kpi
-              label="Confianza prom."
+              label="Seguridad"
               value={
                 campos.length > 0
                   ? `${Math.round((campos.reduce((a, c) => a + c.confianza, 0) / campos.length) * 100)}%`
                   : '—'
               }
+              hint="qué tan seguro está"
               intent="ok"
-            />
-            <Kpi
-              label="Tiempo IA"
-              value={paso === 'firmado' ? '4.2s' : '—'}
-              hint="transcripción + análisis"
-              intent="brand"
             />
             <Kpi
               label="Estado"
@@ -160,8 +155,8 @@ export default function AsistenteParteAIPage() {
             </motion.div>
             <h2 className="mt-4 text-2xl font-bold text-slate-900">Tocá para empezar a dictar</h2>
             <p className="mx-auto mt-2 max-w-md text-sm text-slate-600">
-              La IA transcribe en castellano-rioplatense, identifica códigos NFPA-AR, detecta
-              inconsistencias (ej. horarios incoherentes), y vos firmás con OTP.
+              Hablá normal, la IA convierte lo que decís en el parte. Te marca si hay cosas que no
+              cierran (por ejemplo horarios que no coinciden) y vos firmás al final.
             </p>
             <Button intent="primary" size="lg" onClick={empezarGrabar} className="mt-4">
               <Mic size={20} /> Empezar a grabar
@@ -189,7 +184,7 @@ export default function AsistenteParteAIPage() {
               :{(audioSeg % 60).toString().padStart(2, '0')}
             </p>
             <p className="mt-2 text-sm text-slate-600">
-              Hablá normalmente. Auto-finaliza a los 30s
+              Hablá normal. Tocá el micrófono otra vez para terminar.
             </p>
             <div className="mx-auto mt-4 flex max-w-md items-center gap-1">
               {Array.from({ length: 30 }).map((_, i) => (
@@ -212,11 +207,9 @@ export default function AsistenteParteAIPage() {
           <CardContent className="p-8 text-center">
             <Loader2 size={40} className="text-brand-600 mx-auto animate-spin" />
             <h2 className="mt-3 text-xl font-bold text-slate-900">
-              Transcribiendo audio · Whisper API
+              Convirtiendo el audio en texto…
             </h2>
-            <p className="mt-1 text-sm text-slate-600">
-              Convirtiendo voz a texto en castellano-rioplatense
-            </p>
+            <p className="mt-1 text-sm text-slate-600">Esto tarda unos segundos</p>
           </CardContent>
         </Card>
       )}
@@ -235,9 +228,7 @@ export default function AsistenteParteAIPage() {
           <Card className="bg-brand-50/40 border-brand-100">
             <CardContent className="p-6 text-center">
               <Loader2 size={32} className="text-brand-600 mx-auto animate-spin" />
-              <h2 className="text-brand-900 mt-3 font-bold">
-                Estructurando con Claude · extrayendo 12 campos
-              </h2>
+              <h2 className="text-brand-900 mt-3 font-bold">Identificando los datos del parte…</h2>
               <p className="text-brand-900/70 mt-1 text-sm">
                 Identifica direcciones, horarios, códigos NFPA, causas probables...
               </p>
@@ -297,12 +288,12 @@ export default function AsistenteParteAIPage() {
               <AlertCircle size={18} className="text-status-warn-fg mt-0.5 shrink-0" />
               <div className="flex-1 text-sm">
                 <strong className="text-status-warn-fg">
-                  Disclosure obligatorio para defensibilidad legal
+                  Aclaración importante para que el parte tenga valor legal
                 </strong>
                 <p className="text-status-warn-fg/80 mt-1">
-                  Este parte fue asistido por IA (Whisper + Claude). El jefe de servicio valida y
-                  asume responsabilidad final. La IA NO concluye sobre culpabilidad ni causalidad
-                  legal. El audio original queda como prueba.
+                  Este parte fue completado con ayuda de inteligencia artificial. El jefe de
+                  servicio lo valida y asume responsabilidad final. La IA NO concluye sobre
+                  culpabilidad ni causalidad legal. El audio original queda como prueba.
                 </p>
               </div>
             </CardContent>
@@ -355,7 +346,7 @@ export default function AsistenteParteAIPage() {
                       </Button>
                       <Badge intent="ok">
                         <Sparkles size={10} className="mr-1" />
-                        Asistido por IA con disclosure
+                        Completado con ayuda de IA (queda aclarado)
                       </Badge>
                     </div>
                   </div>

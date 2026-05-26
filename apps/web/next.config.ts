@@ -1,14 +1,20 @@
 import withSerwistInit from '@serwist/next';
 
+import type { NextConfig } from 'next';
+
+// Cuando hacemos build para GitHub Pages, exportamos como sitio estático
+// y respetamos el subpath del repo. Activado por env var FARO_EXPORT=1.
+const isExport = process.env.FARO_EXPORT === '1';
+const basePath = isExport ? '/bomberos-plataforma' : '';
+
 const withSerwist = withSerwistInit({
   swSrc: 'src/sw.ts',
   swDest: 'public/sw.js',
   cacheOnNavigation: true,
   reloadOnOnline: true,
-  disable: process.env.NODE_ENV === 'development',
+  // En dev no, y en static export tampoco (no hay service worker dinámico).
+  disable: process.env.NODE_ENV === 'development' || isExport,
 });
-
-import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
@@ -20,7 +26,16 @@ const nextConfig: NextConfig = {
   eslint: { ignoreDuringBuilds: true },
   images: {
     remotePatterns: [],
+    unoptimized: isExport,
   },
+  ...(isExport
+    ? {
+        output: 'export' as const,
+        basePath,
+        assetPrefix: basePath,
+        trailingSlash: true,
+      }
+    : {}),
 };
 
 export default withSerwist(nextConfig);

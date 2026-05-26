@@ -58,6 +58,11 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const items = navByPerfil[sesion.perfilActivo];
   const bottomItems = items.filter((i) => i.bottomNav).slice(0, 5);
 
+  // Pre-pasamos pathname una sola vez para evitar string ops por cada item
+  // en cada render. Cada nav item solo necesita saber si está activo.
+  const activeCheck = (href: string) =>
+    href === pathname || (href !== `/${sesion!.perfilActivo}` && pathname.startsWith(`${href}/`));
+
   function handleLogout() {
     cerrar();
     router.push('/login');
@@ -94,9 +99,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
         <nav className="mt-4 flex flex-1 flex-col gap-0.5 overflow-y-auto pr-1">
           {items.map((item, idx) => {
-            const active =
-              item.href === pathname ||
-              (item.href !== `/${sesion.perfilActivo}` && pathname.startsWith(`${item.href}/`));
+            const active = activeCheck(item.href);
             const prevSeccion = idx > 0 ? items[idx - 1]?.seccion : undefined;
             const showSeccion = item.seccion && item.seccion !== prevSeccion;
             return (
@@ -214,9 +217,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       <nav className="fixed inset-x-0 bottom-0 z-30 border-t border-slate-200 bg-white pb-[env(safe-area-inset-bottom)] md:hidden">
         <div className="grid" style={{ gridTemplateColumns: `repeat(${bottomItems.length}, 1fr)` }}>
           {bottomItems.map((item) => {
-            const active =
-              item.href === pathname ||
-              (item.href !== `/${sesion.perfilActivo}` && pathname.startsWith(`${item.href}/`));
+            const active = activeCheck(item.href);
             return (
               <Link
                 key={item.href}

@@ -6,20 +6,11 @@ import {
   AlertTriangle,
   ArrowRight,
   CheckCircle2,
-  Droplets,
-  FileBarChart,
-  Flame,
-  LayoutDashboard,
   Moon,
-  Radio,
   ShieldAlert,
-  Sparkles,
   Sun,
   Sunset,
-  TrendingUp,
-  Users,
   Calendar,
-  Wand2,
 } from 'lucide-react';
 import Link from 'next/link';
 import { useMemo, useState } from 'react';
@@ -31,18 +22,14 @@ import {
   CardContent,
   CardHeader,
   CardTitle,
-  Kpi,
   StatusPill,
   Tabs,
   TabsContent,
   TabsList,
   TabsTrigger,
   cn,
-  useToast,
 } from '@faro/ui';
 
-import { FeaturesGrid } from '../../../components/shared/features-grid';
-import { PageHero } from '../../../components/shared/page-hero';
 import { SemaforoRendicion } from '../../../components/rendicion/semaforo-rendicion';
 import {
   useFaroStore,
@@ -157,7 +144,6 @@ export default function MandoDashboard() {
   const allServicios = useFaroStore((s) => s.servicios);
   const allAsistencias = useFaroStore((s) => s.asistencias);
   const personas = useFaroStore((s) => s.personas);
-  const toast = useToast();
   const [tab, setTab] = useState('resumen');
   const [sevFiltro, setSevFiltro] = useState<'todas' | 'risk' | 'warn' | 'ok'>('todas');
 
@@ -196,53 +182,105 @@ export default function MandoDashboard() {
   );
   const porcCobertura = Math.round((cubiertas / totalCeldas) * 100);
 
+  // ¿Está todo bien hoy? Resumen accionable arriba
+  const hayProblemas = pendientes > 0 || alertasRisk > 0;
+  const cosasUrgentes: { texto: string; href: string }[] = [];
+  if (pendientes > 0)
+    cosasUrgentes.push({
+      texto: `${pendientes} servicio${pendientes === 1 ? '' : 's'} sin tu firma`,
+      href: '/mando/operaciones',
+    });
+  if (alertasRisk > 0)
+    cosasUrgentes.push({
+      texto: `${alertasRisk} alerta${alertasRisk === 1 ? '' : 's'} grave${alertasRisk === 1 ? '' : 's'}`,
+      href: '/mando',
+    });
+  if (alertasWarn > 0)
+    cosasUrgentes.push({
+      texto: `${alertasWarn} aviso${alertasWarn === 1 ? '' : 's'} por revisar`,
+      href: '/mando',
+    });
+
   return (
     <div className="mx-auto max-w-7xl space-y-5">
-      <PageHero
-        objetivo="Vista Mando · Dashboard"
-        titulo="Cuartel en tiempo real"
-        descripcion={`${cuartel?.nombre} · ${fmtMesPeriodo(mesActual())} · ${personasActivas} activos, ${serviciosMes} servicios este mes`}
-        icono={<LayoutDashboard size={26} />}
-        meta={
-          <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
-            <Kpi
-              label="Cumplimiento"
-              value={`${cuartel?.porcentajeRendicion ?? 0}%`}
-              hint="del mes"
-              icon={<TrendingUp size={18} />}
-              intent={
-                cuartel?.cumplimiento === 'ok'
-                  ? 'ok'
-                  : cuartel?.cumplimiento === 'warn'
-                    ? 'warn'
-                    : 'risk'
-              }
-            />
-            <Kpi
-              label="Servicios"
-              value={serviciosMes}
-              hint={pendientes > 0 ? `${pendientes} a validar` : 'validados'}
-              icon={<Flame size={18} />}
-              intent="brand"
-            />
-            <Kpi label="Horas op." value={horasMes} hint="del mes" intent="neutral" />
-            <Kpi
-              label="Personal"
-              value={personasActivas}
-              hint="activos"
-              icon={<Users size={18} />}
-              intent="neutral"
-            />
+      {/* HERO: pregunta clara + saludo + lo único accionable */}
+      <Card
+        className={cn(
+          'overflow-hidden border-2',
+          hayProblemas
+            ? 'border-status-warn/30 from-status-warn-bg/40 bg-gradient-to-br to-white'
+            : 'border-status-ok/30 from-status-ok-bg/40 bg-gradient-to-br to-white',
+        )}
+      >
+        <CardContent className="p-6">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex items-start gap-4">
+              <div
+                className={cn(
+                  'grid h-14 w-14 shrink-0 place-items-center rounded-2xl text-white shadow-lg',
+                  hayProblemas ? 'bg-status-warn' : 'bg-status-ok',
+                )}
+              >
+                {hayProblemas ? <AlertTriangle size={28} /> : <CheckCircle2 size={28} />}
+              </div>
+              <div>
+                <div className="text-xs uppercase tracking-wide text-slate-500">
+                  {cuartel?.nombre} · {fmtMesPeriodo(mesActual())}
+                </div>
+                <h1 className="mt-0.5 text-2xl font-black text-slate-900 sm:text-3xl">
+                  {hayProblemas ? 'Hay cosas por resolver hoy' : 'El cuartel está al día'}
+                </h1>
+                {hayProblemas ? (
+                  <ul className="mt-2 space-y-0.5 text-sm text-slate-700">
+                    {cosasUrgentes.map((c, i) => (
+                      <li key={i}>· {c.texto}</li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p className="mt-1 text-sm text-slate-700">
+                    {personasActivas} activos · {serviciosMes} servicios del mes · sin alertas
+                    críticas.
+                  </p>
+                )}
+              </div>
+            </div>
+            <div className="flex flex-wrap gap-2 sm:flex-col sm:items-end">
+              {pendientes > 0 && (
+                <Link href="/mando/operaciones">
+                  <Button intent="primary" size="sm">
+                    Firmar servicios <ArrowRight size={14} />
+                  </Button>
+                </Link>
+              )}
+              <Link href="/mando/rendicion">
+                <Button intent={pendientes > 0 ? 'ghost' : 'primary'} size="sm">
+                  Ver rendición ({cuartel?.porcentajeRendicion ?? 0}%) <ArrowRight size={14} />
+                </Button>
+              </Link>
+            </div>
           </div>
-        }
-        acciones={
-          <Link href="/mando/rendicion">
-            <Button intent="primary">
-              Ver rendición <ArrowRight size={16} />
-            </Button>
-          </Link>
-        }
-      />
+
+          {/* Mini KPIs como tira inferior, no como featured */}
+          <div className="mt-5 grid grid-cols-2 gap-3 border-t border-slate-200/50 pt-4 sm:grid-cols-4">
+            <div>
+              <div className="text-xs text-slate-500">Avance rendición</div>
+              <div className="font-bold text-slate-900">{cuartel?.porcentajeRendicion ?? 0}%</div>
+            </div>
+            <div>
+              <div className="text-xs text-slate-500">Servicios del mes</div>
+              <div className="font-bold text-slate-900">{serviciosMes}</div>
+            </div>
+            <div>
+              <div className="text-xs text-slate-500">Horas trabajadas</div>
+              <div className="font-bold text-slate-900">{horasMes} hs</div>
+            </div>
+            <div>
+              <div className="text-xs text-slate-500">Bomberos activos</div>
+              <div className="font-bold text-slate-900">{personasActivas}</div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
 
       <Tabs value={tab} onChange={setTab}>
         <TabsList>
@@ -334,62 +372,6 @@ export default function MandoDashboard() {
               </div>
             </CardContent>
           </Card>
-
-          {/* Acceso rápido a features nuevas */}
-          <FeaturesGrid
-            titulo="Herramientas avanzadas"
-            descripcion="Lo nuevo de Faro para tu día a día"
-            cards={[
-              {
-                href: '/mando/avl',
-                icon: <Radio size={18} />,
-                titulo: 'AVL en vivo',
-                descripcion: 'Tracking GPS de tus móviles · NFPA 1710',
-                color: 'bg-fire-600',
-                nuevo: true,
-              },
-              {
-                href: '/mando/asistente-parte',
-                icon: <Wand2 size={18} />,
-                titulo: 'Asistente parte IA',
-                descripcion: 'Dictás · IA transcribe + estructura',
-                color: 'bg-brand-600',
-                nuevo: true,
-              },
-              {
-                href: '/mando/hidrantes',
-                icon: <Droplets size={18} />,
-                titulo: 'Hidrantes',
-                descripcion: '8 hidrantes en jurisdicción · caudal',
-                color: 'bg-blue-600',
-                nuevo: true,
-              },
-              {
-                href: '/mando/predicciones',
-                icon: <TrendingUp size={18} />,
-                titulo: 'Predicciones IA',
-                descripcion: 'Demand forecast 12 meses',
-                color: 'bg-purple-600',
-                nuevo: true,
-              },
-              {
-                href: '/mando/reportes',
-                icon: <FileBarChart size={18} />,
-                titulo: 'Reportes',
-                descripcion: 'PDF firmado para CD/Ministerio/Fed',
-                color: 'bg-slate-700',
-                nuevo: true,
-              },
-              {
-                href: '/mando/personal/skills',
-                icon: <Sparkles size={18} />,
-                titulo: 'Skills Matrix',
-                descripcion: 'Cobertura por especialidad',
-                color: 'bg-status-warn',
-                nuevo: true,
-              },
-            ]}
-          />
         </TabsContent>
 
         {/* ───────── GUARDIAS ───────── */}
@@ -410,19 +392,6 @@ export default function MandoDashboard() {
                     declarada esa franja horaria.
                   </p>
                 </div>
-                <Button
-                  intent="primary"
-                  size="sm"
-                  onClick={() =>
-                    toast.push({
-                      kind: 'info',
-                      title: 'Asignar nueva guardia',
-                      description: 'Próximamente: wizard para asignar móvil + dotación',
-                    })
-                  }
-                >
-                  Nueva guardia
-                </Button>
               </div>
             </CardContent>
           </Card>
@@ -515,17 +484,6 @@ export default function MandoDashboard() {
                     ))}
                   </tbody>
                 </table>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="border-slate-200 bg-slate-50">
-            <CardContent className="flex items-start gap-3 p-4 text-sm text-slate-600">
-              <Calendar size={18} className="mt-0.5 shrink-0 text-slate-400" />
-              <div>
-                <strong className="text-slate-900">Próximamente:</strong> al hacer click en una
-                celda se abre el detalle con la dotación completa, posibilidad de pedir cobertura, y
-                reasignación drag-and-drop.
               </div>
             </CardContent>
           </Card>

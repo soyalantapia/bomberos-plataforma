@@ -74,9 +74,9 @@ const ITEMS_DEMO: ItemRendicion[] = [
   {
     id: 'r-5',
     categoria: 'Capacitación',
-    concepto: 'Curso rescate vehicular ANB · 12 personas',
+    concepto: 'Curso rescate vehicular · 12 personas',
     monto: 540_000,
-    comprobante: 'ANB Recibo 2026-1142',
+    comprobante: 'Recibo curso 2026-1142',
     validado: true,
   },
   {
@@ -121,18 +121,18 @@ export default function PresentarRendicionPage() {
       setComprobante(cod);
       toast.push({
         kind: 'success',
-        title: 'Rendición presentada al SNBV',
-        description: `Comprobante ${cod} · Firmada con audit log inmutable.`,
+        title: 'Rendición presentada al Sistema Nacional',
+        description: `Comprobante ${cod} · Firmada y guardada para siempre.`,
       });
     }, 2200);
   }
 
   const PASOS: Array<{ id: Paso; titulo: string; descripcion: string }> = [
-    { id: 1, titulo: 'Validación', descripcion: 'Confirmar items del período' },
+    { id: 1, titulo: 'Validación', descripcion: 'Confirmar ítems del período' },
     { id: 2, titulo: 'Comprobantes', descripcion: 'Adjuntar facturas y recibos' },
     { id: 3, titulo: 'Resumen', descripcion: 'Revisar totales y distribución' },
     { id: 4, titulo: 'Declaración', descripcion: 'Firma del jefe del cuartel' },
-    { id: 5, titulo: 'Presentar', descripcion: 'Subir al Módulo SNBV' },
+    { id: 5, titulo: 'Presentar', descripcion: 'Subir al sistema nacional' },
   ];
 
   return (
@@ -150,10 +150,10 @@ export default function PresentarRendicionPage() {
         objetivo="Vista Mando · Rendición al Fondo"
         titulo={
           presentada
-            ? 'Rendición presentada al SNBV'
+            ? 'Rendición presentada al sistema nacional'
             : `Presentar rendición · ${fmtMesPeriodo(rendicion?.periodo ?? mesActual())}`
         }
-        descripcion="Wizard guiado según Res. MS 272/2025. Genera el archivo exacto que pide el Módulo de Rendiciones Web del SNBV."
+        descripcion="Paso a paso según Res. MS 272/2025. Genera el archivo exacto que pide el sistema nacional de rendiciones."
         icono={<FileCheck2 size={26} />}
         variant={presentada ? 'success' : 'default'}
         meta={
@@ -241,11 +241,11 @@ export default function PresentarRendicionPage() {
             <Card>
               <CardContent className="p-5">
                 <h2 className="mb-3 text-lg font-bold text-slate-900">
-                  Confirmar items del período
+                  Confirmar ítems del período
                 </h2>
                 <p className="mb-4 text-sm text-slate-600">
-                  Revisá cada gasto. Tocá para marcar como validado. Los marcados como pendientes se
-                  excluyen de la rendición.
+                  Revisá cada gasto. Tocá para marcarlo como validado. Los pendientes se excluyen de
+                  la rendición.
                 </p>
                 <ul className="divide-y divide-slate-100">
                   {items.map((item) => (
@@ -305,8 +305,8 @@ export default function PresentarRendicionPage() {
                 <div>
                   <strong className="text-brand-900">Adjuntar comprobantes</strong>
                   <p className="text-brand-900/80 mt-0.5">
-                    Para cada item validado el SNBV exige factura A/B o recibo oficial. Los
-                    comprobantes se almacenan cifrados.
+                    Para cada ítem validado el sistema pide Factura A/B o recibo oficial. Los
+                    comprobantes se guardan cifrados.
                   </p>
                 </div>
               </CardContent>
@@ -401,7 +401,7 @@ export default function PresentarRendicionPage() {
                   <div className="bg-status-warn-bg/40 text-status-warn-fg flex items-start gap-2 rounded-lg p-3 text-xs">
                     <AlertCircle size={14} className="mt-0.5 shrink-0" />
                     <div>
-                      Los items sin validar ({items.filter((i) => !i.validado).length}) quedan en
+                      Los ítems sin validar ({items.filter((i) => !i.validado).length}) quedan en
                       borrador para el próximo período.
                     </div>
                   </div>
@@ -429,13 +429,13 @@ export default function PresentarRendicionPage() {
                 <div className="prose prose-sm max-w-none text-sm text-slate-700">
                   <p>
                     Quien suscribe, en su carácter de jefe del cuartel{' '}
-                    <strong>{cuartel?.nombre}</strong>, declara bajo juramento que los items y
+                    <strong>{cuartel?.nombre}</strong>, declara bajo juramento que los ítems y
                     comprobantes incluidos en esta rendición son veraces, corresponden al período{' '}
                     <strong>{fmtMesPeriodo(rendicion?.periodo ?? mesActual())}</strong> y se
                     enmarcan en la Ley 25.054 y su modificación 26.987.
                   </p>
                   <p>
-                    Toda diferencia material detectada por la auditoría del SNBV será
+                    Toda diferencia material detectada por la auditoría del sistema nacional será
                     responsabilidad del firmante.
                   </p>
                 </div>
@@ -449,7 +449,7 @@ export default function PresentarRendicionPage() {
                   />
                   <span className="text-sm text-slate-900">
                     <strong>Acepto la declaración jurada</strong> y firmo digitalmente con mi legajo{' '}
-                    {persona?.legajo}. Esta acción queda en el audit log inmutable.
+                    {persona?.legajo}. Esta acción queda guardada para siempre.
                   </span>
                 </label>
               </CardContent>
@@ -473,11 +473,11 @@ export default function PresentarRendicionPage() {
                     <Upload size={28} />
                   </div>
                   <h2 className="mt-3 text-xl font-bold text-slate-900">
-                    Listo para presentar al SNBV
+                    Listo para presentar al sistema nacional
                   </h2>
                   <p className="mt-1 text-sm text-slate-600">
                     Se generará el archivo XML según especificación Res. 272/2025 y se subirá al
-                    Módulo de Rendiciones Web. Recibirás el comprobante en segundos.
+                    sistema nacional de rendiciones. Recibirás el comprobante en segundos.
                   </p>
                   <Button
                     intent="success"
@@ -531,10 +531,10 @@ export default function PresentarRendicionPage() {
 
                   <div className="bg-brand-50 border-brand-100 mt-5 rounded-lg border p-3 text-left text-xs text-slate-700">
                     <div className="text-brand-900 flex items-center gap-1 font-semibold">
-                      <ShieldCheck size={12} /> Firma audit log
+                      <ShieldCheck size={12} /> Comprobante de firma
                     </div>
                     <div className="mt-1 break-all font-mono text-[10px] text-slate-600">
-                      sha256:8f3a9c1b2d4e5f6789abcdef0123456789abcdef0123456789abcdef01234567
+                      {comprobante}
                     </div>
                   </div>
                 </CardContent>

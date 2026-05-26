@@ -23,16 +23,16 @@ const moviles: MovilStock[] = [
       { nombre: 'Mangueras 70 mm', cantidad: 4, estado: 'ok' },
       { nombre: 'Línea de ataque', cantidad: 2, estado: 'ok', nota: 'Revisada 20/5' },
       { nombre: 'Lanzas regulables', cantidad: 3, estado: 'ok' },
-      { nombre: 'Tubo SCBA', cantidad: 6, estado: 'ok' },
+      { nombre: 'Equipo de aire (tubo)', cantidad: 6, estado: 'ok' },
     ],
   },
   {
     codigo: 'BV-5',
     tipo: 'Rescate',
     items: [
-      { nombre: 'Pinzas hidráulicas', cantidad: 1, estado: 'warn', nota: 'Mant. 28/5' },
+      { nombre: 'Pinzas hidráulicas', cantidad: 1, estado: 'warn', nota: 'Mantenimiento 28/5' },
       { nombre: 'Cojín de elevación', cantidad: 2, estado: 'ok' },
-      { nombre: 'Cilindros aire 30 min', cantidad: 4, estado: 'ok' },
+      { nombre: 'Cilindros de aire 30 min', cantidad: 4, estado: 'ok' },
     ],
   },
   {
@@ -56,9 +56,15 @@ interface PanolItem {
 }
 
 const panol: PanolItem[] = [
-  { nombre: 'EPP completo', cantidad: 18, capacidad: 20, icono: <Shirt size={20} />, intent: 'ok' },
   {
-    nombre: 'Botellas SCBA cargadas',
+    nombre: 'EPP completo (uniforme de bombero)',
+    cantidad: 18,
+    capacidad: 20,
+    icono: <Shirt size={20} />,
+    intent: 'ok',
+  },
+  {
+    nombre: 'Botellas de aire cargadas',
     cantidad: 12,
     capacidad: 12,
     icono: <Boxes size={20} />,

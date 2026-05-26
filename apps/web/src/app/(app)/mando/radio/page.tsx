@@ -309,9 +309,9 @@ export default function RadioPage() {
           <div className="flex-1 text-sm">
             <div className="text-brand-900 font-semibold">Análisis IA del incidente</div>
             <p className="text-brand-900/80 mt-0.5">
-              Whisper transcribió 8 transmisiones (108 segundos en total). Claude detectó: tiempo de
+              La IA transcribió 8 transmisiones (108 segundos en total) y detectó: tiempo de
               respuesta 4 min ✓, comunicación clara, pedido de refuerzo apropiado, cierre
-              coordinado. <strong>Sin anomalías comunicacionales.</strong>
+              coordinado. <strong>Sin problemas en las comunicaciones.</strong>
             </p>
           </div>
         </CardContent>
@@ -322,9 +322,9 @@ export default function RadioPage() {
         <CardContent className="flex items-start gap-3 p-4 text-sm text-slate-600">
           <Signal size={18} className="mt-0.5 shrink-0 text-slate-400" />
           <div>
-            <strong className="text-slate-900">Retención legal:</strong> los audios crudos se
-            mantienen 90 días, las transcripciones 7 años. Cifrado AES-256 en reposo. Acceso sólo
-            para auditorías judiciales y revisiones internas con doble firma.
+            <strong className="text-slate-900">Cuánto tiempo se guarda:</strong> los audios se
+            guardan 90 días y las transcripciones 7 años. Están encriptados. Solo se accede a ellos
+            por orden judicial o con doble firma del cuartel.
           </div>
         </CardContent>
       </Card>

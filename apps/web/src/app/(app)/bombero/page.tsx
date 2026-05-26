@@ -113,7 +113,7 @@ const AVISOS_FULL = [
   },
   {
     emoji: '🎓',
-    titulo: 'Reunión de instrucción cadetes',
+    titulo: 'Reunión de cadetes',
     cuerpo: 'Sábado 25/5 · 17 hs · Aula 2.',
     cuando: 'Hace 3 días',
     prioridad: 'normal',
@@ -310,14 +310,14 @@ export default function BomberoInicio() {
           {/* Acceso rápido a herramientas nuevas */}
           <FeaturesGrid
             titulo="Tus nuevas herramientas"
-            descripcion="Faro 2026 · sumá tu información para mejorar el cuartel"
+            descripcion="Sumá tu información para mejorar el cuartel"
             columnas={2}
             cards={[
               {
                 href: '/bombero/equipo',
                 icon: <Shield size={18} />,
-                titulo: 'Mi equipo (EPP)',
-                descripcion: '8 items con vencimientos NFPA 1851 + QR',
+                titulo: 'Mi equipo (uniforme)',
+                descripcion: '8 ítems con vencimientos + QR',
                 color: 'bg-fire-700',
                 nuevo: true,
               },
@@ -325,7 +325,7 @@ export default function BomberoInicio() {
                 href: '/bombero/disponibilidad',
                 icon: <Calendar size={18} />,
                 titulo: 'Disponibilidad semanal',
-                descripcion: 'Declarás cuándo estás · IA cubre gaps',
+                descripcion: 'Declarás cuándo estás · cubre los huecos',
                 color: 'bg-brand-600',
                 nuevo: true,
               },

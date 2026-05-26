@@ -93,6 +93,17 @@ export function NuevoCursoDialog({ open, onClose, onCreated }: Props) {
       onClose={close}
       title="Nuevo curso"
       description="Programá una capacitación interna o externa"
+      size="lg"
+      footer={
+        <div className="flex justify-end gap-2">
+          <Button intent="ghost" onClick={close}>
+            Cancelar
+          </Button>
+          <Button intent="primary" onClick={guardar}>
+            <GraduationCap size={14} /> Crear curso
+          </Button>
+        </div>
+      }
     >
       <div className="space-y-3">
         <div>
@@ -213,15 +224,6 @@ export function NuevoCursoDialog({ open, onClose, onCreated }: Props) {
           <strong>Próximo paso:</strong> al crear, la app notifica por broadcast a quienes puedan
           inscribirse (según rango + skill matrix).
         </div>
-      </div>
-
-      <div className="mt-5 flex justify-end gap-2 border-t border-slate-100 pt-4">
-        <Button intent="ghost" onClick={close}>
-          Cancelar
-        </Button>
-        <Button intent="primary" onClick={guardar}>
-          <GraduationCap size={14} /> Crear curso
-        </Button>
       </div>
     </Dialog>
   );

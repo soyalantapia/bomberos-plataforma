@@ -124,9 +124,9 @@ export default function BroadcastPage() {
   return (
     <div className="mx-auto max-w-6xl space-y-5">
       <PageHero
-        objetivo="Vista Administrativo · Broadcast"
+        objetivo="Administrativo · Avisos masivos"
         titulo="Enviar aviso al cuartel"
-        descripcion="Composer rich-text con audiencias segmentadas. Programable. Read receipts en tiempo real."
+        descripcion="Editor con formato, eligiendo a quién le llega. Podés programarlo. Ves quién lo leyó en tiempo real."
         icono={<Megaphone size={26} />}
         meta={
           <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
@@ -145,8 +145,7 @@ export default function BroadcastPage() {
             {/* Audiencia */}
             <div>
               <label className="mb-2 block text-xs font-bold uppercase text-slate-500">
-                <Users size={11} className="mr-1 inline" />
-                Audiencia
+                <Users size={11} className="mr-1 inline" />A quién le llega
               </label>
               <div className="flex flex-wrap gap-2">
                 {AUDIENCIAS.map((a) => (
@@ -250,7 +249,7 @@ export default function BroadcastPage() {
                 <p className="text-status-risk-fg mt-1 text-xs font-medium">{errors.cuerpo}</p>
               ) : (
                 <p className="mt-1 text-xs text-slate-500">
-                  {cuerpo.length} caracteres · Markdown soportado · mín. 20
+                  {cuerpo.length} caracteres · admite texto formateado · mín. 20
                 </p>
               )}
             </div>
@@ -294,7 +293,7 @@ export default function BroadcastPage() {
         <div className="space-y-3">
           <Card>
             <CardContent className="p-4">
-              <div className="mb-2 text-xs font-bold uppercase text-slate-500">Preview</div>
+              <div className="mb-2 text-xs font-bold uppercase text-slate-500">Vista previa</div>
               <div className="rounded-lg bg-slate-50 p-3">
                 <div className="flex items-center gap-1 text-xs text-slate-500">
                   <Megaphone size={10} />
@@ -342,7 +341,7 @@ export default function BroadcastPage() {
       <Card>
         <CardContent className="p-0">
           <div className="border-b border-slate-100 px-5 py-3">
-            <h3 className="font-bold text-slate-900">Broadcasts recientes</h3>
+            <h3 className="font-bold text-slate-900">Avisos enviados recientes</h3>
           </div>
           <ul className="divide-y divide-slate-100">
             {RECIENTES.map((b, idx) => {

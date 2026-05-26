@@ -431,12 +431,12 @@ export default function HidrantesPage() {
                               e.stopPropagation();
                               toast.push({
                                 kind: 'success',
-                                title: `${h.codigo} testeado`,
+                                title: `${h.codigo} probado`,
                                 description: `${h.caudal} L/m · ${h.presion} bar registrado`,
                               });
                             }}
                           >
-                            <CheckCircle2 size={12} /> Marcar tested
+                            <CheckCircle2 size={12} /> Marcar como probado
                           </Button>
                         </div>
                       </div>
@@ -453,7 +453,7 @@ export default function HidrantesPage() {
       <Card>
         <CardContent className="p-4">
           <div className="mb-2 text-xs font-semibold uppercase text-slate-500">
-            Código de colores (NFPA 291)
+            Código de colores por caudal
           </div>
           <div className="flex flex-wrap gap-3 text-xs">
             <div className="flex items-center gap-1.5">

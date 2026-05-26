@@ -80,8 +80,8 @@ export default function IntegracionesFed() {
     <div className="mx-auto max-w-6xl space-y-5">
       <PageHero
         objetivo="Federación · Integraciones"
-        titulo="Conectar Faro a los sistemas que ya existen"
-        descripcion="Identidad, salud ocupacional y coordinación operativa. Diseñado para no duplicar carga y mantener trazabilidad."
+        titulo="Conectar Faro con los sistemas que ya existen"
+        descripcion="Identidad, salud laboral y coordinación operativa. Pensado para no duplicar carga y que todo quede registrado."
         icono={<Cable size={26} />}
         meta={
           <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
@@ -95,14 +95,19 @@ export default function IntegracionesFed() {
             <Kpi
               label="Activos"
               value={0}
-              hint="conexión productiva"
+              hint="en producción"
               intent="neutral"
               icon={<ServerCog size={16} />}
             />
-            <Kpi label="Webhooks" value={0} hint="suscriptos" icon={<Webhook size={16} />} />
             <Kpi
-              label="Cifrado API"
-              value="mTLS"
+              label="Avisos automáticos"
+              value={0}
+              hint="suscriptos"
+              icon={<Webhook size={16} />}
+            />
+            <Kpi
+              label="Conexión segura"
+              value="Sí"
               hint="cliente + servidor"
               intent="ok"
               icon={<FileLock2 size={16} />}
@@ -167,15 +172,15 @@ export default function IntegracionesFed() {
 
           <div className="mt-5 grid gap-2 text-xs sm:grid-cols-3">
             <div className="rounded-lg bg-white p-2.5 ring-1 ring-slate-200">
-              <div className="font-bold text-slate-900">REST + JSON</div>
-              <div className="mt-0.5 text-slate-600">APIs versionadas (v1)</div>
+              <div className="font-bold text-slate-900">Conexión estándar</div>
+              <div className="mt-0.5 text-slate-600">Versionada (v1)</div>
             </div>
             <div className="rounded-lg bg-white p-2.5 ring-1 ring-slate-200">
-              <div className="font-bold text-slate-900">Webhooks de evento</div>
-              <div className="mt-0.5 text-slate-600">Push hacia terceros suscriptos</div>
+              <div className="font-bold text-slate-900">Avisos automáticos</div>
+              <div className="mt-0.5 text-slate-600">Hacia los sistemas suscriptos</div>
             </div>
             <div className="rounded-lg bg-white p-2.5 ring-1 ring-slate-200">
-              <div className="font-bold text-slate-900">Audit completo</div>
+              <div className="font-bold text-slate-900">Todo queda registrado</div>
               <div className="mt-0.5 text-slate-600">Cada llamada queda firmada</div>
             </div>
           </div>
@@ -242,9 +247,9 @@ export default function IntegracionesFed() {
         <CardContent className="flex items-start gap-3 p-4 text-sm text-slate-700">
           <Sparkles size={18} className="mt-0.5 shrink-0 text-slate-500" />
           <div>
-            <strong className="text-slate-900">Modelo de cobro de API</strong> · Las integraciones
-            consumen llamadas. Plan inicial: gratis hasta 1.000 llamadas/mes por organismo, después
-            tarifa nacional. Cada organismo recibe sus propias credenciales y dashboard de uso.
+            <strong className="text-slate-900">Modelo de cobro</strong> · Las integraciones consumen
+            llamadas. Plan inicial: gratis hasta 1.000 llamadas por mes por organismo, después
+            tarifa nacional. Cada organismo recibe sus propias credenciales y un panel de uso.
           </div>
         </CardContent>
       </Card>
@@ -252,13 +257,13 @@ export default function IntegracionesFed() {
       <Card>
         <CardContent className="p-5">
           <h3 className="mb-3 flex items-center gap-2 font-bold text-slate-900">
-            <Webhook size={18} className="text-slate-700" /> Logs de llamadas API
+            <Webhook size={18} className="text-slate-700" /> Registro de llamadas
           </h3>
           <div className="rounded-lg border border-dashed border-slate-300 bg-slate-50 p-8 text-center">
             <Clock size={28} className="mx-auto text-slate-400" />
             <p className="mt-2 text-sm text-slate-600">
-              Sin actividad todavía. Cuando una integración esté activa, las llamadas API aparecen
-              acá con su latencia, código de respuesta y carga útil.
+              Sin actividad todavía. Cuando una integración esté activa, las llamadas aparecen acá
+              con su tiempo de respuesta y resultado.
             </p>
           </div>
         </CardContent>

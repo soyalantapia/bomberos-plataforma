@@ -6,3 +6,4 @@ export * from './asistencias';
 export * from './rendicion';
 export * from './alertas';
 export * from './notificaciones';
+export * from './finanzas';

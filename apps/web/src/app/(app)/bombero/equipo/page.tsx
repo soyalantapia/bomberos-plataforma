@@ -37,12 +37,12 @@ const TIPOS_EPP: Record<
   { label: string; icon: React.ReactNode; color: string }
 > = {
   casco: { label: 'Casco', icon: <Shield size={16} />, color: 'bg-fire-700' },
-  chaqueta: { label: 'Chaqueta turnout', icon: <Shield size={16} />, color: 'bg-fire-600' },
-  pantalon: { label: 'Pantalón turnout', icon: <Shield size={16} />, color: 'bg-fire-600' },
-  botas: { label: 'Botas estructurales', icon: <Shield size={16} />, color: 'bg-slate-700' },
+  chaqueta: { label: 'Chaqueta de bombero', icon: <Shield size={16} />, color: 'bg-fire-600' },
+  pantalon: { label: 'Pantalón de bombero', icon: <Shield size={16} />, color: 'bg-fire-600' },
+  botas: { label: 'Botas para incendios', icon: <Shield size={16} />, color: 'bg-slate-700' },
   guantes: { label: 'Guantes', icon: <Shield size={16} />, color: 'bg-slate-600' },
-  capucha: { label: 'Capucha Nomex', icon: <Shield size={16} />, color: 'bg-slate-500' },
-  scba: { label: 'SCBA / ERA', icon: <Wind size={16} />, color: 'bg-brand-700' },
+  capucha: { label: 'Capucha ignífuga', icon: <Shield size={16} />, color: 'bg-slate-500' },
+  scba: { label: 'Equipo de aire (ERA)', icon: <Wind size={16} />, color: 'bg-brand-700' },
   mascara: { label: 'Máscara facial', icon: <Wind size={16} />, color: 'bg-brand-600' },
 };
 
@@ -161,9 +161,9 @@ export default function EquipoPage() {
   return (
     <div className="mx-auto max-w-5xl space-y-5">
       <PageHero
-        objetivo="Vista Bombero · Tu equipo"
-        titulo="Tu EPP individual"
-        descripcion="8 items con vencimientos NFPA 1851 (10 años máximo). Cada exposición a hot zone queda registrada. QR único por pieza."
+        objetivo="Bombero · Tu equipo"
+        titulo="Tu uniforme individual"
+        descripcion="8 ítems con vencimientos (10 años máximo). Cada exposición a fuego queda registrada. QR único por pieza."
         icono={<Shield size={26} />}
         meta={
           <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
@@ -250,7 +250,9 @@ export default function EquipoPage() {
                             ? 'Vigente'
                             : item.estado === 'por_vencer'
                               ? 'Por vencer'
-                              : 'Vencido'}
+                              : item.estado === 'fuera_servicio'
+                                ? 'Fuera de servicio'
+                                : 'Vencido'}
                         </Badge>
                       </div>
                       <div className="mt-0.5 text-xs text-slate-600">
@@ -322,8 +324,8 @@ export default function EquipoPage() {
                                 {item.qrCode}
                               </div>
                               <div className="mt-1 text-slate-600">
-                                Escanear al entrar/salir de hot zone para registrar exposición
-                                automática.
+                                Escaneá al entrar y salir del fuego para registrar la exposición de
+                                forma automática.
                               </div>
                             </div>
                           </div>
@@ -344,11 +346,11 @@ export default function EquipoPage() {
             <ShieldCheck size={18} />
           </div>
           <div className="text-sm">
-            <strong className="text-brand-900">NFPA 1851 · Vida útil 10 años</strong>
+            <strong className="text-brand-900">Vida útil del traje: 10 años</strong>
             <p className="text-brand-900/80 mt-0.5">
-              Esta norma exige reemplazo del traje turnout cada 10 años desde su fabricación. Faro
-              genera alertas con 60 días de anticipación. El exposure log opcional sirve para
-              auditorías post-incidente y reclamos a aseguradoras.
+              El traje de bombero se reemplaza cada 10 años desde su fabricación. Te avisamos con 60
+              días de anticipación. El registro de exposiciones sirve para auditorías después de un
+              siniestro y reclamos a aseguradoras.
             </p>
           </div>
         </CardContent>

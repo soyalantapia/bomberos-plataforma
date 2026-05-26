@@ -93,7 +93,7 @@ export default function MiPerfilPage() {
     toast.push({
       kind: 'info',
       title: 'Sesión cerrada',
-      description: 'La sesión remota ya no puede acceder. Queda en audit log.',
+      description: 'La sesión remota ya no puede acceder. Queda registrado.',
     });
   }
 
@@ -175,8 +175,11 @@ export default function MiPerfilPage() {
             <CardContent className="flex items-start gap-3 p-4 text-sm text-slate-600">
               <ShieldCheck size={18} className="mt-0.5 shrink-0 text-slate-400" />
               <div>
-                <strong className="text-slate-900">Cambios validados por OTP</strong>. Tras
-                modificar email o teléfono recibís un código al canal actual para confirmar.
+                <strong className="text-slate-900">
+                  Cambios confirmados con código al celular
+                </strong>
+                . Tras modificar email o teléfono recibís un código en el canal actual para
+                confirmar.
               </div>
             </CardContent>
           </Card>
@@ -232,9 +235,9 @@ export default function MiPerfilPage() {
 
               <div className="bg-brand-50 text-brand-900 mt-4 rounded-md p-3 text-sm">
                 <strong>Tip de seguridad:</strong> revisá esta lista periódicamente. Cualquier
-                dispositivo desconocido podés cerrarlo desde acá y queda registrado en{' '}
+                dispositivo desconocido podés cerrarlo desde acá y queda en el{' '}
                 <a href="/gobierno/audit" className="hover:text-brand-700 font-medium">
-                  Audit log
+                  Registro permanente
                 </a>
                 .
               </div>
@@ -253,7 +256,7 @@ export default function MiPerfilPage() {
                   <thead>
                     <tr className="bg-slate-50 text-slate-600">
                       <th className="px-3 py-2 text-left">Tipo</th>
-                      <th className="px-3 py-2 text-center">Push</th>
+                      <th className="px-3 py-2 text-center">Notificación</th>
                       <th className="px-3 py-2 text-center">Email</th>
                       <th className="px-3 py-2 text-center">WhatsApp</th>
                     </tr>
@@ -289,8 +292,8 @@ export default function MiPerfilPage() {
                 </table>
               </div>
               <p className="mt-3 text-xs text-slate-500">
-                Push siempre va al dispositivo donde tenés sesión activa. Mail y WhatsApp son opt-in
-                por tipo.
+                Las notificaciones siempre van al dispositivo donde tenés sesión activa. Email y
+                WhatsApp los activás por cada tipo.
               </p>
             </CardContent>
           </Card>
@@ -307,9 +310,11 @@ export default function MiPerfilPage() {
                 <div className="space-y-3">
                   <div className="flex items-center justify-between rounded-lg border border-slate-200 p-3">
                     <div>
-                      <div className="font-medium text-slate-900">Biometría en mobile</div>
+                      <div className="font-medium text-slate-900">
+                        Huella o reconocimiento facial
+                      </div>
                       <div className="mt-0.5 text-xs text-slate-600">
-                        Huella / Face ID después del primer login OTP
+                        Después del primer ingreso con código al celular
                       </div>
                     </div>
                     <button
@@ -334,7 +339,7 @@ export default function MiPerfilPage() {
                     onClick={() =>
                       toast.push({
                         kind: 'info',
-                        title: 'OTP de prueba enviado',
+                        title: 'Código de prueba enviado',
                         description: 'Revisá tu canal configurado.',
                       })
                     }
@@ -344,7 +349,7 @@ export default function MiPerfilPage() {
                       <KeyRound size={16} className="text-slate-700" />
                     </div>
                     <div className="min-w-0 flex-1">
-                      <div className="font-medium text-slate-900">Probar OTP</div>
+                      <div className="font-medium text-slate-900">Probar envío de código</div>
                       <div className="mt-0.5 text-xs text-slate-600">
                         Verificá que tu canal recibe los códigos
                       </div>
@@ -386,7 +391,7 @@ export default function MiPerfilPage() {
                 </h3>
                 <p className="text-sm text-slate-700">
                   Pedí exportar todo lo que Faro tiene sobre vos (Ley 25.326) o solicitá la baja de
-                  tu cuenta. Ambos requieren OTP y quedan en audit log.
+                  tu cuenta. Ambos requieren código al celular y quedan registrados.
                 </p>
                 <div className="mt-3 flex flex-wrap gap-2">
                   <Button
@@ -409,7 +414,7 @@ export default function MiPerfilPage() {
                       toast.push({
                         kind: 'info',
                         title: 'Solicitud iniciada',
-                        description: 'Confirmá con OTP.',
+                        description: 'Confirmá con el código que recibiste al celular.',
                       })
                     }
                   >

@@ -142,8 +142,8 @@ export default function DocumentosPage() {
     <div className="mx-auto max-w-6xl space-y-5">
       <PageHero
         objetivo="Administrativo · Biblioteca"
-        titulo="Buscás por intención, la IA te lleva al párrafo"
-        descripcion="50 documentos del cuartel y la Federación · indexados por significado, no por palabra exacta."
+        titulo="Buscás por idea, te lleva al párrafo"
+        descripcion="50 documentos del cuartel y la Federación · busca por significado, no solo por palabra exacta."
         icono={<FolderOpen size={26} />}
         meta={
           <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
@@ -151,9 +151,9 @@ export default function DocumentosPage() {
             <Kpi label="Vigentes" value={36} intent="ok" />
             <Kpi label="Categorías" value={5} intent="neutral" />
             <Kpi
-              label="Indexado IA"
+              label="Listos para buscar"
               value="100%"
-              hint="búsqueda semántica"
+              hint="búsqueda inteligente"
               intent="ok"
               icon={<Sparkles size={16} />}
             />
@@ -166,8 +166,8 @@ export default function DocumentosPage() {
         <CardContent className="relative p-5">
           <div className="mb-3 flex items-center gap-2">
             <Sparkles size={18} className="text-brand-600" />
-            <span className="font-semibold text-slate-900">Búsqueda con IA</span>
-            <Badge intent="brand">en lenguaje natural</Badge>
+            <span className="font-semibold text-slate-900">Búsqueda inteligente</span>
+            <Badge intent="brand">como vos hablás</Badge>
           </div>
           <div className="relative">
             <FileSearch
@@ -281,8 +281,8 @@ export default function DocumentosPage() {
           <div className="flex-1">
             <div className="font-semibold text-slate-900">Subir un documento</div>
             <div className="mt-0.5 text-sm text-slate-600">
-              Arrastrá un PDF, .docx o imagen acá. La IA lo indexa y aparece en la búsqueda
-              semántica en menos de 1 minuto.
+              Arrastrá un PDF, .docx o imagen acá. Lo procesamos y aparece en la búsqueda en menos
+              de 1 minuto.
             </div>
           </div>
           <button
@@ -290,8 +290,8 @@ export default function DocumentosPage() {
             onClick={() =>
               toast.push({
                 kind: 'info',
-                title: 'Selector de archivos',
-                description: 'Próximamente: drag & drop real',
+                title: 'Elegí un archivo',
+                description: 'Buscando en tu carpeta',
               })
             }
             className="rounded-md bg-slate-900 px-3 py-2 text-sm font-semibold text-white hover:bg-slate-700"

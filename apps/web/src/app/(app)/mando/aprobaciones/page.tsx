@@ -4,7 +4,6 @@ import {
   Calendar,
   Check,
   ClipboardCheck,
-  GraduationCap,
   ShieldAlert,
   ShieldCheck,
   TrendingUp,
@@ -189,6 +188,23 @@ export default function AprobacionesPage() {
   const toast = useToast();
 
   function decidir(id: string, accion: 'aprobar' | 'rechazar') {
+    const item = items.find((s) => s.id === id);
+    // Para sanciones o rechazos pedimos un motivo
+    if (item?.categoria === 'sancion' || accion === 'rechazar') {
+      const motivo = window.prompt(
+        accion === 'aprobar'
+          ? '¿Por qué aprobás esta sanción? (queda registrado)'
+          : '¿Por qué rechazás esta solicitud? (queda registrado)',
+      );
+      if (!motivo || motivo.trim().length < 4) {
+        toast.push({
+          kind: 'warn',
+          title: 'Necesitamos un motivo',
+          description: 'Escribí al menos un par de palabras.',
+        });
+        return;
+      }
+    }
     setItems((arr) =>
       arr.map((s) =>
         s.id === id ? { ...s, estado: accion === 'aprobar' ? 'aprobada' : 'rechazada' } : s,
@@ -197,7 +213,7 @@ export default function AprobacionesPage() {
     toast.push({
       kind: accion === 'aprobar' ? 'success' : 'info',
       title: accion === 'aprobar' ? 'Aprobada' : 'Rechazada',
-      description: 'Quedó en el audit log con tu firma.',
+      description: 'Queda registrada con tu firma.',
     });
   }
 
@@ -236,7 +252,7 @@ export default function AprobacionesPage() {
             ? 'Nada para decidir hoy'
             : `${pendientesTotal} ${pendientesTotal === 1 ? 'decisión espera' : 'decisiones esperan'} tu firma`
         }
-        descripcion="Cada decisión queda firmada en audit log con tu nombre, fecha y motivo. Doble check obligatorio en sanciones."
+        descripcion="Cada decisión queda firmada con tu nombre, fecha y motivo. Doble revisión obligatoria en sanciones."
         icono={<ClipboardCheck size={26} />}
         variant={altaTotal > 0 ? 'critical' : pendientesTotal === 0 ? 'success' : 'default'}
         meta={
@@ -287,11 +303,11 @@ export default function AprobacionesPage() {
                 <ShieldAlert size={18} className="text-status-risk-fg mt-0.5 shrink-0" />
                 <div>
                   <strong className="text-status-risk-fg">
-                    Las sanciones requieren doble validación
+                    Las sanciones requieren doble revisión
                   </strong>
                   <p className="text-status-risk-fg/80 mt-0.5">
                     Además de tu firma, el Comandante debe aprobar antes de que se aplique. Las
-                    decisiones quedan en audit log permanente.
+                    decisiones quedan registradas de forma permanente.
                   </p>
                 </div>
               </CardContent>
@@ -398,7 +414,7 @@ export default function AprobacionesPage() {
 
                           {estado !== 'pendiente' && (
                             <div className="mt-2 flex items-center gap-1.5 text-[11px] text-slate-500">
-                              <ShieldCheck size={10} className={col.accent} /> Firmado en audit log
+                              <ShieldCheck size={10} className={col.accent} /> Firmada y registrada
                             </div>
                           )}
                         </CardContent>
@@ -414,24 +430,11 @@ export default function AprobacionesPage() {
 
       <Card className="border-slate-200 bg-slate-50">
         <CardContent className="flex items-start gap-3 p-4 text-sm text-slate-700">
-          <Badge intent="brand">Doble validación</Badge>
+          <Badge intent="brand">Doble revisión</Badge>
           <div>
-            Toda aprobación queda con <strong>tu nombre</strong>, fecha exacta y motivo opcional. Si
-            rechazás, podés escribir el motivo y la persona lo recibe por notificación. Las
-            sanciones requieren además aprobación del Comandante.
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Pista educacional */}
-      <Card className="bg-brand-50/60 border-brand-100">
-        <CardContent className="flex items-start gap-3 p-4 text-sm text-slate-700">
-          <GraduationCap size={18} className="text-brand-700 mt-0.5 shrink-0" />
-          <div>
-            <strong className="text-brand-900">Tip:</strong> filtrá por categoría para enfocarte en
-            un tipo de decisión, o usá la pestaña{' '}
-            <span className="text-brand-700 font-medium">Todas</span> para resolver lo más urgente
-            primero. Las sanciones siempre aparecen en su propia columna por trazabilidad.
+            Toda aprobación queda con <strong>tu nombre</strong>, fecha exacta y motivo. Si
+            rechazás, escribís el motivo y la persona lo recibe por notificación. Las sanciones
+            requieren además aprobación del Comandante.
           </div>
         </CardContent>
       </Card>

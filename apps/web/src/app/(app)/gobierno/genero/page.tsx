@@ -53,7 +53,7 @@ export default function GeneroPage() {
       <PageHero
         objetivo="Gobierno interno · Género"
         titulo="Canal confidencial reforzado"
-        descripcion="Acceso aún más restringido que Ética. Identidad cifrada con clave de la denunciante."
+        descripcion="Acceso aún más restringido que Ética. La identidad está encriptada con la clave de la denunciante."
         icono={<Heart size={26} />}
         variant="critical"
         meta={
@@ -61,8 +61,8 @@ export default function GeneroPage() {
             <Kpi label="Activas" value={0} hint="sin novedades" intent="ok" />
             <Kpi label="Cerradas año" value={1} hint="con resolución" />
             <Kpi
-              label="Cifrado"
-              value="E2E"
+              label="Encriptación"
+              value="Punta a punta"
               hint="identidad protegida"
               intent="ok"
               icon={<FileLock2 size={16} />}
@@ -83,11 +83,11 @@ export default function GeneroPage() {
           <div className="mb-3 flex items-center gap-2">
             <ShieldCheck size={18} className="text-rose-700" />
             <span className="font-bold text-rose-900">Canal confidencial</span>
-            <Badge intent="risk">E2E</Badge>
+            <Badge intent="risk">Encriptado punta a punta</Badge>
           </div>
           <p className="text-sm text-slate-700">
-            Las denuncias por género tienen el nivel más alto de protección de Faro. La identidad
-            del denunciante se cifra con su propia clave. Solo la referente de género del cuartel
+            Las denuncias por género tienen el nivel más alto de protección. La identidad de la
+            denunciante se encripta con su propia clave. Solo la referente de género del cuartel
             (Florencia Salinas) y la Coordinadora Regional (Patricia Morales) pueden abrir un
             expediente.
           </p>
@@ -98,7 +98,7 @@ export default function GeneroPage() {
                 toast.push({
                   kind: 'info',
                   title: 'Iniciando denuncia confidencial',
-                  description: 'Se cifra con tu clave personal antes de subir.',
+                  description: 'Se encripta con tu clave personal antes de subir.',
                 })
               }
               className="rounded-md bg-rose-700 px-3 py-2 text-sm font-semibold text-white hover:bg-rose-800"
@@ -111,7 +111,8 @@ export default function GeneroPage() {
                 toast.push({
                   kind: 'info',
                   title: 'Anonimato parcial',
-                  description: 'Tus datos quedan cifrados; solo se libera con tu OTP.',
+                  description:
+                    'Tus datos quedan encriptados; solo se liberan con un código al celular.',
                 })
               }
               className="rounded-md border border-rose-200 bg-white px-3 py-2 text-sm font-medium text-rose-700 hover:bg-rose-50"

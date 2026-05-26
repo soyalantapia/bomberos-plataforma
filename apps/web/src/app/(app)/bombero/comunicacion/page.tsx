@@ -4,7 +4,6 @@ import {
   Heart,
   Megaphone,
   MessageCircle,
-  Paperclip,
   Send,
   ShieldCheck,
   Smile,
@@ -479,7 +478,7 @@ export default function ComunicacionPage() {
               <div className="min-w-0 flex-1">
                 <div className="font-bold text-slate-900">{chatActivo.nombre}</div>
                 <div className="text-xs text-slate-500">
-                  {chatActivo.integrantes} integrantes · cifrado punto a punto
+                  {chatActivo.integrantes} integrantes · encriptado punta a punta
                 </div>
               </div>
               <Badge intent="brand">{chatActivo.tipo}</Badge>
@@ -561,20 +560,6 @@ export default function ComunicacionPage() {
               }}
               className="flex items-center gap-2 border-t border-slate-100 bg-slate-50 p-3"
             >
-              <button
-                type="button"
-                onClick={() =>
-                  toast.push({
-                    kind: 'info',
-                    title: 'Próximamente',
-                    description: 'Adjuntos en mensajes.',
-                  })
-                }
-                className="grid h-10 w-10 shrink-0 place-items-center rounded-full text-slate-500 hover:bg-white hover:text-slate-700"
-                aria-label="Adjuntar"
-              >
-                <Paperclip size={18} />
-              </button>
               <input
                 value={draft}
                 onChange={(e) => setDraft(e.target.value)}

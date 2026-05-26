@@ -68,16 +68,16 @@ export default function CumplimientoFed() {
             <Sparkles size={20} />
           </div>
           <div className="flex-1">
-            <div className="text-brand-900 font-semibold">Copiloto regional (IA)</div>
+            <div className="text-brand-900 font-semibold">Sugerencia regional</div>
             <p className="text-brand-900/80 text-sm">
               {enRiesgo > 0 ? (
                 <>
                   Priorizá <strong>{ranking[0]?.nombre}</strong> ({ranking[0]?.porcentajeRendicion}
-                  %) — al ritmo actual no llega al plazo. Sugerencia: reunión virtual esta semana +
-                  soporte de Federación para completar firmas y nómina.
+                  %) — al ritmo actual no llega al plazo. Sugerencia: reunión virtual esta semana
+                  más soporte de Federación para completar firmas y nómina.
                 </>
               ) : (
-                'Todos los cuarteles van encaminados. Mantené el monitoreo y enviá recordatorios a los amarillos antes del 5/6.'
+                'Todos los cuarteles van encaminados. Mantené el seguimiento y enviá recordatorios a los amarillos antes del 5/6.'
               )}
             </p>
           </div>
@@ -100,7 +100,7 @@ export default function CumplimientoFed() {
                 fecha: '01 jun',
                 titulo: 'Recordatorio automático',
                 estado: 'futuro',
-                texto: 'Email + WhatsApp + push a los cuarteles atrasados',
+                texto: 'Email + WhatsApp + notificación a los cuarteles atrasados',
               },
               {
                 fecha: '05 jun',
@@ -210,7 +210,8 @@ export default function CumplimientoFed() {
                             toast.push({
                               kind: 'info',
                               title: `Recordatorio enviado a ${c.nombre}`,
-                              description: 'Email + WhatsApp + push al Mando y al Administrativo.',
+                              description:
+                                'Email + WhatsApp + notificación al Mando y al Administrativo.',
                             })
                           }
                           className="inline-flex items-center gap-1 rounded-md border border-slate-200 bg-white px-2.5 py-1.5 text-xs font-medium text-slate-700 hover:border-slate-300"

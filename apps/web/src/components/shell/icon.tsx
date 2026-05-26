@@ -42,6 +42,15 @@ import {
   Database,
   Map,
   Hash,
+  // Iconos módulo Finanzas
+  PiggyBank,
+  ArrowLeftRight,
+  Landmark,
+  BadgeDollarSign,
+  ListTree,
+  Target,
+  Receipt,
+  FileSpreadsheet,
   type LucideIcon,
 } from 'lucide-react';
 
@@ -87,6 +96,15 @@ const iconMap: Record<string, LucideIcon> = {
   database: Database,
   map: Map,
   hash: Hash,
+  // Finanzas
+  'piggy-bank': PiggyBank,
+  'arrow-left-right': ArrowLeftRight,
+  landmark: Landmark,
+  'badge-dollar-sign': BadgeDollarSign,
+  'list-tree': ListTree,
+  target: Target,
+  receipt: Receipt,
+  'file-spreadsheet': FileSpreadsheet,
 };
 
 export function Icon({

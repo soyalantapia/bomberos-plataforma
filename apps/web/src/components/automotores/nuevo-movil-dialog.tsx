@@ -106,6 +106,17 @@ export function NuevoMovilDialog({ open, onClose, onCreated }: Props) {
       onClose={close}
       title="Nuevo móvil"
       description="Datos básicos del móvil que se suma a la flota"
+      size="lg"
+      footer={
+        <div className="flex justify-end gap-2">
+          <Button intent="ghost" onClick={close}>
+            Cancelar
+          </Button>
+          <Button intent="primary" onClick={guardar}>
+            <Truck size={14} /> Crear móvil
+          </Button>
+        </div>
+      }
     >
       <div className="space-y-3">
         <div className="grid grid-cols-2 gap-3">
@@ -204,18 +215,9 @@ export function NuevoMovilDialog({ open, onClose, onCreated }: Props) {
         </div>
 
         <div className="bg-brand-50 text-brand-900 rounded-lg p-3 text-xs">
-          <strong>Tip:</strong> después de crear, podés agregar truck-checks, programar
-          mantenimientos y ver telemetría desde la ficha del móvil.
+          <strong>Tip:</strong> después de crear el móvil, podés cargar las revisiones de
+          pre-servicio, programar mantenimientos y ver su historia desde la ficha.
         </div>
-      </div>
-
-      <div className="mt-5 flex justify-end gap-2 border-t border-slate-100 pt-4">
-        <Button intent="ghost" onClick={close}>
-          Cancelar
-        </Button>
-        <Button intent="primary" onClick={guardar}>
-          <Truck size={14} /> Crear móvil
-        </Button>
       </div>
     </Dialog>
   );

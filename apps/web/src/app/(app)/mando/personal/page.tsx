@@ -1,19 +1,6 @@
 'use client';
 
 import {
-  Award,
-  Clock,
-  Filter,
-  Flame,
-  Medal,
-  ShieldCheck,
-  Sparkles,
-  TrendingUp,
-  Users,
-} from 'lucide-react';
-import { useMemo, useState } from 'react';
-
-import {
   Avatar,
   Badge,
   Card,
@@ -27,10 +14,14 @@ import {
   TabsTrigger,
   cn,
 } from '@faro/ui';
+import { Award, Clock, Filter, Flame, Medal, ShieldCheck, Sparkles, Users } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { useMemo, useState } from 'react';
 
-import { PageHero } from '../../../../components/shared/page-hero';
-import { FiltersBar, type FilterChip } from '../../../../components/shared/filters-bar';
 import { PersonaCard } from '../../../../components/personal/persona-card';
+import { FiltersBar, type FilterChip } from '../../../../components/shared/filters-bar';
+import { PageHero } from '../../../../components/shared/page-hero';
+import { calcularComputoMensual } from '../../../../lib/utils/computo';
 import {
   clasificarCuerpo,
   contarPorCuerpo,
@@ -38,7 +29,6 @@ import {
   detectarAlertasPersona,
   disponibleAhora,
 } from '../../../../lib/utils/cuerpo';
-import { calcularComputoMensual } from '../../../../lib/utils/computo';
 import { fmtJerarquia, jerarquiaOrden } from '../../../../lib/utils/jerarquia';
 import { useFaroStore, selectCuartelActivo } from '../../../../store/use-faro-store';
 
@@ -68,6 +58,7 @@ export default function PersonalMando() {
   const allPersonas = useFaroStore((s) => s.personas);
   const allAsistencias = useFaroStore((s) => s.asistencias);
   const allServicios = useFaroStore((s) => s.servicios);
+  const router = useRouter();
 
   const personas = useMemo(
     () => allPersonas.filter((p) => p.cuartelId === cuartel?.id),
@@ -190,6 +181,108 @@ export default function PersonalMando() {
         }
       />
 
+      {/* Flujos accionables RR.HH. */}
+      <Card className="bg-brand-50/40 border-brand-100">
+        <CardContent className="p-4">
+          <div className="mb-3 flex items-center gap-2">
+            <Sparkles size={16} className="text-brand-700" />
+            <span className="text-brand-900 font-bold">Flujos rápidos</span>
+            <span className="text-brand-700 text-xs">· los más usados</span>
+          </div>
+          <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
+            <button
+              type="button"
+              onClick={() => router.push('/administrativo')}
+              className="flex items-start gap-3 rounded-lg border border-slate-200 bg-white p-3 text-left transition-all hover:-translate-y-0.5 hover:shadow-md"
+            >
+              <div className="bg-status-ok grid h-9 w-9 shrink-0 place-items-center rounded-lg text-white">
+                <Users size={16} />
+              </div>
+              <div>
+                <div className="text-sm font-semibold text-slate-900">Alta nueva persona</div>
+                <div className="mt-0.5 text-xs text-slate-500">Paso a paso · 3 pantallas</div>
+              </div>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => router.push('/mando/personal/skills')}
+              className="flex items-start gap-3 rounded-lg border border-slate-200 bg-white p-3 text-left transition-all hover:-translate-y-0.5 hover:shadow-md"
+            >
+              <div className="bg-brand-600 grid h-9 w-9 shrink-0 place-items-center rounded-lg text-white">
+                <Award size={16} />
+              </div>
+              <div>
+                <div className="text-sm font-semibold text-slate-900">Mapa de habilidades</div>
+                <div className="mt-0.5 text-xs text-slate-500">Quién tiene qué curso vigente</div>
+              </div>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => router.push('/administrativo/aptitud-medica')}
+              className="flex items-start gap-3 rounded-lg border border-slate-200 bg-white p-3 text-left transition-all hover:-translate-y-0.5 hover:shadow-md"
+            >
+              <div className="bg-status-risk grid h-9 w-9 shrink-0 place-items-center rounded-lg text-white">
+                <ShieldCheck size={16} />
+              </div>
+              <div>
+                <div className="text-sm font-semibold text-slate-900">Aptitud médica</div>
+                <div className="mt-0.5 text-xs text-slate-500">{conAlertas} alertas activas</div>
+              </div>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => router.push('/mando/aprobaciones')}
+              className="flex items-start gap-3 rounded-lg border border-slate-200 bg-white p-3 text-left transition-all hover:-translate-y-0.5 hover:shadow-md"
+            >
+              <div className="bg-status-warn grid h-9 w-9 shrink-0 place-items-center rounded-lg text-white">
+                <Medal size={16} />
+              </div>
+              <div>
+                <div className="text-sm font-semibold text-slate-900">Aprobaciones</div>
+                <div className="mt-0.5 text-xs text-slate-500">Licencias, ascensos, sanciones</div>
+              </div>
+            </button>
+          </div>
+
+          {/* Ejemplos con datos reales */}
+          <div className="border-brand-100 mt-3 border-t pt-3">
+            <div className="text-brand-900 mb-2 text-xs font-bold uppercase tracking-wide">
+              Ejemplos para revisar
+            </div>
+            <ul className="grid gap-2 text-xs sm:grid-cols-2">
+              {personas.slice(0, 4).map((p) => {
+                const alertas = detectarAlertasPersona(p);
+                const disponible = disponibleAhora(p);
+                return (
+                  <li key={p.id}>
+                    <button
+                      type="button"
+                      onClick={() => router.push(`/mando/personal/${p.id}`)}
+                      className="flex w-full items-center gap-2 rounded-md bg-white px-2 py-1.5 text-left ring-1 ring-slate-200 hover:bg-slate-50"
+                    >
+                      <Avatar name={`${p.nombre} ${p.apellido}`} src={p.fotoUrl} size={20} />
+                      <span className="flex-1 truncate text-slate-900">
+                        {p.apellido}, {p.nombre}
+                      </span>
+                      {alertas.length > 0 ? (
+                        <Badge intent="risk">{alertas.length}⚠</Badge>
+                      ) : disponible ? (
+                        <Badge intent="ok">Disp</Badge>
+                      ) : (
+                        <Badge intent="neutral">Lic</Badge>
+                      )}
+                    </button>
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+        </CardContent>
+      </Card>
+
       <Tabs value={tab} onChange={setTab}>
         <TabsList>
           <TabsTrigger value="nomina">Nómina ({personas.length})</TabsTrigger>
@@ -288,7 +381,11 @@ export default function PersonalMando() {
 
               <div className="grid gap-3 sm:grid-cols-2">
                 {filtradas.map((p) => (
-                  <PersonaCard key={p.id} persona={p} />
+                  <PersonaCard
+                    key={p.id}
+                    persona={p}
+                    onClick={() => router.push(`/mando/personal/${p.id}`)}
+                  />
                 ))}
               </div>
             </>
@@ -431,10 +528,9 @@ export default function PersonalMando() {
             <CardContent className="flex items-start gap-3 p-4 text-sm text-slate-600">
               <Sparkles size={18} className="mt-0.5 shrink-0 text-slate-400" />
               <div>
-                <strong className="text-slate-900">IA proactiva:</strong> si un turno queda sin
-                cubrir, Faro propone candidatos en función de disponibilidad, cercanía geográfica,
-                horas trabajadas en el mes y cursos vigentes. La asignación final siempre la valida
-                un jefe.
+                <strong className="text-slate-900">El sistema sugiere:</strong> si un turno queda
+                sin cubrir, Faro propone candidatos según disponibilidad, cercanía, horas trabajadas
+                en el mes y cursos vigentes. La asignación final siempre la decide un jefe.
               </div>
             </CardContent>
           </Card>
@@ -515,17 +611,6 @@ export default function PersonalMando() {
                   );
                 })}
               </ul>
-            </CardContent>
-          </Card>
-
-          <Card className="border-slate-200 bg-slate-50">
-            <CardContent className="flex items-start gap-3 p-4 text-sm text-slate-600">
-              <TrendingUp size={18} className="mt-0.5 shrink-0 text-slate-400" />
-              <div>
-                <strong className="text-slate-900">Próximamente:</strong> ranking por categoría
-                (jefatura, suboficiales, tropa, cadetes), evolución mensual con sparklines, y badges
-                automáticos (más servicios, más cursos, mejor asistencia).
-              </div>
             </CardContent>
           </Card>
         </TabsContent>

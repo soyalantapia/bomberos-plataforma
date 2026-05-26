@@ -101,11 +101,12 @@ export default function MapaAppPage() {
 
       <Card className="border-slate-200 bg-slate-50">
         <CardContent className="p-4 text-sm text-slate-600">
-          <strong className="text-slate-900">Tip:</strong> en cada perfil tenés el sidebar completo
-          con las pantallas distribuidas por sección. Las marcadas como{' '}
-          <Badge intent="risk">Nuevo</Badge> fueron añadidas en las fases 1 a 8 del roadmap
-          (compliance Argentina, AVL, ICS, NFIRS-AR, skills matrix, aptitud médica, EPP, hidrantes,
-          WhatsApp, broadcast, federación, IA, offline-first).
+          <strong className="text-slate-900">Tip:</strong> en cada perfil tenés el menú completo con
+          las pantallas distribuidas por sección. Las marcadas como{' '}
+          <Badge intent="risk">Nuevo</Badge> son las funcionalidades recién agregadas: cumplimiento
+          legal Argentina, móviles en vivo, comando de incidentes, parte de servicio, capacidades,
+          aptitud médica, uniforme, hidrantes, WhatsApp, avisos masivos, federación, asistente con
+          voz, trabajo sin internet.
         </CardContent>
       </Card>
     </div>
