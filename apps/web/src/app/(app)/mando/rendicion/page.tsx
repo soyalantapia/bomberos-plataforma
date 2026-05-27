@@ -36,7 +36,7 @@ import {
 
 import { SemaforoRendicion } from '../../../../components/rendicion/semaforo-rendicion';
 import { rendicionesHistoricasMock } from '../../../../data/rendicion';
-import { fmtMesPeriodo } from '../../../../lib/utils/date';
+import { fmtMesPeriodo, mesActual } from '../../../../lib/utils/date';
 import { exportarCsv } from '../../../../lib/utils/export-csv';
 import {
   useFaroStore,
@@ -59,7 +59,7 @@ export default function RendicionPage() {
   const [confirmText, setConfirmText] = useState('');
   const [tab, setTab] = useState('estado');
 
-  const periodoMes = rendicion?.periodo ?? '2026-05';
+  const periodoMes = rendicion?.periodo ?? mesActual();
   const serviciosMes = servicios.filter(
     (s) => s.cuartelId === cuartel?.id && s.horaSalida.startsWith(periodoMes),
   );
