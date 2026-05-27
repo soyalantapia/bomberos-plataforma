@@ -1,5 +1,9 @@
 @import "tailwindcss";
 
+/* Incluir paquetes del monorepo para que Tailwind escanee sus clases */
+@source "../../../../packages/ui/src";
+@source "../../../../packages/types/src";
+
 @theme {
   /* Marca Faro */
   --color-brand-50: #eff6ff;
