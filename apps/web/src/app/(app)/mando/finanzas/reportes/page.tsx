@@ -298,7 +298,9 @@ export default function ReportesPage() {
               <div className="mb-4 flex items-baseline justify-between border-b border-slate-200 pb-3">
                 <div>
                   <h3 className="font-bold text-slate-900">Balance General simplificado</h3>
-                  <p className="text-xs text-slate-500">Al 25/05/2026</p>
+                  <p className="text-xs text-slate-500">
+                    Al {demoToday().toLocaleDateString('es-AR')}
+                  </p>
                 </div>
                 <Badge intent="neutral">DPPJ</Badge>
               </div>

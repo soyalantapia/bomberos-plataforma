@@ -239,7 +239,9 @@ export default function ComputoPage() {
         <TabsContent value="anual">
           <Card>
             <CardHeader>
-              <CardTitle>Año 2026 · {totalAnual} hs acumuladas</CardTitle>
+              <CardTitle>
+                Año {demoToday().getFullYear()} · {totalAnual} hs acumuladas
+              </CardTitle>
             </CardHeader>
             <CardContent className="p-5">
               {/* Leyenda estimado */}

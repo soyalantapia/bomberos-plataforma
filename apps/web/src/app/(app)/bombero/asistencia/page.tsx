@@ -291,7 +291,9 @@ export default function AsistenciaBombero() {
       </Card>
 
       <div>
-        <h2 className="mb-3 text-lg font-bold text-slate-900">Tu historial · mayo 2026</h2>
+        <h2 className="mb-3 text-lg font-bold text-slate-900">
+          Tu historial · {fmtMesPeriodo(mesActual())}
+        </h2>
 
         <FiltersBar chips={chips} chipValue={tab} onChipChange={setTab} />
 

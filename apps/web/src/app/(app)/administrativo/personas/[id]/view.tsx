@@ -46,7 +46,7 @@ import {
   cuerpoLabel,
   detectarAlertasPersona,
 } from '../../../../../lib/utils/cuerpo';
-import { fmtFechaCorta, mesActual } from '../../../../../lib/utils/date';
+import { fmtFechaCorta, fmtMesPeriodo, mesActual } from '../../../../../lib/utils/date';
 import { fmtJerarquia } from '../../../../../lib/utils/jerarquia';
 import { useFaroStore } from '../../../../../store/use-faro-store';
 
@@ -493,7 +493,7 @@ export default function FichaPersonaView() {
               {computo && (
                 <div className="mt-4">
                   <div className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-500">
-                    Cómputo del mes (mayo 2026)
+                    Cómputo del mes ({fmtMesPeriodo(mesActual())})
                   </div>
                   <div className="grid grid-cols-3 gap-2 sm:grid-cols-5">
                     <Kpi label="Total" value={computo.total} hint="hs" intent="brand" />
