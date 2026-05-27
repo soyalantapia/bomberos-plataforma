@@ -33,7 +33,8 @@ import { FeaturesGrid } from '../../../components/shared/features-grid';
 import { PageHero } from '../../../components/shared/page-hero';
 import { calcularComputoMensual } from '../../../lib/utils/computo';
 import { detectarAlertasPersona } from '../../../lib/utils/cuerpo';
-import { fmtMesPeriodo } from '../../../lib/utils/date';
+import { fmtMesPeriodo, mesActual } from '../../../lib/utils/date';
+import { demoToday } from '../../../lib/utils/demo-today';
 import {
   useFaroStore,
   selectCuartelActivo,
@@ -98,7 +99,7 @@ export default function BomberoInicio() {
   const [tab, setTab] = useState('hoy');
 
   const computo = useMemo(
-    () => (cuartel ? calcularComputoMensual(asistencias, cuartel.id, '2026-05') : []),
+    () => (cuartel ? calcularComputoMensual(asistencias, cuartel.id, mesActual()) : []),
     [asistencias, cuartel],
   );
   if (!persona) return null;
@@ -108,7 +109,7 @@ export default function BomberoInicio() {
   const horasEsteMes = propio?.total ?? 0;
   const serviciosMios = servicios.filter((s) => s.dotacionIds.includes(persona.id)).length;
 
-  const ahora = new Date();
+  const ahora = demoToday();
   const hora = ahora.getHours();
   const saludo = hora < 12 ? 'Buen día' : hora < 19 ? 'Buenas tardes' : 'Buenas noches';
 
@@ -137,7 +138,7 @@ export default function BomberoInicio() {
             <Kpi
               label="Tus horas"
               value={horasEsteMes}
-              hint={fmtMesPeriodo('2026-05')}
+              hint={fmtMesPeriodo(mesActual())}
               intent="brand"
               icon={<Clock size={16} />}
             />

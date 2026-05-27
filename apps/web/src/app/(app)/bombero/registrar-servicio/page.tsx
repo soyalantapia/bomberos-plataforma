@@ -27,6 +27,7 @@ import {
   selectPersonaActual,
   selectCuartelActivo,
 } from '../../../../store/use-faro-store';
+import { demoToday } from '../../../../lib/utils/demo-today';
 
 import type { PropuestaServicioIA, TipoServicio } from '@faro/types';
 
@@ -63,7 +64,7 @@ export default function RegistrarServicio() {
     [personas, cuartel],
   );
 
-  const now = new Date();
+  const now = demoToday();
   const horaActual = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
   const ago30 = new Date(now.getTime() - 30 * 60_000);
   const horaInicio = `${String(ago30.getHours()).padStart(2, '0')}:${String(ago30.getMinutes()).padStart(2, '0')}`;
@@ -470,9 +471,7 @@ export default function RegistrarServicio() {
                   type="time"
                   value={horaRegreso}
                   onChange={(e) => setHoraRegreso(e.target.value)}
-                  aria-invalid={
-                    !!(horaSalida && horaRegreso && horaSalida >= horaRegreso)
-                  }
+                  aria-invalid={!!(horaSalida && horaRegreso && horaSalida >= horaRegreso)}
                 />
                 {horaSalida && horaRegreso && horaSalida >= horaRegreso && (
                   <p className="text-status-risk-fg mt-1 text-xs font-medium">

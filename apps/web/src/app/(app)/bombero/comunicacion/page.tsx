@@ -17,6 +17,7 @@ import { Avatar, Badge, Card, Kpi, cn, useToast } from '@faro/ui';
 
 import { PageHero } from '../../../../components/shared/page-hero';
 import { selectPersonaActual, useFaroStore } from '../../../../store/use-faro-store';
+import { demoToday } from '../../../../lib/utils/demo-today';
 
 interface Aviso {
   id: string;
@@ -84,47 +85,47 @@ const avisos: Aviso[] = [
 
 function buildChatsInicial(autor: string): Chat[] {
   return [
-  {
-    id: 'ch1',
-    nombre: 'Cuartel general',
-    ultimoMensaje: 'Mañana 7am en Pueyrredón. Llevar EPP completo.',
-    autor,
-    cuando: '14:32',
-    sinLeer: 3,
-    tipo: 'cuartel',
-    integrantes: 47,
-  },
-  {
-    id: 'ch2',
-    nombre: 'Sección Operativa',
-    ultimoMensaje: 'Bien hecho con lo del incendio de Alvear, dotación impecable.',
-    autor: 'Roberto González',
-    cuando: 'Ayer',
-    sinLeer: 0,
-    tipo: 'seccion',
-    integrantes: 14,
-  },
-  {
-    id: 'ch3',
-    nombre: 'Cadetes 2026',
-    ultimoMensaje: 'Próxima reunión sábado a las 17hs. Confirmen asistencia.',
-    autor: 'Florencia Salinas',
-    cuando: 'Hace 2 días',
-    sinLeer: 1,
-    tipo: 'cadetes',
-    integrantes: 8,
-  },
-  {
-    id: 'ch4',
-    nombre: 'Equipo Rescate',
-    ultimoMensaje: 'Llegaron las pinzas nuevas, las probamos el viernes.',
-    autor: 'Carolina Sosa',
-    cuando: 'Hace 3 días',
-    sinLeer: 0,
-    tipo: 'rescate',
-    integrantes: 6,
-  },
-];
+    {
+      id: 'ch1',
+      nombre: 'Cuartel general',
+      ultimoMensaje: 'Mañana 7am en Pueyrredón. Llevar EPP completo.',
+      autor,
+      cuando: '14:32',
+      sinLeer: 3,
+      tipo: 'cuartel',
+      integrantes: 47,
+    },
+    {
+      id: 'ch2',
+      nombre: 'Sección Operativa',
+      ultimoMensaje: 'Bien hecho con lo del incendio de Alvear, dotación impecable.',
+      autor: 'Roberto González',
+      cuando: 'Ayer',
+      sinLeer: 0,
+      tipo: 'seccion',
+      integrantes: 14,
+    },
+    {
+      id: 'ch3',
+      nombre: 'Cadetes 2026',
+      ultimoMensaje: 'Próxima reunión sábado a las 17hs. Confirmen asistencia.',
+      autor: 'Florencia Salinas',
+      cuando: 'Hace 2 días',
+      sinLeer: 1,
+      tipo: 'cadetes',
+      integrantes: 8,
+    },
+    {
+      id: 'ch4',
+      nombre: 'Equipo Rescate',
+      ultimoMensaje: 'Llegaron las pinzas nuevas, las probamos el viernes.',
+      autor: 'Carolina Sosa',
+      cuando: 'Hace 3 días',
+      sinLeer: 0,
+      tipo: 'rescate',
+      integrantes: 6,
+    },
+  ];
 }
 
 const CHAT_STYLE: Record<Chat['tipo'], { color: string; icono: React.ReactNode }> = {
@@ -136,102 +137,102 @@ const CHAT_STYLE: Record<Chat['tipo'], { color: string; icono: React.ReactNode }
 
 function buildHistorial(autor: string): Record<string, Mensaje[]> {
   return {
-  ch1: [
-    {
-      id: 'm-ch1-1',
-      autor: 'Roberto González',
-      texto: '¿Quién puede cubrir el turno de mañana 8am? Carolina avisó que no puede.',
-      ts: 'Ayer 21:14',
-      mio: false,
-    },
-    {
-      id: 'm-ch1-2',
-      autor: 'Sebastián Ruiz',
-      texto: 'Yo puedo. Confirmo dotación al BV-3.',
-      ts: 'Ayer 21:18',
-      mio: false,
-    },
-    {
-      id: 'm-ch1-3',
-      autor,
-      texto: 'Mañana 7am en Pueyrredón. Llevar EPP completo.',
-      ts: '14:32',
-      mio: false,
-    },
-    {
-      id: 'm-ch1-4',
-      autor: 'Vos',
-      texto: 'Confirmo.',
-      ts: '14:35',
-      mio: true,
-      leido: true,
-    },
-  ],
-  ch2: [
-    {
-      id: 'm-ch2-1',
-      autor: 'Roberto González',
-      texto: 'Bien hecho con lo del incendio de Alvear, dotación impecable.',
-      ts: 'Ayer',
-      mio: false,
-    },
-    {
-      id: 'm-ch2-2',
-      autor: 'Vos',
-      texto: 'Gracias jefe! Lo merecido para todos.',
-      ts: 'Ayer',
-      mio: true,
-      leido: true,
-    },
-  ],
-  ch3: [
-    {
-      id: 'm-ch3-1',
-      autor: 'Florencia Salinas',
-      texto: 'Hola gente! El curso de combate empieza el lunes 3/6 a las 18hs.',
-      ts: 'Hace 3 días',
-      mio: false,
-    },
-    {
-      id: 'm-ch3-2',
-      autor: 'Camila Torres',
-      texto: '¿Es obligatorio?',
-      ts: 'Hace 3 días',
-      mio: false,
-    },
-    {
-      id: 'm-ch3-3',
-      autor: 'Florencia Salinas',
-      texto: 'Sí, parte del programa anual 2026.',
-      ts: 'Hace 2 días',
-      mio: false,
-    },
-    {
-      id: 'm-ch3-4',
-      autor: 'Florencia Salinas',
-      texto: 'Próxima reunión sábado a las 17hs. Confirmen asistencia.',
-      ts: 'Hace 2 días',
-      mio: false,
-    },
-  ],
-  ch4: [
-    {
-      id: 'm-ch4-1',
-      autor: 'Carolina Sosa',
-      texto: 'Llegaron las pinzas nuevas, las probamos el viernes.',
-      ts: 'Hace 3 días',
-      mio: false,
-    },
-    {
-      id: 'm-ch4-2',
-      autor: 'Vos',
-      texto: '¡Genial! Voy a estar.',
-      ts: 'Hace 3 días',
-      mio: true,
-      leido: true,
-    },
-  ],
-};
+    ch1: [
+      {
+        id: 'm-ch1-1',
+        autor: 'Roberto González',
+        texto: '¿Quién puede cubrir el turno de mañana 8am? Carolina avisó que no puede.',
+        ts: 'Ayer 21:14',
+        mio: false,
+      },
+      {
+        id: 'm-ch1-2',
+        autor: 'Sebastián Ruiz',
+        texto: 'Yo puedo. Confirmo dotación al BV-3.',
+        ts: 'Ayer 21:18',
+        mio: false,
+      },
+      {
+        id: 'm-ch1-3',
+        autor,
+        texto: 'Mañana 7am en Pueyrredón. Llevar EPP completo.',
+        ts: '14:32',
+        mio: false,
+      },
+      {
+        id: 'm-ch1-4',
+        autor: 'Vos',
+        texto: 'Confirmo.',
+        ts: '14:35',
+        mio: true,
+        leido: true,
+      },
+    ],
+    ch2: [
+      {
+        id: 'm-ch2-1',
+        autor: 'Roberto González',
+        texto: 'Bien hecho con lo del incendio de Alvear, dotación impecable.',
+        ts: 'Ayer',
+        mio: false,
+      },
+      {
+        id: 'm-ch2-2',
+        autor: 'Vos',
+        texto: 'Gracias jefe! Lo merecido para todos.',
+        ts: 'Ayer',
+        mio: true,
+        leido: true,
+      },
+    ],
+    ch3: [
+      {
+        id: 'm-ch3-1',
+        autor: 'Florencia Salinas',
+        texto: 'Hola gente! El curso de combate empieza el lunes 3/6 a las 18hs.',
+        ts: 'Hace 3 días',
+        mio: false,
+      },
+      {
+        id: 'm-ch3-2',
+        autor: 'Camila Torres',
+        texto: '¿Es obligatorio?',
+        ts: 'Hace 3 días',
+        mio: false,
+      },
+      {
+        id: 'm-ch3-3',
+        autor: 'Florencia Salinas',
+        texto: 'Sí, parte del programa anual 2026.',
+        ts: 'Hace 2 días',
+        mio: false,
+      },
+      {
+        id: 'm-ch3-4',
+        autor: 'Florencia Salinas',
+        texto: 'Próxima reunión sábado a las 17hs. Confirmen asistencia.',
+        ts: 'Hace 2 días',
+        mio: false,
+      },
+    ],
+    ch4: [
+      {
+        id: 'm-ch4-1',
+        autor: 'Carolina Sosa',
+        texto: 'Llegaron las pinzas nuevas, las probamos el viernes.',
+        ts: 'Hace 3 días',
+        mio: false,
+      },
+      {
+        id: 'm-ch4-2',
+        autor: 'Vos',
+        texto: '¡Genial! Voy a estar.',
+        ts: 'Hace 3 días',
+        mio: true,
+        leido: true,
+      },
+    ],
+  };
 }
 
 // Respuestas automáticas según contenido
@@ -267,7 +268,9 @@ export default function ComunicacionPage() {
   const autor = persona ? `${persona.nombre} ${persona.apellido}` : 'Vos';
   const [seleccionado, setSeleccionado] = useState<string>('ch1');
   const [draft, setDraft] = useState('');
-  const [historial, setHistorial] = useState<Record<string, Mensaje[]>>(() => buildHistorial(autor));
+  const [historial, setHistorial] = useState<Record<string, Mensaje[]>>(() =>
+    buildHistorial(autor),
+  );
   const [chats, setChats] = useState<Chat[]>(() => buildChatsInicial(autor));
   const [escribiendo, setEscribiendo] = useState<Record<string, boolean>>({});
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -291,7 +294,7 @@ export default function ComunicacionPage() {
 
   function enviar(texto: string) {
     if (!texto.trim()) return;
-    const ahora = new Date();
+    const ahora = demoToday();
     const hora = `${String(ahora.getHours()).padStart(2, '0')}:${String(ahora.getMinutes()).padStart(2, '0')}`;
     const nuevoId = `m-${seleccionado}-${Date.now()}`;
     const nuevoMensaje: Mensaje = {
@@ -333,7 +336,7 @@ export default function ComunicacionPage() {
     setTimeout(
       () => {
         const respuesta = generarRespuesta(seleccionado, texto, autor);
-        const horaResp = `${String(new Date().getHours()).padStart(2, '0')}:${String(new Date().getMinutes()).padStart(2, '0')}`;
+        const horaResp = `${String(demoToday().getHours()).padStart(2, '0')}:${String(demoToday().getMinutes()).padStart(2, '0')}`;
         const respId = `m-${seleccionado}-${Date.now()}-resp`;
         setHistorial((h) => ({
           ...h,

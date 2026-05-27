@@ -34,7 +34,7 @@ import {
 import { PageHero } from '../../../../components/shared/page-hero';
 import { calcularComputoMensual } from '../../../../lib/utils/computo';
 import { detectarAlertasPersona } from '../../../../lib/utils/cuerpo';
-import { fmtFechaCorta, fmtMesPeriodo } from '../../../../lib/utils/date';
+import { fmtFechaCorta, fmtMesPeriodo, mesActual } from '../../../../lib/utils/date';
 import { fmtJerarquia } from '../../../../lib/utils/jerarquia';
 import {
   useFaroStore,
@@ -54,7 +54,7 @@ export default function MiLegajo() {
   const [tab, setTab] = useState('datos');
 
   const computo = useMemo(
-    () => (cuartel ? calcularComputoMensual(asistencias, cuartel.id, '2026-05') : []),
+    () => (cuartel ? calcularComputoMensual(asistencias, cuartel.id, mesActual()) : []),
     [asistencias, cuartel],
   );
 
@@ -261,7 +261,7 @@ export default function MiLegajo() {
             <Kpi
               label="Total mes"
               value={propio?.total ?? 0}
-              hint={fmtMesPeriodo('2026-05')}
+              hint={fmtMesPeriodo(mesActual())}
               intent="brand"
             />
             <Kpi label="Accidentales" value={propio?.accidental ?? 0} hint="hs" intent="brand" />

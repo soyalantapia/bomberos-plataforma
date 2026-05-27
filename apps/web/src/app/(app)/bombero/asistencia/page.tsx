@@ -11,7 +11,8 @@ import { PageHero } from '../../../../components/shared/page-hero';
 import { FiltersBar, type FilterChip } from '../../../../components/shared/filters-bar';
 import { MapView } from '../../../../components/shared/map-view';
 import { calcularComputoMensual } from '../../../../lib/utils/computo';
-import { fmtFecha, fmtMesPeriodo } from '../../../../lib/utils/date';
+import { fmtFecha, fmtMesPeriodo, mesActual } from '../../../../lib/utils/date';
+import { demoToday } from '../../../../lib/utils/demo-today';
 import {
   useFaroStore,
   selectCuartelActivo,
@@ -45,7 +46,7 @@ export default function AsistenciaBombero() {
   const cuartel = useFaroStore(selectCuartelActivo);
   const asistencias = useFaroStore((s) => s.asistencias);
   const computo = useMemo(
-    () => (cuartel ? calcularComputoMensual(asistencias, cuartel.id, '2026-05') : []),
+    () => (cuartel ? calcularComputoMensual(asistencias, cuartel.id, mesActual()) : []),
     [asistencias, cuartel],
   );
   const toast = useToast();
@@ -120,7 +121,7 @@ export default function AsistenciaBombero() {
       });
       return;
     }
-    const now = new Date();
+    const now = demoToday();
     const hora = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
     setMarcado({ in: hora });
     toast.push({
@@ -131,7 +132,7 @@ export default function AsistenciaBombero() {
   }
 
   function marcarSalida() {
-    const now = new Date();
+    const now = demoToday();
     const hora = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
     setMarcado((m) => ({ ...m, out: hora }));
     toast.push({ kind: 'success', title: 'Salida registrada', description: `Salida ${hora}.` });
@@ -142,7 +143,7 @@ export default function AsistenciaBombero() {
       <PageHero
         objetivo="Tu asistencia"
         titulo={`${propio?.total ?? 0} hs este mes`}
-        descripcion={`${fmtMesPeriodo('2026-05')} · ${persona.nombre}, marcá tu presente y revisá el desglose.`}
+        descripcion={`${fmtMesPeriodo(mesActual())} · ${persona.nombre}, marcá tu presente y revisá el desglose.`}
         icono={<Clock size={26} />}
         variant={(propio?.total ?? 0) >= 20 ? 'success' : 'default'}
         meta={
