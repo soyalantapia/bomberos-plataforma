@@ -1,6 +1,17 @@
 'use client';
 
-import { Badge, Button, Card, CardContent, Dialog, Input, Kpi, Label, cn, useToast } from '@faro/ui';
+import {
+  Badge,
+  Button,
+  Card,
+  CardContent,
+  Dialog,
+  Input,
+  Kpi,
+  Label,
+  cn,
+  useToast,
+} from '@faro/ui';
 import {
   ArrowDownRight,
   ArrowLeftRight,
@@ -8,6 +19,7 @@ import {
   Ban,
   BookOpen,
   CheckCircle2,
+  ChevronDown,
   Download,
   Filter,
   Plus,
@@ -20,6 +32,7 @@ import { NuevoMovimientoDialog } from '../../../../../components/finanzas/nuevo-
 import { MEDIO_LABEL, ars, arsCompact, fechaCorta } from '../../../../../components/finanzas/utils';
 import { EmptyState } from '../../../../../components/shared/empty-state';
 import { PageHero } from '../../../../../components/shared/page-hero';
+import { exportarCsv } from '../../../../../lib/utils/export-csv';
 import { useFaroStore } from '../../../../../store/use-faro-store';
 
 import type { MovimientoFinanciero } from '@faro/types';
@@ -105,10 +118,43 @@ export default function MovimientosPage() {
   }
 
   function exportar() {
+    const headers = [
+      'Fecha',
+      'Tipo',
+      'Descripción',
+      'Contraparte',
+      'CUIT',
+      'Cuenta',
+      'Caja',
+      'Medio',
+      'Comprobante',
+      'Nº comprobante',
+      'Monto',
+      'Estado',
+    ];
+    const rows = filtrados.map((m) => {
+      const cuenta = cuentaMap.get(m.cuentaId);
+      const caja = cajaMap.get(m.cajaOrigenId ?? '');
+      return [
+        m.fecha.slice(0, 10),
+        m.tipo,
+        m.descripcion,
+        m.contraparte ?? '',
+        m.cuitContraparte ?? '',
+        cuenta ? `${cuenta.codigo} ${cuenta.nombre}` : '',
+        caja?.nombre ?? '',
+        MEDIO_LABEL[m.medio],
+        m.comprobanteTipo ?? '',
+        m.comprobanteNumero ?? '',
+        m.tipo === 'egreso' ? -m.monto : m.monto,
+        estadoLabel[m.estado] ?? m.estado,
+      ];
+    });
+    exportarCsv(`libro-diario-${filtrados.length}-mov`, headers, rows);
     toast.push({
-      kind: 'info',
-      title: 'Descargando lista de movimientos',
-      description: `Libro-Diario-${filtrados.length}-mov.xlsx`,
+      kind: 'success',
+      title: 'Movimientos descargados',
+      description: `${filtrados.length} fila${filtrados.length === 1 ? '' : 's'} · libro-diario-${filtrados.length}-mov.csv`,
     });
   }
 
@@ -228,44 +274,65 @@ export default function MovimientosPage() {
                 })}
               </div>
 
-              <select
-                value={estadoFiltro}
-                onChange={(e) => setEstadoFiltro(e.target.value as FiltroEstado)}
-                className="rounded-lg border border-slate-200 bg-white px-2 py-1.5 text-xs"
-              >
-                <option value="todos">Todos los estados</option>
-                <option value="conciliado">Confirmados</option>
-                <option value="borrador">Borradores</option>
-                <option value="anulado">Anulados</option>
-              </select>
+              <div className="relative">
+                <select
+                  value={estadoFiltro}
+                  onChange={(e) => setEstadoFiltro(e.target.value as FiltroEstado)}
+                  className="focus:border-brand-400 focus:ring-brand-100 w-full appearance-none rounded-lg border border-slate-200 bg-white py-1.5 pl-2 pr-7 text-xs outline-none focus:ring-2"
+                  aria-label="Filtrar por estado"
+                >
+                  <option value="todos">Todos los estados</option>
+                  <option value="conciliado">Confirmados</option>
+                  <option value="borrador">Borradores</option>
+                  <option value="anulado">Anulados</option>
+                </select>
+                <ChevronDown
+                  size={12}
+                  className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-slate-400"
+                />
+              </div>
 
-              <select
-                value={cuentaFiltro}
-                onChange={(e) => setCuentaFiltro(e.target.value)}
-                className="rounded-lg border border-slate-200 bg-white px-2 py-1.5 text-xs"
-              >
-                <option value="todas">Todas las categorías</option>
-                {cuentas
-                  .filter((c) => c.operable)
-                  .map((c) => (
+              <div className="relative">
+                <select
+                  value={cuentaFiltro}
+                  onChange={(e) => setCuentaFiltro(e.target.value)}
+                  className="focus:border-brand-400 focus:ring-brand-100 w-full appearance-none rounded-lg border border-slate-200 bg-white py-1.5 pl-2 pr-7 text-xs outline-none focus:ring-2"
+                  aria-label="Filtrar por categoría"
+                >
+                  <option value="todas">Todas las categorías</option>
+                  {cuentas
+                    .filter((c) => c.operable)
+                    .map((c) => (
+                      <option key={c.id} value={c.id}>
+                        {c.codigo} · {c.nombre}
+                      </option>
+                    ))}
+                </select>
+                <ChevronDown
+                  size={12}
+                  className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-slate-400"
+                />
+              </div>
+
+              <div className="relative">
+                <select
+                  value={cajaFiltro}
+                  onChange={(e) => setCajaFiltro(e.target.value)}
+                  className="focus:border-brand-400 focus:ring-brand-100 w-full appearance-none rounded-lg border border-slate-200 bg-white py-1.5 pl-2 pr-7 text-xs outline-none focus:ring-2"
+                  aria-label="Filtrar por caja"
+                >
+                  <option value="todas">Todas las cajas</option>
+                  {cajas.map((c) => (
                     <option key={c.id} value={c.id}>
-                      {c.codigo} · {c.nombre}
+                      {c.nombre}
                     </option>
                   ))}
-              </select>
-
-              <select
-                value={cajaFiltro}
-                onChange={(e) => setCajaFiltro(e.target.value)}
-                className="rounded-lg border border-slate-200 bg-white px-2 py-1.5 text-xs"
-              >
-                <option value="todas">Todas las cuentas</option>
-                {cajas.map((c) => (
-                  <option key={c.id} value={c.id}>
-                    {c.nombre}
-                  </option>
-                ))}
-              </select>
+                </select>
+                <ChevronDown
+                  size={12}
+                  className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-slate-400"
+                />
+              </div>
 
               <Input
                 type="date"
@@ -498,9 +565,7 @@ export default function MovimientosPage() {
         }}
         title="¿Anular movimiento?"
         description={
-          confirmAnular
-            ? `${confirmAnular.descripcion} · ${ars.format(confirmAnular.monto)}`
-            : ''
+          confirmAnular ? `${confirmAnular.descripcion} · ${ars.format(confirmAnular.monto)}` : ''
         }
         size="sm"
         footer={

@@ -20,6 +20,7 @@ import { useMemo, useState } from 'react';
 import { ars, arsCompact, fechaCorta } from '../../../../../components/finanzas/utils';
 import { EmptyState } from '../../../../../components/shared/empty-state';
 import { PageHero } from '../../../../../components/shared/page-hero';
+import { exportarCsv } from '../../../../../lib/utils/export-csv';
 import { useFaroStore } from '../../../../../store/use-faro-store';
 
 import type { MovimientoFinanciero } from '@faro/types';
@@ -174,8 +175,10 @@ export default function ComprobantesPage() {
               <Kpi
                 label="Con factura"
                 value={`${stats.pctCompliance.toFixed(0)}%`}
-                hint={`${stats.conComp}/${stats.total}`}
-                intent={stats.pctCompliance >= 90 ? 'ok' : 'warn'}
+                hint={`${stats.conComp}/${stats.total} · <70% = devol.`}
+                intent={
+                  stats.pctCompliance >= 90 ? 'ok' : stats.pctCompliance < 70 ? 'risk' : 'warn'
+                }
               />
               <Kpi
                 label="Sin factura"
@@ -195,9 +198,34 @@ export default function ComprobantesPage() {
               <Button
                 intent="ghost"
                 size="sm"
-                onClick={() =>
-                  toast.push({ kind: 'info', title: 'Descargando paquete para el contador' })
-                }
+                onClick={() => {
+                  const headers = [
+                    'Fecha',
+                    'Proveedor',
+                    'CUIT',
+                    'Tipo',
+                    'Nº comprobante',
+                    'Descripción',
+                    'Monto',
+                    'Estado',
+                  ];
+                  const rows = egresos.map((m) => [
+                    m.fecha.slice(0, 10),
+                    m.contraparte ?? '',
+                    m.cuitContraparte ?? '',
+                    m.comprobanteTipo ?? 'SIN COMPROBANTE',
+                    m.comprobanteNumero ?? '',
+                    m.descripcion,
+                    m.monto,
+                    m.estado === 'conciliado' ? 'Confirmado' : 'Borrador',
+                  ]);
+                  exportarCsv(`paquete-contador-${egresos.length}-comp`, headers, rows);
+                  toast.push({
+                    kind: 'success',
+                    title: 'Paquete contador descargado',
+                    description: `${egresos.length} comprobante${egresos.length === 1 ? '' : 's'} en CSV`,
+                  });
+                }}
               >
                 <Download size={12} /> Paquete contador
               </Button>

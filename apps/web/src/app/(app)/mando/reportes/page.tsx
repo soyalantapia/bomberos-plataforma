@@ -16,6 +16,8 @@ import { useState } from 'react';
 import { Badge, Button, Card, CardContent, Kpi, cn, useToast } from '@faro/ui';
 
 import { PageHero } from '../../../../components/shared/page-hero';
+import { exportarCsv } from '../../../../lib/utils/export-csv';
+import { useFaroStore } from '../../../../store/use-faro-store';
 
 interface PlantillaReporte {
   id: string;
@@ -99,21 +101,81 @@ const RECIENTES = [
 
 export default function ReportesPage() {
   const toast = useToast();
+  const movimientos = useFaroStore((s) => s.movimientos);
+  const cajas = useFaroStore((s) => s.cajas);
+  const personas = useFaroStore((s) => s.personas);
+  const servicios = useFaroStore((s) => s.servicios);
   const [generando, setGenerando] = useState<string | null>(null);
   const [seleccionada, setSeleccionada] = useState<string>('mensual-cd');
   const [rangoDesde, setRangoDesde] = useState('2026-05-01');
   const [rangoHasta, setRangoHasta] = useState('2026-05-24');
 
+  const rangoInvalido = rangoHasta < rangoDesde;
+
   function generar(id: string) {
+    if (rangoInvalido) {
+      toast.push({
+        kind: 'warn',
+        title: 'Rango de fechas inválido',
+        description: 'La fecha "hasta" debe ser posterior o igual a "desde".',
+      });
+      return;
+    }
     setGenerando(id);
     setTimeout(() => {
       setGenerando(null);
+      // Generar CSV con resumen según la plantilla elegida
+      const plantilla = PLANTILLAS.find((p) => p.id === id);
+      const movsRango = movimientos.filter(
+        (m) =>
+          m.estado === 'conciliado' &&
+          m.fecha.slice(0, 10) >= rangoDesde &&
+          m.fecha.slice(0, 10) <= rangoHasta,
+      );
+      const servsRango = servicios.filter(
+        (s) => s.horaSalida.slice(0, 10) >= rangoDesde && s.horaSalida.slice(0, 10) <= rangoHasta,
+      );
+      const totalIng = movsRango
+        .filter((m) => m.tipo === 'ingreso')
+        .reduce((s, m) => s + m.monto, 0);
+      const totalEgr = movsRango
+        .filter((m) => m.tipo === 'egreso')
+        .reduce((s, m) => s + m.monto, 0);
+
+      const headers = ['Sección', 'Concepto', 'Valor'];
+      const rows: Array<Array<string | number>> = [
+        ['Cabecera', 'Plantilla', plantilla?.titulo ?? id],
+        ['Cabecera', 'Destinatario', plantilla?.destinatario ?? ''],
+        ['Cabecera', 'Rango', `${rangoDesde} a ${rangoHasta}`],
+        ['Resumen', 'Movimientos del período', movsRango.length],
+        ['Resumen', 'Ingresos totales', totalIng],
+        ['Resumen', 'Egresos totales', totalEgr],
+        ['Resumen', 'Saldo neto', totalIng - totalEgr],
+        ['Operativo', 'Servicios del período', servsRango.length],
+        ['Operativo', 'Personal activo', personas.filter((p) => p.estado === 'activo').length],
+        ['Operativo', 'Cajas operativas', cajas.length],
+      ];
+      exportarCsv(`reporte-${id}-${rangoDesde}-a-${rangoHasta}`, headers, rows);
       toast.push({
         kind: 'success',
-        title: 'Reporte generado',
-        description: 'PDF firmado descargado · 2.4 MB',
+        title: 'Reporte descargado',
+        description: `reporte-${id}-${rangoDesde}-a-${rangoHasta}.csv`,
       });
-    }, 2200);
+    }, 1500);
+  }
+
+  function descargarReciente(titulo: string) {
+    // Para los recientes generamos un CSV stub con metadatos
+    exportarCsv(
+      titulo.replace(/[^a-z0-9]/gi, '-').toLowerCase(),
+      ['Campo', 'Valor'],
+      [
+        ['Reporte', titulo],
+        ['Generado', new Date().toLocaleString('es-AR')],
+        ['Origen', 'Faro · histórico reportes'],
+      ],
+    );
+    toast.push({ kind: 'success', title: `Descargando ${titulo}` });
   }
 
   const plantillaSel = PLANTILLAS.find((p) => p.id === seleccionada)!;
@@ -134,6 +196,25 @@ export default function ReportesPage() {
           </div>
         }
       />
+
+      {/* F24: Leyenda de categorías */}
+      <div className="flex flex-wrap items-center gap-4 rounded-lg bg-slate-50 px-4 py-2.5">
+        <span className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+          Categoría
+        </span>
+        <span className="flex items-center gap-1.5 text-xs text-slate-700">
+          <span className="bg-brand-600 h-2.5 w-2.5 shrink-0 rounded-sm" />
+          Periódico (obligatorio)
+        </span>
+        <span className="flex items-center gap-1.5 text-xs text-slate-700">
+          <span className="bg-status-warn h-2.5 w-2.5 shrink-0 rounded-sm" />
+          On-demand
+        </span>
+        <span className="flex items-center gap-1.5 text-xs text-slate-700">
+          <span className="bg-status-risk h-2.5 w-2.5 shrink-0 rounded-sm" />
+          Judicial
+        </span>
+      </div>
 
       <div className="grid gap-4 lg:grid-cols-2">
         {PLANTILLAS.map((p, idx) => (
@@ -261,7 +342,12 @@ export default function ReportesPage() {
                     Generado {new Date(r.generado).toLocaleDateString('es-AR')} · {r.tamaño}
                   </div>
                 </div>
-                <Button intent="ghost" size="sm">
+                <Button
+                  intent="ghost"
+                  size="sm"
+                  onClick={() => descargarReciente(r.titulo)}
+                  aria-label={`Descargar ${r.titulo}`}
+                >
                   <Download size={12} />
                 </Button>
               </motion.li>

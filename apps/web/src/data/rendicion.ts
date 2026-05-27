@@ -1,6 +1,59 @@
 import type { Rendicion } from '@faro/types';
 import { CUARTEL_PRINCIPAL_ID } from './cuarteles';
 
+/** Histórico de rendiciones presentadas en meses anteriores (referencia para la pantalla Mando · Rendición). */
+export interface RendicionHistorica {
+  periodo: string;
+  pct: number;
+  estado: string;
+  fecha: string;
+  por: string;
+  cuartelId: string;
+}
+
+export const rendicionesHistoricasMock: RendicionHistorica[] = [
+  {
+    periodo: '2026-04',
+    pct: 100,
+    estado: 'Presentada',
+    fecha: '2026-05-08',
+    por: 'Mariana P.',
+    cuartelId: CUARTEL_PRINCIPAL_ID,
+  },
+  {
+    periodo: '2026-03',
+    pct: 100,
+    estado: 'Presentada',
+    fecha: '2026-04-08',
+    por: 'Roberto G.',
+    cuartelId: CUARTEL_PRINCIPAL_ID,
+  },
+  {
+    periodo: '2026-02',
+    pct: 95,
+    estado: 'Presentada · con observación',
+    fecha: '2026-03-08',
+    por: 'Roberto G.',
+    cuartelId: CUARTEL_PRINCIPAL_ID,
+  },
+  {
+    periodo: '2026-01',
+    pct: 100,
+    estado: 'Presentada',
+    fecha: '2026-02-07',
+    por: 'Roberto G.',
+    cuartelId: CUARTEL_PRINCIPAL_ID,
+  },
+  {
+    periodo: '2025-12',
+    pct: 100,
+    estado: 'Presentada',
+    fecha: '2026-01-08',
+    por: 'Roberto G.',
+    cuartelId: CUARTEL_PRINCIPAL_ID,
+  },
+];
+
 export const rendicionMayoMock: Rendicion = {
   id: 'rend-2026-05',
   cuartelId: CUARTEL_PRINCIPAL_ID,

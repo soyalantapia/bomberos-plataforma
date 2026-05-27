@@ -26,15 +26,6 @@ import { demoToday } from '../../../../lib/utils/demo-today';
 import { fmtJerarquia, jerarquiaOrden } from '../../../../lib/utils/jerarquia';
 import { useFaroStore, selectCuartelActivo } from '../../../../store/use-faro-store';
 
-const MESES_ANIO = (() => {
-  const today = demoToday();
-  const year = today.getFullYear();
-  const upToMonth = today.getMonth() + 1; // 0-indexed
-  return Array.from({ length: upToMonth }, (_, i) => `${year}-${String(i + 1).padStart(2, '0')}`);
-})();
-
-const MES_ACTUAL = MESES_ANIO[MESES_ANIO.length - 1] ?? '';
-
 export default function ComputoPage() {
   const personas = useFaroStore((s) => s.personas);
   const cuartel = useFaroStore(selectCuartelActivo);
@@ -43,9 +34,18 @@ export default function ComputoPage() {
   const [tab, setTab] = useState('mensual');
   const [personaSel, setPersonaSel] = useState<string>('');
 
+  // F19: calculado dentro del componente para evitar ejecución en SSR/prerender
+  const MESES_ANIO = useMemo(() => {
+    const today = demoToday();
+    const year = today.getFullYear();
+    const upToMonth = today.getMonth() + 1;
+    return Array.from({ length: upToMonth }, (_, i) => `${year}-${String(i + 1).padStart(2, '0')}`);
+  }, []);
+  const MES_ACTUAL = useMemo(() => MESES_ANIO[MESES_ANIO.length - 1] ?? '', [MESES_ANIO]);
+
   const computo = useMemo(
     () => (cuartel ? calcularComputoMensual(asistencias, cuartel.id, MES_ACTUAL) : []),
-    [asistencias, cuartel],
+    [asistencias, cuartel, MES_ACTUAL],
   );
 
   const filas = useMemo(() => {
@@ -85,7 +85,7 @@ export default function ComputoPage() {
       const factor = mes === MES_ACTUAL ? 1 : 0.6 + ((idx * 0.137 + mes.length * 0.05) % 0.4);
       return { mes, total: Math.round((tot || totales.total) * factor) };
     });
-  }, [asistencias, cuartel, totales.total]);
+  }, [asistencias, cuartel, totales.total, MESES_ANIO, MES_ACTUAL]);
 
   const maxAnual = Math.max(...anual.map((a) => a.total), 1);
   const totalAnual = anual.reduce((a, x) => a + x.total, 0);
@@ -165,11 +165,20 @@ export default function ComputoPage() {
                   <thead>
                     <tr className="bg-slate-50 text-slate-600">
                       <th className="px-4 py-2.5 text-left">Persona</th>
-                      <th className="px-2 py-2.5 text-right">Accident.</th>
-                      <th className="px-2 py-2.5 text-right">Obligat.</th>
+                      <th className="px-2 py-2.5 text-right">
+                        <span className="hidden sm:inline">Accidental</span>
+                        <span className="sm:hidden">Acc.</span>
+                      </th>
+                      <th className="px-2 py-2.5 text-right">
+                        <span className="hidden sm:inline">Obligatorio</span>
+                        <span className="sm:hidden">Oblig.</span>
+                      </th>
                       <th className="px-2 py-2.5 text-right">Guardia</th>
                       <th className="px-2 py-2.5 text-right">Jefatura</th>
-                      <th className="px-2 py-2.5 text-right">O.I.</th>
+                      <th className="px-2 py-2.5 text-right">
+                        <span className="hidden sm:inline">Orden Int.</span>
+                        <span className="sm:hidden">O.I.</span>
+                      </th>
                       <th className="px-4 py-2.5 text-right font-bold">Total</th>
                     </tr>
                   </thead>
@@ -233,6 +242,13 @@ export default function ComputoPage() {
               <CardTitle>Año 2026 · {totalAnual} hs acumuladas</CardTitle>
             </CardHeader>
             <CardContent className="p-5">
+              {/* Leyenda estimado */}
+              <div className="mb-3 flex items-center gap-1.5">
+                <div className="bg-brand-600 h-2.5 w-2.5 rounded-sm" />
+                <span className="text-[11px] text-slate-600">Mes actual</span>
+                <div className="ml-3 h-2.5 w-2.5 rounded-sm border border-dashed border-slate-400 bg-slate-200" />
+                <span className="text-[11px] text-slate-500">Estimado (meses anteriores)</span>
+              </div>
               <div className="flex h-48 items-end justify-between gap-3">
                 {anual.map((a, idx) => {
                   const h = (a.total / maxAnual) * 100;
@@ -244,12 +260,14 @@ export default function ComputoPage() {
                     >
                       <div className="relative w-full">
                         <div className="absolute -top-5 left-1/2 -translate-x-1/2 text-[10px] font-bold tabular-nums text-slate-700">
-                          {a.total}
+                          {isCurrent ? a.total : `~${a.total}`}
                         </div>
                         <div
                           className={cn(
                             'w-full rounded-t-md transition-all',
-                            isCurrent ? 'bg-brand-600' : 'bg-slate-300',
+                            isCurrent
+                              ? 'bg-brand-600'
+                              : 'border border-dashed border-slate-400 bg-slate-200',
                           )}
                           style={{ height: `${h}%`, minHeight: '8px' }}
                         />

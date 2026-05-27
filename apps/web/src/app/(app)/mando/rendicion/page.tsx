@@ -35,13 +35,15 @@ import {
 } from '@faro/ui';
 
 import { SemaforoRendicion } from '../../../../components/rendicion/semaforo-rendicion';
+import { rendicionesHistoricasMock } from '../../../../data/rendicion';
+import { fmtMesPeriodo } from '../../../../lib/utils/date';
+import { exportarCsv } from '../../../../lib/utils/export-csv';
 import {
   useFaroStore,
   selectRendicionActual,
   selectPersonaActual,
   selectCuartelActivo,
 } from '../../../../store/use-faro-store';
-import { fmtMesPeriodo } from '../../../../lib/utils/date';
 
 export default function RendicionPage() {
   const rendicion = useFaroStore(selectRendicionActual);
@@ -62,7 +64,9 @@ export default function RendicionPage() {
     (s) => s.cuartelId === cuartel?.id && s.horaSalida.startsWith(periodoMes),
   );
   const serviciosValidados = serviciosMes.filter((s) => s.estado === 'validado').length;
-  const serviciosPendientes = serviciosMes.filter((s) => s.estado === 'pendiente_validacion').length;
+  const serviciosPendientes = serviciosMes.filter(
+    (s) => s.estado === 'pendiente_validacion',
+  ).length;
   const serviciosTexto = `${serviciosMes.length} (validados ${serviciosValidados}/pendientes ${serviciosPendientes})`;
 
   async function abrirCopiloto() {
@@ -311,71 +315,50 @@ export default function RendicionPage() {
             </CardHeader>
             <CardContent className="p-0">
               <ul className="divide-y divide-slate-100">
-                {[
-                  {
-                    periodo: '2026-04',
-                    pct: 100,
-                    estado: 'Presentada',
-                    fecha: '8/5/2026',
-                    por: 'Mariana P.',
-                  },
-                  {
-                    periodo: '2026-03',
-                    pct: 100,
-                    estado: 'Presentada',
-                    fecha: '8/4/2026',
-                    por: 'Roberto G.',
-                  },
-                  {
-                    periodo: '2026-02',
-                    pct: 95,
-                    estado: 'Presentada · con observación',
-                    fecha: '8/3/2026',
-                    por: 'Roberto G.',
-                  },
-                  {
-                    periodo: '2026-01',
-                    pct: 100,
-                    estado: 'Presentada',
-                    fecha: '7/2/2026',
-                    por: 'Roberto G.',
-                  },
-                  {
-                    periodo: '2025-12',
-                    pct: 100,
-                    estado: 'Presentada',
-                    fecha: '8/1/2026',
-                    por: 'Roberto G.',
-                  },
-                ].map((h) => (
-                  <li key={h.periodo} className="flex items-center gap-3 p-4 hover:bg-slate-50">
-                    <div className="bg-status-ok-bg/40 text-status-ok-fg grid h-12 w-12 shrink-0 place-items-center rounded-xl">
-                      <Check size={20} />
-                    </div>
-                    <div className="min-w-0 flex-1">
-                      <div className="font-bold capitalize text-slate-900">
-                        {fmtMesPeriodo(h.periodo)}
+                {rendicionesHistoricasMock
+                  .filter((h) => !cuartel || h.cuartelId === cuartel.id)
+                  .map((h) => (
+                    <li key={h.periodo} className="flex items-center gap-3 p-4 hover:bg-slate-50">
+                      <div className="bg-status-ok-bg/40 text-status-ok-fg grid h-12 w-12 shrink-0 place-items-center rounded-xl">
+                        <Check size={20} />
                       </div>
-                      <div className="mt-0.5 text-xs text-slate-600">
-                        {h.estado} · {h.fecha} · por {h.por}
+                      <div className="min-w-0 flex-1">
+                        <div className="font-bold capitalize text-slate-900">
+                          {fmtMesPeriodo(h.periodo)}
+                        </div>
+                        <div className="mt-0.5 text-xs text-slate-600">
+                          {h.estado} · {new Date(h.fecha).toLocaleDateString('es-AR')} · por {h.por}
+                        </div>
                       </div>
-                    </div>
-                    <Badge intent="ok">{h.pct}%</Badge>
-                    <button
-                      type="button"
-                      onClick={() =>
-                        toast.push({
-                          kind: 'info',
-                          title: `Descargando ${fmtMesPeriodo(h.periodo)}`,
-                          description: 'PDF firmado + anexos',
-                        })
-                      }
-                      className="rounded-md border border-slate-200 bg-white px-2.5 py-1.5 text-xs font-medium text-slate-700 hover:border-slate-300"
-                    >
-                      <Download size={12} className="mr-1 inline" /> PDF
-                    </button>
-                  </li>
-                ))}
+                      <Badge intent="ok">{h.pct}%</Badge>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          exportarCsv(
+                            `rendicion-${h.periodo}-resumen`,
+                            ['Campo', 'Valor'],
+                            [
+                              ['Período', h.periodo],
+                              ['Estado', h.estado],
+                              ['Presentada', new Date(h.fecha).toLocaleDateString('es-AR')],
+                              ['Responsable', h.por],
+                              ['Avance', `${h.pct}%`],
+                              ['Cuartel', cuartel?.nombre ?? ''],
+                            ],
+                          );
+                          toast.push({
+                            kind: 'success',
+                            title: `Descargado ${fmtMesPeriodo(h.periodo)}`,
+                            description: `rendicion-${h.periodo}-resumen.csv`,
+                          });
+                        }}
+                        className="rounded-md border border-slate-200 bg-white px-2.5 py-1.5 text-xs font-medium text-slate-700 hover:border-slate-300"
+                        aria-label={`Descargar resumen de ${fmtMesPeriodo(h.periodo)}`}
+                      >
+                        <Download size={12} className="mr-1 inline" /> PDF
+                      </button>
+                    </li>
+                  ))}
               </ul>
             </CardContent>
           </Card>

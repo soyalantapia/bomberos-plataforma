@@ -14,18 +14,28 @@ import {
   Upload,
 } from 'lucide-react';
 import Link from 'next/link';
-import { useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 import { Badge, Button, Card, CardContent, Kpi, cn, useToast } from '@faro/ui';
 
 import { PageHero } from '../../../../../components/shared/page-hero';
 import { fmtMesPeriodo, mesActual } from '../../../../../lib/utils/date';
+import { exportarCsv } from '../../../../../lib/utils/export-csv';
 import {
   selectCuartelActivo,
   selectPersonaActual,
   selectRendicionActual,
   useFaroStore,
 } from '../../../../../store/use-faro-store';
+
+import type { CategoriaEgreso } from '@faro/types';
+
+/** Texto legal de la declaración jurada. Centralizado para facilitar
+ *  cambios normativos (Res. MS 272/2025 + Ley 25.054). */
+const DECLARACION_LEGAL = {
+  normativa: 'Res. MS 272/2025',
+  marco: 'Ley 25.054 y su modificación 26.987',
+} as const;
 
 type Paso = 1 | 2 | 3 | 4 | 5;
 
@@ -38,71 +48,78 @@ interface ItemRendicion {
   validado: boolean;
 }
 
-const ITEMS_DEMO: ItemRendicion[] = [
-  {
-    id: 'r-1',
-    categoria: 'Operativo',
-    concepto: 'Combustible móviles BV-3, BV-5, BV-7',
-    monto: 2_450_000,
-    comprobante: 'YPF Factura A-0012-00045',
-    validado: true,
-  },
-  {
-    id: 'r-2',
-    categoria: 'Operativo',
-    concepto: 'Mantenimiento Móvil BV-5 (revisión completa)',
-    monto: 380_000,
-    comprobante: 'Taller Pereyra Factura B-005-00012',
-    validado: true,
-  },
-  {
-    id: 'r-3',
-    categoria: 'Operativo',
-    concepto: 'EPP renovación · 4 sets completos',
-    monto: 1_200_000,
-    comprobante: 'Promace S.A. Factura A-0001-00832',
-    validado: true,
-  },
-  {
-    id: 'r-4',
-    categoria: 'Administrativo',
-    concepto: 'Servicios públicos cuartel',
-    monto: 165_000,
-    comprobante: 'Edenor + ABSA + Camuzzi',
-    validado: true,
-  },
-  {
-    id: 'r-5',
-    categoria: 'Capacitación',
-    concepto: 'Curso rescate vehicular · 12 personas',
-    monto: 540_000,
-    comprobante: 'Recibo curso 2026-1142',
-    validado: true,
-  },
-  {
-    id: 'r-6',
-    categoria: 'Administrativo',
-    concepto: 'Honorarios contables marzo-mayo',
-    monto: 285_000,
-    comprobante: 'Cdor. González Recibo 2026-0532',
-    validado: false,
-  },
-];
+/** Agrupa categorías técnicas en los 4 ejes Ley 25.054. */
+function ejeRendicion(cat: CategoriaEgreso | undefined): string {
+  if (!cat) return 'Otros';
+  if (
+    cat === 'combustible' ||
+    cat === 'mantenimiento_movil' ||
+    cat === 'epp_equipamiento' ||
+    cat === 'insumos_medicos'
+  )
+    return 'Operativo';
+  if (cat === 'capacitacion') return 'Capacitación';
+  if (cat === 'personal_rentado') return 'Personal rentado';
+  if (
+    cat === 'administrativo' ||
+    cat === 'servicios_publicos' ||
+    cat === 'seguros' ||
+    cat === 'impuestos_tasas'
+  )
+    return 'Administrativo';
+  if (cat === 'inversion_bienes_uso') return 'Bienes de uso';
+  return 'Otros';
+}
 
 export default function PresentarRendicionPage() {
   const cuartel = useFaroStore(selectCuartelActivo);
   const rendicion = useFaroStore(selectRendicionActual);
   const persona = useFaroStore(selectPersonaActual);
   const sesion = useFaroStore((s) => s.sesion);
+  const movimientos = useFaroStore((s) => s.movimientos);
+  const cuentas = useFaroStore((s) => s.cuentas);
   const presentarRendicion = useFaroStore((s) => s.presentarRendicion);
   const toast = useToast();
 
+  // Construir ítems a partir de los movimientos reales del período de la rendición
+  const itemsDelStore = useMemo<ItemRendicion[]>(() => {
+    if (!rendicion) return [];
+    const cuentaPorId = new Map(cuentas.map((c) => [c.id, c]));
+    return movimientos
+      .filter(
+        (m) =>
+          m.tipo === 'egreso' && m.estado !== 'anulado' && m.fecha.startsWith(rendicion.periodo),
+      )
+      .sort((a, b) => b.monto - a.monto)
+      .slice(0, 12) // limitamos para que el paso 1 sea legible
+      .map<ItemRendicion>((m) => {
+        const cta = cuentaPorId.get(m.cuentaId);
+        return {
+          id: m.id,
+          categoria: ejeRendicion(cta?.categoria as CategoriaEgreso | undefined),
+          concepto: m.descripcion,
+          monto: m.monto,
+          comprobante: m.comprobanteNumero
+            ? `${m.contraparte ?? ''} ${m.comprobanteTipo ?? ''} ${m.comprobanteNumero}`.trim()
+            : (m.contraparte ?? 'Sin comprobante'),
+          validado: m.estado === 'conciliado' && Boolean(m.comprobanteNumero),
+        };
+      });
+  }, [rendicion, movimientos, cuentas]);
+
   const [paso, setPaso] = useState<Paso>(1);
-  const [items, setItems] = useState<ItemRendicion[]>(ITEMS_DEMO);
+  const [items, setItems] = useState<ItemRendicion[]>(itemsDelStore);
   const [aceptaDeclaracion, setAceptaDeclaracion] = useState(false);
   const [presentando, setPresentando] = useState(false);
   const [presentada, setPresentada] = useState(false);
   const [comprobante, setComprobante] = useState<string | null>(null);
+
+  // Hidratar items si la rendición/store cargan después del primer render
+  useEffect(() => {
+    if (items.length === 0 && itemsDelStore.length > 0 && !presentada && !presentando) {
+      setItems(itemsDelStore);
+    }
+  }, [itemsDelStore, items.length, presentada, presentando]);
 
   const total = items.reduce((acc, i) => acc + i.monto, 0);
   const totalValidados = items.filter((i) => i.validado).reduce((acc, i) => acc + i.monto, 0);
@@ -122,7 +139,7 @@ export default function PresentarRendicionPage() {
       const cod = 'RND-' + Date.now().toString().slice(-8);
       setComprobante(cod);
       if (rendicion) {
-        presentarRendicion(rendicion.id, sesion?.personaId ?? persona?.id ?? 'persona-1');
+        presentarRendicion(rendicion.id, sesion?.personaId ?? persona?.id ?? 'persona-001');
       }
       toast.push({
         kind: 'success',
@@ -158,7 +175,7 @@ export default function PresentarRendicionPage() {
             ? 'Rendición presentada al sistema nacional'
             : `Presentar rendición · ${fmtMesPeriodo(rendicion?.periodo ?? mesActual())}`
         }
-        descripcion="Paso a paso según Res. MS 272/2025. Genera el archivo exacto que pide el sistema nacional de rendiciones."
+        descripcion={`Paso a paso según ${DECLARACION_LEGAL.normativa}. Genera el archivo exacto que pide el sistema nacional de rendiciones.`}
         icono={<FileCheck2 size={26} />}
         variant={presentada ? 'success' : 'default'}
         meta={
@@ -437,11 +454,12 @@ export default function PresentarRendicionPage() {
                     <strong>{cuartel?.nombre}</strong>, declara bajo juramento que los ítems y
                     comprobantes incluidos en esta rendición son veraces, corresponden al período{' '}
                     <strong>{fmtMesPeriodo(rendicion?.periodo ?? mesActual())}</strong> y se
-                    enmarcan en la Ley 25.054 y su modificación 26.987.
+                    enmarcan en la <strong>{DECLARACION_LEGAL.marco}</strong>.
                   </p>
                   <p>
                     Toda diferencia material detectada por la auditoría del sistema nacional será
-                    responsabilidad del firmante.
+                    responsabilidad del firmante (norma de presentación:{' '}
+                    {DECLARACION_LEGAL.normativa}).
                   </p>
                 </div>
 
@@ -489,6 +507,7 @@ export default function PresentarRendicionPage() {
                     size="lg"
                     onClick={presentarFondo}
                     disabled={presentando}
+                    aria-busy={presentando}
                     className="mt-4"
                   >
                     {presentando ? (
@@ -499,6 +518,11 @@ export default function PresentarRendicionPage() {
                       </>
                     )}
                   </Button>
+                  {presentando && (
+                    <span role="status" aria-live="polite" className="sr-only">
+                      Presentando rendición al sistema nacional, esto puede tardar unos segundos.
+                    </span>
+                  )}
                 </CardContent>
               </Card>
             ) : (
@@ -521,11 +545,50 @@ export default function PresentarRendicionPage() {
                   </p>
 
                   <div className="mt-4 flex flex-wrap justify-center gap-2">
-                    <Button intent="secondary" size="sm">
-                      <Download size={14} /> Descargar XML
+                    <Button
+                      intent="secondary"
+                      size="sm"
+                      onClick={() => {
+                        const headers = ['Campo', 'Valor'];
+                        const rows: Array<Array<string | number>> = [
+                          ['Comprobante', comprobante ?? ''],
+                          ['Cuartel', cuartel?.nombre ?? ''],
+                          ['Período', rendicion?.periodo ?? mesActual()],
+                          ['Ítems', items.length],
+                          ['Total presentado', totalValidados],
+                          ['Subsidio (80%)', Math.round(totalValidados * 0.8)],
+                          ['Normativa', DECLARACION_LEGAL.normativa],
+                          ['Marco', DECLARACION_LEGAL.marco],
+                        ];
+                        exportarCsv(`rendicion-${comprobante ?? 'sin-cod'}`, headers, rows);
+                      }}
+                    >
+                      <Download size={14} /> Descargar resumen
                     </Button>
-                    <Button intent="secondary" size="sm">
-                      <Download size={14} /> Comprobante PDF firmado
+                    <Button
+                      intent="secondary"
+                      size="sm"
+                      onClick={() => {
+                        const headers = [
+                          'ID',
+                          'Categoría',
+                          'Concepto',
+                          'Comprobante',
+                          'Monto',
+                          'Validado',
+                        ];
+                        const rows = items.map((it) => [
+                          it.id,
+                          it.categoria,
+                          it.concepto,
+                          it.comprobante ?? '',
+                          it.monto,
+                          it.validado ? 'Sí' : 'No',
+                        ]);
+                        exportarCsv(`rendicion-detalle-${comprobante ?? 'sin-cod'}`, headers, rows);
+                      }}
+                    >
+                      <Download size={14} /> Detalle de ítems
                     </Button>
                     <Link href="/mando/rendicion">
                       <Button intent="primary" size="sm">

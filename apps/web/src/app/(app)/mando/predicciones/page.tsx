@@ -47,6 +47,7 @@ const RECOMENDACIONES = [
     detalle:
       'Se estiman 48 servicios (+14% vs el año pasado) por temporada de incendios forestales. Recomendado: reforzar forestal con 4 cursos adicionales en el último trimestre.',
     accion: 'Programar capacitación',
+    href: '/bombero/capacitacion',
     icon: <Flame size={16} />,
     intent: 'warn' as const,
   },
@@ -55,6 +56,7 @@ const RECOMENDACIONES = [
     detalle:
       'Estimación: 8 servicios promedio domingo 22-04 hs. Disponibles: 6 voluntarios. Recomendado: sumar 4 voluntarios más en esa franja.',
     accion: 'Notificar a voluntarios',
+    href: '/comunicacion',
     icon: <Users size={16} />,
     intent: 'risk' as const,
   },
@@ -63,6 +65,7 @@ const RECOMENDACIONES = [
     detalle:
       '12 voluntarios capacitados, sólo 3 activos en operativos de materiales peligrosos. Recomendado: rotación obligatoria para mantener la práctica.',
     accion: 'Ajustar guardias',
+    href: '/mando/personal',
     icon: <GraduationCap size={16} />,
     intent: 'brand' as const,
   },
@@ -71,6 +74,7 @@ const RECOMENDACIONES = [
     detalle:
       'Tendencia a la baja por la construcción de la autopista. Se puede reasignar presupuesto a equipamiento estructural.',
     accion: 'Revisar inversión',
+    href: '/mando/finanzas/presupuesto',
     icon: <TrendingDown size={16} />,
     intent: 'brand' as const,
   },
@@ -105,15 +109,20 @@ export default function PrediccionesPage() {
         icono={<Sparkles size={26} />}
         meta={
           <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
-            <Kpi label="Próx 30 días" value="+18%" hint="vs mes ant." intent="warn" />
-            <Kpi label="Próx 12 meses" value="318" hint="serv. estimados" intent="brand" />
+            <Kpi
+              label="Próx 30 días"
+              value="+18%"
+              hint="vs mes ant. · 36m historial"
+              intent="warn"
+            />
+            <Kpi label="Próx 12 meses" value="318" hint="serv. estimados · 36m" intent="brand" />
             <Kpi
               label="Pico horario"
               value={`${DIAS_SEMANA[hotDia]} ${hotHora}h`}
               hint={`${hotMax} serv/sem`}
               intent="risk"
             />
-            <Kpi label="Precisión" value="87%" intent="ok" />
+            <Kpi label="Precisión" value="87%" hint="basado en 36 meses" intent="ok" />
           </div>
         }
       />
@@ -129,7 +138,13 @@ export default function PrediccionesPage() {
               Más oscuro = más servicios estimados. Tocá para detalle.
             </p>
           </div>
-          <div className="overflow-x-auto p-4">
+          {/* F26: anima el contenedor una sola vez en lugar de 168 motion.div */}
+          <motion.div
+            className="overflow-x-auto p-4"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.35 }}
+          >
             <div className="min-w-[600px]">
               <div className="flex">
                 <div className="w-12 shrink-0" />
@@ -146,29 +161,26 @@ export default function PrediccionesPage() {
                     const v = predict(dIdx, h);
                     const intensity = Math.min(1, v / 18);
                     return (
-                      <motion.div
+                      /* F27: celda accesible como button con aria-label */
+                      <button
                         key={h}
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        transition={{ delay: (dIdx * 24 + h) * 0.003 }}
-                        className={cn(
-                          'mx-px my-px flex-1 rounded-sm text-center text-[9px] font-bold text-white',
-                        )}
+                        type="button"
+                        aria-label={`${dia} a las ${h}h — ${v} servicios estimados por semana`}
+                        className="mx-px my-px flex-1 rounded-sm text-center text-[9px] font-bold text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-500"
                         style={{
                           backgroundColor: `rgba(220, 38, 38, ${intensity})`,
                           minHeight: 22,
                           paddingTop: 4,
                         }}
-                        title={`${dia} ${h}h: ${v} serv/sem`}
                       >
                         {v >= 12 ? v : ''}
-                      </motion.div>
+                      </button>
                     );
                   })}
                 </div>
               ))}
             </div>
-          </div>
+          </motion.div>
         </CardContent>
       </Card>
 
@@ -253,12 +265,12 @@ export default function PrediccionesPage() {
                   <div className="min-w-0 flex-1">
                     <h4 className="font-bold text-slate-900">{r.titulo}</h4>
                     <p className="mt-1 text-sm text-slate-700">{r.detalle}</p>
-                    <button
-                      type="button"
-                      className="text-brand-700 hover:text-brand-900 mt-2 text-xs font-medium"
+                    <a
+                      href={r.href}
+                      className="text-brand-700 hover:text-brand-900 mt-2 inline-block text-xs font-medium underline-offset-2 hover:underline"
                     >
                       {r.accion} →
-                    </button>
+                    </a>
                   </div>
                 </div>
               </CardContent>

@@ -566,9 +566,10 @@ export default function PlanCuentasPage() {
         </Card>
 
         {/* Panel detalle de cuenta seleccionada */}
-        <AnimatePresence>
+        <AnimatePresence mode="wait">
           {seleccionada && (
             <motion.div
+              key={seleccionadaId}
               initial={{ opacity: 0, x: 12 }}
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: 12 }}

@@ -29,7 +29,9 @@ import {
   fechaCorta,
 } from '../../../../components/finanzas/utils';
 import { PageHero } from '../../../../components/shared/page-hero';
+import { mesAnteriorKey, mesKey, nombreMes } from '../../../../lib/utils/date';
 import { demoToday } from '../../../../lib/utils/demo-today';
+import { exportarCsv } from '../../../../lib/utils/export-csv';
 import { useFaroStore } from '../../../../store/use-faro-store';
 
 const VENCIMIENTOS = [
@@ -54,9 +56,12 @@ export default function FinanzasDashboardPage() {
   const presupuestos = useFaroStore((s) => s.presupuestos);
   const [openNuevo, setOpenNuevo] = useState(false);
 
-  // KPIs del mes actual
-  const mesActual = '2026-05';
-  const mesAnterior = '2026-04';
+  // KPIs del mes actual (derivado del DEMO_TODAY consolidado)
+  const hoy = demoToday();
+  const mesActual = mesKey(hoy);
+  const mesAnterior = mesAnteriorKey(hoy);
+  const mesActualNombre = nombreMes(mesActual);
+  const mesAnteriorAbrev = nombreMes(mesAnterior).slice(0, 3);
 
   const movsConciliados = useMemo(
     () => movimientos.filter((m) => m.estado === 'conciliado'),
@@ -179,10 +184,27 @@ export default function FinanzasDashboardPage() {
   );
 
   function exportarBalance() {
+    // Balance ejecutivo del mes en CSV (resumen + composición)
+    const rows: Array<Array<string | number>> = [
+      ['Sección', 'Concepto', 'Monto ARS'],
+      ['Resumen', `Ingresos ${mesActualNombre}`, ingMes],
+      ['Resumen', `Egresos ${mesActualNombre}`, egrMes],
+      ['Resumen', 'Saldo del mes', saldoMes],
+      ['Resumen', 'Saldo total (todas las cajas)', saldoTotal],
+      ['Saldos', 'Caja', 'Saldo actual'],
+      ...cajas.map((c) => ['Saldos', c.nombre, c.saldoActual]),
+      ['Top egresos', 'Categoría', 'Monto'],
+      ...topEgresos.map(([cat, monto]) => [
+        'Top egresos',
+        CATEGORIA_EGRESO_LABEL[cat as keyof typeof CATEGORIA_EGRESO_LABEL] ?? cat,
+        monto,
+      ]),
+    ];
+    exportarCsv(`balance-faro-${mesActual}`, rows[0]!.map(String), rows.slice(1));
     toast.push({
-      kind: 'info',
-      title: 'Generando balance ejecutivo',
-      description: 'Balance-Faro-2026-05.pdf · 18 páginas',
+      kind: 'success',
+      title: 'Balance descargado',
+      description: `balance-faro-${mesActual}.csv`,
     });
   }
 
@@ -206,16 +228,16 @@ export default function FinanzasDashboardPage() {
           meta={
             <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
               <Kpi
-                label="Ingresos mayo"
+                label={`Ingresos ${mesActualNombre}`}
                 value={arsCompact(ingMes)}
                 intent="ok"
-                hint={`${variacionIngresos >= 0 ? '+' : ''}${variacionIngresos.toFixed(0)}% vs abr`}
+                hint={`${variacionIngresos >= 0 ? '+' : ''}${variacionIngresos.toFixed(0)}% vs ${mesAnteriorAbrev}`}
               />
               <Kpi
-                label="Egresos mayo"
+                label={`Egresos ${mesActualNombre}`}
                 value={arsCompact(egrMes)}
                 intent="warn"
-                hint={`${variacionEgresos >= 0 ? '+' : ''}${variacionEgresos.toFixed(0)}% vs abr`}
+                hint={`${variacionEgresos >= 0 ? '+' : ''}${variacionEgresos.toFixed(0)}% vs ${mesAnteriorAbrev}`}
               />
               <Kpi
                 label="Saldo mes"
@@ -384,8 +406,9 @@ export default function FinanzasDashboardPage() {
           {/* Top 5 egresos */}
           <Card>
             <CardContent className="p-5">
-              <h3 className="mb-3 font-bold text-slate-900">
-                <ArrowDownRight size={14} className="mr-1 inline" /> Top 5 egresos · mayo
+              <h3 className="mb-3 font-bold capitalize text-slate-900">
+                <ArrowDownRight size={14} className="mr-1 inline" /> Top 5 egresos ·{' '}
+                {mesActualNombre}
               </h3>
               <ul className="space-y-2">
                 {topEgresos.map(([cat, monto], i) => {
@@ -521,8 +544,9 @@ export default function FinanzasDashboardPage() {
           {/* Ingresos del mes desglosados */}
           <Card>
             <CardContent className="p-5">
-              <h3 className="mb-3 font-bold text-slate-900">
-                <ArrowUpRight size={14} className="mr-1 inline" /> Composición ingresos · mayo
+              <h3 className="mb-3 font-bold capitalize text-slate-900">
+                <ArrowUpRight size={14} className="mr-1 inline" /> Composición ingresos ·{' '}
+                {mesActualNombre}
               </h3>
               <ul className="space-y-2">
                 {Array.from(

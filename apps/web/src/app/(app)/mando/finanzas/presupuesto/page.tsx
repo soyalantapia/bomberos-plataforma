@@ -17,6 +17,7 @@ import { useMemo } from 'react';
 import { ars, arsCompact } from '../../../../../components/finanzas/utils';
 import { PageHero } from '../../../../../components/shared/page-hero';
 import { demoToday } from '../../../../../lib/utils/demo-today';
+import { exportarCsv } from '../../../../../lib/utils/export-csv';
 import { useFaroStore } from '../../../../../store/use-faro-store';
 
 export default function PresupuestoPage() {
@@ -127,7 +128,40 @@ export default function PresupuestoPage() {
           <Button
             intent="ghost"
             size="sm"
-            onClick={() => toast.push({ kind: 'info', title: 'Exportando presupuesto Excel' })}
+            onClick={() => {
+              const headers = [
+                'Tipo',
+                'Cuenta',
+                'Presupuestado anual',
+                'Ejecutado YTD',
+                '% ejecutado',
+                'Desvío vs % año',
+              ];
+              const rows: Array<Array<string | number>> = [
+                ...lineasIngresos.map((l) => [
+                  'Ingreso',
+                  l.cuenta.nombre,
+                  l.presupuesto,
+                  l.ejecutado,
+                  Number(l.pctEjec.toFixed(1)),
+                  Number(l.desvio.toFixed(1)),
+                ]),
+                ...lineasEgresos.map((l) => [
+                  'Egreso',
+                  l.cuenta.nombre,
+                  l.presupuesto,
+                  l.ejecutado,
+                  Number(l.pctEjec.toFixed(1)),
+                  Number(l.desvio.toFixed(1)),
+                ]),
+              ];
+              exportarCsv(`presupuesto-${presupuesto.anio}`, headers, rows);
+              toast.push({
+                kind: 'success',
+                title: 'Presupuesto descargado',
+                description: `presupuesto-${presupuesto.anio}.csv`,
+              });
+            }}
           >
             <Download size={12} /> Exportar
           </Button>
@@ -160,8 +194,13 @@ export default function PresupuestoPage() {
                   animate={{ width: `${Math.min(100, pctIngresos)}%` }}
                   className="bg-status-ok h-full"
                 />
-                <div className="absolute inset-0 flex items-center justify-center text-xs font-bold text-white mix-blend-difference">
-                  {ars.format(totalIngEjec)} de {ars.format(totalIngPres)}
+                <div className="absolute inset-0 flex items-center justify-center text-xs font-bold text-slate-900 [text-shadow:0_1px_2px_rgba(255,255,255,0.7)]">
+                  <span className="hidden sm:inline">
+                    {ars.format(totalIngEjec)} de {ars.format(totalIngPres)}
+                  </span>
+                  <span className="sm:hidden">
+                    {arsCompact(totalIngEjec)} / {arsCompact(totalIngPres)}
+                  </span>
                 </div>
               </div>
               <div className="mt-1 flex justify-between text-xs text-slate-500">
@@ -202,8 +241,13 @@ export default function PresupuestoPage() {
                     pctEgresos > pctAnio + 10 ? 'bg-status-risk' : 'bg-status-warn',
                   )}
                 />
-                <div className="absolute inset-0 flex items-center justify-center text-xs font-bold text-white mix-blend-difference">
-                  {ars.format(totalEgrEjec)} de {ars.format(totalEgrPres)}
+                <div className="absolute inset-0 flex items-center justify-center text-xs font-bold text-slate-900 [text-shadow:0_1px_2px_rgba(255,255,255,0.7)]">
+                  <span className="hidden sm:inline">
+                    {ars.format(totalEgrEjec)} de {ars.format(totalEgrPres)}
+                  </span>
+                  <span className="sm:hidden">
+                    {arsCompact(totalEgrEjec)} / {arsCompact(totalEgrPres)}
+                  </span>
                 </div>
               </div>
               <div className="mt-1 flex justify-between text-xs text-slate-500">

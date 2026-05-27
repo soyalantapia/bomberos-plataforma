@@ -19,6 +19,7 @@ import {
   BadgeDollarSign,
   Calendar,
   CheckCircle2,
+  ChevronDown,
   CreditCard,
   Mail,
   MessageSquare,
@@ -187,18 +188,25 @@ export default function CuotasPage() {
                 className="pl-9"
               />
             </div>
-            <select
-              value={periodoFiltro}
-              onChange={(e) => setPeriodoFiltro(e.target.value)}
-              className="rounded-lg border border-slate-200 bg-white px-2 py-1.5 text-xs"
-            >
-              <option value="todos">Todos los períodos</option>
-              {periodos.map((p) => (
-                <option key={p} value={p}>
-                  {p}
-                </option>
-              ))}
-            </select>
+            <div className="relative">
+              <select
+                value={periodoFiltro}
+                onChange={(e) => setPeriodoFiltro(e.target.value)}
+                className="focus:border-brand-400 focus:ring-brand-100 appearance-none rounded-lg border border-slate-200 bg-white py-1.5 pl-2 pr-7 text-xs outline-none focus:ring-2"
+                aria-label="Filtrar por período"
+              >
+                <option value="todos">Todos los períodos</option>
+                {periodos.map((p) => (
+                  <option key={p} value={p}>
+                    {p}
+                  </option>
+                ))}
+              </select>
+              <ChevronDown
+                size={12}
+                className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-slate-400"
+              />
+            </div>
             <div className="flex gap-1">
               {(['todas', 'pendiente', 'vencida', 'pagada'] as const).map((e) => (
                 <button
@@ -378,30 +386,44 @@ export default function CuotasPage() {
           )}
           <div>
             <Label>¿Cómo pagó?</Label>
-            <select
-              value={cobroMedio}
-              onChange={(e) => setCobroMedio(e.target.value as MedioPago)}
-              className="focus:border-brand-400 mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm outline-none focus:ring-2"
-            >
-              <option value="mercadopago">MercadoPago</option>
-              <option value="efectivo">Efectivo</option>
-              <option value="transferencia">Transferencia</option>
-              <option value="tarjeta_debito">Tarjeta débito</option>
-            </select>
+            <div className="relative mt-1">
+              <select
+                value={cobroMedio}
+                onChange={(e) => setCobroMedio(e.target.value as MedioPago)}
+                className="focus:border-brand-400 focus:ring-brand-100 w-full appearance-none rounded-lg border border-slate-200 bg-white py-2 pl-3 pr-9 text-sm outline-none focus:ring-2"
+              >
+                <option value="mercadopago">MercadoPago</option>
+                <option value="efectivo">Efectivo</option>
+                <option value="transferencia">Transferencia</option>
+                <option value="tarjeta_debito">Tarjeta débito</option>
+              </select>
+              <ChevronDown
+                size={14}
+                className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-400"
+              />
+            </div>
           </div>
           <div>
             <Label>¿Dónde entra la plata?</Label>
-            <select
-              value={cobroCaja}
-              onChange={(e) => setCobroCaja(e.target.value)}
-              className="focus:border-brand-400 mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm outline-none focus:ring-2"
-            >
-              {cajas.map((c) => (
-                <option key={c.id} value={c.id}>
-                  {c.nombre}
-                </option>
-              ))}
-            </select>
+            <div className="relative mt-1">
+              <select
+                value={cobroCaja}
+                onChange={(e) => setCobroCaja(e.target.value)}
+                disabled={cajas.length === 0}
+                className="focus:border-brand-400 focus:ring-brand-100 w-full appearance-none rounded-lg border border-slate-200 bg-white py-2 pl-3 pr-9 text-sm outline-none focus:ring-2 disabled:bg-slate-50 disabled:text-slate-400"
+              >
+                {cajas.length === 0 && <option value="">Sin cajas configuradas</option>}
+                {cajas.map((c) => (
+                  <option key={c.id} value={c.id}>
+                    {c.nombre}
+                  </option>
+                ))}
+              </select>
+              <ChevronDown
+                size={14}
+                className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-400"
+              />
+            </div>
           </div>
           {cobrando?.cargoRecargo && (
             <div className="bg-status-warn-bg text-status-warn-fg rounded-lg p-2 text-xs">
