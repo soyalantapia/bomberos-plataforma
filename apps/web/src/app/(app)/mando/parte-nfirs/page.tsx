@@ -21,6 +21,7 @@ import { useRef, useState } from 'react';
 
 import { ConfirmDialog } from '../../../../components/shared/confirm-dialog';
 import { PageHero } from '../../../../components/shared/page-hero';
+import { demoToday } from '../../../../lib/utils/demo-today';
 
 type Paso = 1 | 2 | 3 | 4 | 5;
 
@@ -111,7 +112,9 @@ export default function ParteNFIRSPage() {
   const [confirmaFirma, setConfirmaFirma] = useState(false);
   const [hashFirma, setHashFirma] = useState<string>('');
 
-  const [numeroInicial] = useState(() => 'PS-2026-' + Math.random().toString().slice(2, 8));
+  const [numeroInicial] = useState(
+    () => 'PS-' + demoToday().getFullYear() + '-' + Math.random().toString().slice(2, 8),
+  );
 
   const [data, setData] = useState<ParteData>({
     numero: numeroInicial,
@@ -303,7 +306,11 @@ export default function ParteNFIRSPage() {
                   setOtpRequest(false);
                   setData({
                     ...data,
-                    numero: 'PS-2026-' + Math.random().toString().slice(2, 8),
+                    numero:
+                      'PS-' +
+                      demoToday().getFullYear() +
+                      '-' +
+                      Math.random().toString().slice(2, 8),
                   });
                 }}
               >
