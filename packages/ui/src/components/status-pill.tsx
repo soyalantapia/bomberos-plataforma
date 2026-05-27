@@ -32,7 +32,7 @@ export function StatusPill({
   return (
     <span
       className={cn(
-        'inline-flex items-center gap-1.5 rounded-full font-medium',
+        'inline-flex max-w-full items-center gap-1.5 truncate rounded-full font-medium tabular-nums',
         bgColor[status],
         size === 'sm' && 'px-2 py-0.5 text-xs',
         size === 'md' && 'px-3 py-1 text-sm',
@@ -40,8 +40,10 @@ export function StatusPill({
         className,
       )}
     >
-      {withDot && <span className={cn('h-2 w-2 rounded-full', dotColor[status])} />}
-      {label}
+      {withDot && (
+        <span className={cn('h-2 w-2 shrink-0 rounded-full', dotColor[status])} />
+      )}
+      <span className="truncate">{label}</span>
     </span>
   );
 }

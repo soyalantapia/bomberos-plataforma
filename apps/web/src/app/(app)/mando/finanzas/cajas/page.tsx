@@ -35,6 +35,7 @@ import {
   fechaCorta,
 } from '../../../../../components/finanzas/utils';
 import { PageHero } from '../../../../../components/shared/page-hero';
+import { demoToday } from '../../../../../lib/utils/demo-today';
 import { useFaroStore } from '../../../../../store/use-faro-store';
 
 import type { Caja, TipoCaja } from '@faro/types';
@@ -62,6 +63,7 @@ export default function CajasPage() {
   const cajas = useFaroStore((s) => s.cajas);
   const movimientos = useFaroStore((s) => s.movimientos);
   const transferirEntreCajas = useFaroStore((s) => s.transferirEntreCajas);
+  const actualizarCaja = useFaroStore((s) => s.actualizarCaja);
   const [openNueva, setOpenNueva] = useState(false);
   const [openTransfer, setOpenTransfer] = useState(false);
   const [cajaSel, setCajaSel] = useState<Caja | null>(null);
@@ -116,10 +118,10 @@ export default function CajasPage() {
   }
 
   function conciliar(caja: Caja) {
-    // Mock: marca el saldo conciliado igual al actual
-    useFaroStore.getState().actualizarCaja(caja.id, {
+    // Marca el saldo conciliado igual al actual
+    actualizarCaja(caja.id, {
       saldoConciliado: caja.saldoActual,
-      fechaUltimaConciliacion: new Date().toISOString().slice(0, 10),
+      fechaUltimaConciliacion: demoToday().toISOString().slice(0, 10),
     });
     toast.push({
       kind: 'success',

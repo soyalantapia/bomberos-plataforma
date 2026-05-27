@@ -30,6 +30,7 @@ import {
 } from '@faro/ui';
 
 import { PageHero } from '../../../../components/shared/page-hero';
+import { demoTodayMinus } from '../../../../lib/utils/demo-today';
 
 type Categoria = 'licencia' | 'ascenso' | 'sancion';
 interface Solicitud {
@@ -44,6 +45,9 @@ interface Solicitud {
   categoria: Categoria;
 }
 
+const fechaRel = (dias: number) => demoTodayMinus(dias).toLocaleDateString('es-AR');
+
+// TODO: cuando exista slice `aprobaciones` en el store, leer desde useFaroStore
 const SEED: Solicitud[] = [
   // Licencias
   {
@@ -51,8 +55,8 @@ const SEED: Solicitud[] = [
     persona: 'Iván Quiroga',
     legajo: '0269',
     tipo: 'Licencia médica',
-    detalle: 'Cirugía menor · 7 días desde 15/5',
-    fecha: '15/5/2026',
+    detalle: 'Cirugía menor · 7 días',
+    fecha: fechaRel(10),
     prioridad: 'alta',
     estado: 'pendiente',
     categoria: 'licencia',
@@ -62,8 +66,8 @@ const SEED: Solicitud[] = [
     persona: 'Camila Torres',
     legajo: '0276',
     tipo: 'Licencia académica',
-    detalle: 'Examen final · 1 día (20/5)',
-    fecha: '14/5/2026',
+    detalle: 'Examen final · 1 día',
+    fecha: fechaRel(11),
     prioridad: 'normal',
     estado: 'pendiente',
     categoria: 'licencia',
@@ -73,8 +77,8 @@ const SEED: Solicitud[] = [
     persona: 'Florencia Salinas',
     legajo: '0212',
     tipo: 'Licencia académica',
-    detalle: 'Aprobada 8/5 por R. González',
-    fecha: '5/5/2026',
+    detalle: 'Aprobada por R. González',
+    fecha: fechaRel(20),
     prioridad: 'normal',
     estado: 'aprobada',
     categoria: 'licencia',
@@ -85,7 +89,7 @@ const SEED: Solicitud[] = [
     legajo: '0156',
     tipo: 'Licencia personal',
     detalle: '3 días · viaje familiar',
-    fecha: '12/5/2026',
+    fecha: fechaRel(13),
     prioridad: 'baja',
     estado: 'pendiente',
     categoria: 'licencia',
@@ -97,7 +101,7 @@ const SEED: Solicitud[] = [
     legajo: '0078',
     tipo: 'Pliego de ascenso · a Sargento',
     detalle: 'Cumple antigüedad y cursos · Aval del Comandante',
-    fecha: '10/5/2026',
+    fecha: fechaRel(15),
     prioridad: 'normal',
     estado: 'pendiente',
     categoria: 'ascenso',
@@ -108,7 +112,7 @@ const SEED: Solicitud[] = [
     legajo: '0091',
     tipo: 'Pliego de ascenso · a Cabo',
     detalle: 'Pendiente curso de mando · vence agosto',
-    fecha: '8/5/2026',
+    fecha: fechaRel(17),
     prioridad: 'normal',
     estado: 'pendiente',
     categoria: 'ascenso',
@@ -118,8 +122,8 @@ const SEED: Solicitud[] = [
     persona: 'Brenda Cáceres',
     legajo: '0184',
     tipo: 'Pliego de ascenso · a Sargento Ayudante',
-    detalle: 'Aprobado 2/5 por R. González',
-    fecha: '2/5/2026',
+    detalle: 'Aprobado por R. González',
+    fecha: fechaRel(23),
     prioridad: 'normal',
     estado: 'aprobada',
     categoria: 'ascenso',
@@ -130,8 +134,8 @@ const SEED: Solicitud[] = [
     persona: 'Juan Aguirre',
     legajo: '0203',
     tipo: 'Apercibimiento',
-    detalle: 'Inasistencia injustificada · turno noche 6/5',
-    fecha: '7/5/2026',
+    detalle: 'Inasistencia injustificada · turno noche',
+    fecha: fechaRel(18),
     prioridad: 'alta',
     estado: 'pendiente',
     categoria: 'sancion',
@@ -142,7 +146,7 @@ const SEED: Solicitud[] = [
     legajo: '0117',
     tipo: 'Llamado de atención',
     detalle: 'Mal trato con par · informado por Sgto. Pérez',
-    fecha: '3/5/2026',
+    fecha: fechaRel(22),
     prioridad: 'normal',
     estado: 'rechazada',
     categoria: 'sancion',

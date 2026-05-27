@@ -577,9 +577,9 @@ export default function OperacionesPage() {
                         href={`/mando/operaciones/${s.id}` as never}
                         onClick={(e) => e.stopPropagation()}
                         className="text-brand-700 hover:bg-brand-50 grid h-8 w-8 place-items-center rounded text-xs font-bold"
-                        aria-label="Ver detalle"
+                        aria-label={`Ver detalle del servicio ${s.direccion}`}
                       >
-                        →
+                        <span aria-hidden="true">→</span>
                       </Link>
                       {s.estado === 'pendiente_validacion' && (
                         <Button

@@ -29,7 +29,20 @@ import {
   fechaCorta,
 } from '../../../../components/finanzas/utils';
 import { PageHero } from '../../../../components/shared/page-hero';
+import { demoToday } from '../../../../lib/utils/demo-today';
 import { useFaroStore } from '../../../../store/use-faro-store';
+
+const VENCIMIENTOS = [
+  { titulo: 'Aportes patronales · junio', subtitulo: 'Cargas sociales mayo', fecha: '2026-06-15' },
+  { titulo: 'VTV BV-2', subtitulo: 'Vence 12/06/2026', fecha: '2026-06-12' },
+  { titulo: 'Ingresos Brutos', subtitulo: 'Vence 28/05/2026', fecha: '2026-05-28' },
+];
+
+function diasHasta(fechaIso: string): number {
+  const f = new Date(fechaIso);
+  const hoy = demoToday();
+  return Math.round((f.getTime() - hoy.getTime()) / 86400000);
+}
 
 export default function FinanzasDashboardPage() {
   const router = useRouter();
@@ -562,27 +575,30 @@ export default function FinanzasDashboardPage() {
                 <Calendar size={14} className="mr-1 inline" /> Próximos vencimientos
               </h3>
               <ul className="space-y-2 text-sm">
-                <li className="bg-status-warn-bg/30 flex items-start justify-between rounded-lg p-2">
-                  <div>
-                    <div className="font-semibold text-slate-900">F931 AFIP · junio</div>
-                    <div className="text-xs text-slate-600">Cargas sociales mayo</div>
-                  </div>
-                  <Badge intent="warn">En 7 días</Badge>
-                </li>
-                <li className="bg-status-warn-bg/30 flex items-start justify-between rounded-lg p-2">
-                  <div>
-                    <div className="font-semibold text-slate-900">VTV BV-2</div>
-                    <div className="text-xs text-slate-600">Vence 12/06/2026</div>
-                  </div>
-                  <Badge intent="warn">En 18 días</Badge>
-                </li>
-                <li className="bg-status-risk-bg/30 flex items-start justify-between rounded-lg p-2">
-                  <div>
-                    <div className="font-semibold text-slate-900">DDJJ AFIP · IIBB</div>
-                    <div className="text-xs text-slate-600">Vence 28/05/2026</div>
-                  </div>
-                  <Badge intent="risk">En 3 días</Badge>
-                </li>
+                {VENCIMIENTOS.map((v) => {
+                  const dias = diasHasta(v.fecha);
+                  const intent = dias <= 7 ? 'risk' : 'warn';
+                  const bgClass =
+                    intent === 'risk' ? 'bg-status-risk-bg/30' : 'bg-status-warn-bg/30';
+                  return (
+                    <li
+                      key={v.titulo}
+                      className={`${bgClass} flex items-start justify-between rounded-lg p-2`}
+                    >
+                      <div>
+                        <div className="font-semibold text-slate-900">{v.titulo}</div>
+                        <div className="text-xs text-slate-600">{v.subtitulo}</div>
+                      </div>
+                      <Badge intent={intent}>
+                        {dias < 0
+                          ? `Hace ${Math.abs(dias)} días`
+                          : dias === 0
+                            ? 'Hoy'
+                            : `En ${dias} días`}
+                      </Badge>
+                    </li>
+                  );
+                })}
               </ul>
             </CardContent>
           </Card>

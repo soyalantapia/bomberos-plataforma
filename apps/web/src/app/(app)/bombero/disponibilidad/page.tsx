@@ -7,6 +7,7 @@ import { useState } from 'react';
 import { Avatar, Badge, Button, Card, CardContent, Kpi, cn, useToast } from '@faro/ui';
 
 import { PageHero } from '../../../../components/shared/page-hero';
+import { fmtJerarquia } from '../../../../lib/utils/jerarquia';
 import { selectPersonaActual, useFaroStore } from '../../../../store/use-faro-store';
 
 type Turno = 'manana' | 'tarde' | 'noche';
@@ -286,7 +287,12 @@ export default function DisponibilidadPage() {
           </h3>
           <div className="flex flex-wrap gap-2">
             {[
-              { nombre: 'Mariana Pereyra', jerarquia: 'Comandante' },
+              persona
+                ? {
+                    nombre: `${persona.nombre} ${persona.apellido}`,
+                    jerarquia: fmtJerarquia(persona.jerarquia),
+                  }
+                : { nombre: 'Voluntario', jerarquia: 'Bombero' },
               { nombre: 'Sebastián Ruiz', jerarquia: 'Sargento' },
               { nombre: 'Carolina Sosa', jerarquia: 'Cabo' },
               { nombre: 'Federico Vázquez', jerarquia: 'Bombero 1ra' },

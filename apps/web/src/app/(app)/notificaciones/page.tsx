@@ -55,6 +55,7 @@ export default function NotificacionesPage() {
     return notificaciones.filter((n) => n.tipo === tab);
   }, [tab, notificaciones, sinLeer]);
 
+  const todayStr = demoToday().toISOString().slice(0, 10);
   const top3 = sinLeer.slice(0, 3);
 
   const tiposConCantidad = Array.from(porTipo.entries())
@@ -119,7 +120,7 @@ export default function NotificacionesPage() {
             />
             <Kpi
               label="Hoy"
-              value={notificaciones.filter((n) => n.fecha.startsWith('2026-05-24')).length}
+              value={notificaciones.filter((n) => n.fecha.startsWith(todayStr)).length}
               intent="brand"
             />
             <Kpi label="Canales" value="Push + Mail" hint="WhatsApp opt-in" intent="ok" />

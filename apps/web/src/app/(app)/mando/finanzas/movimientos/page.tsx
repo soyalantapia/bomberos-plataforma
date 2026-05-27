@@ -195,22 +195,37 @@ export default function MovimientosPage() {
             <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-6">
               {/* Tipo */}
               <div className="flex flex-wrap gap-1">
-                {(['todos', 'ingreso', 'egreso', 'transferencia'] as const).map((t) => (
-                  <button
-                    key={t}
-                    type="button"
-                    onClick={() => setTipoFiltro(t)}
-                    className={cn(
-                      'rounded-full px-2.5 py-1 text-xs font-medium',
-                      tipoFiltro === t
-                        ? 'bg-brand-600 text-white'
-                        : 'bg-slate-100 text-slate-700 hover:bg-slate-200',
-                    )}
-                  >
-                    {t === 'todos' ? 'Todos' : t === 'ingreso' ? '↑' : t === 'egreso' ? '↓' : '⇄'}{' '}
-                    {t !== 'todos' && t}
-                  </button>
-                ))}
+                {(['todos', 'ingreso', 'egreso', 'transferencia'] as const).map((t) => {
+                  const labelMap = {
+                    todos: 'Todos',
+                    ingreso: 'Ingreso',
+                    egreso: 'Egreso',
+                    transferencia: 'Transferencia',
+                  } as const;
+                  const symbolMap = {
+                    todos: '',
+                    ingreso: '↑',
+                    egreso: '↓',
+                    transferencia: '⇄',
+                  } as const;
+                  return (
+                    <button
+                      key={t}
+                      type="button"
+                      onClick={() => setTipoFiltro(t)}
+                      aria-label={`Filtrar ${labelMap[t].toLowerCase()}`}
+                      className={cn(
+                        'rounded-full px-2.5 py-1 text-xs font-medium',
+                        tipoFiltro === t
+                          ? 'bg-brand-600 text-white'
+                          : 'bg-slate-100 text-slate-700 hover:bg-slate-200',
+                      )}
+                    >
+                      {symbolMap[t] && <span aria-hidden="true">{symbolMap[t]} </span>}
+                      {labelMap[t]}
+                    </button>
+                  );
+                })}
               </div>
 
               <select

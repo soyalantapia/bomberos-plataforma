@@ -145,7 +145,7 @@ export default function SeleccionarPerfil() {
               </div>
               <div className="flex-1 min-w-0">
                 <div className="font-semibold text-brand-900">¿Ver la vista de Federación?</div>
-                <div className="text-sm text-brand-900/80 mt-0.5">El demo incluye un usuario federación con visión multi-cuartel.</div>
+                <div className="text-sm text-brand-900/80 mt-0.5">El acceso a la vista de Federación es regional. Si tu cuartel forma parte, vas a ver el tablero correspondiente.</div>
               </div>
               <Button intent="secondary" size="sm" onClick={entrarComoFederacion}>Entrar como Federación</Button>
             </div>

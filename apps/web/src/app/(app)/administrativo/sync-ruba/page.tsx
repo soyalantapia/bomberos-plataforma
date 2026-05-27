@@ -54,7 +54,7 @@ const DIFF_DEMO: DiffItem[] = [
     apellido: 'Pereyra',
     tipo: 'actualizado',
     campos: [
-      { campo: 'Teléfono', rubaValor: '+54 11 5555 0017', faroValor: '+54 11 5555 0099' },
+      { campo: 'Teléfono', rubaValor: '+54 11 6234 5612', faroValor: '+54 11 5555 0099' },
       { campo: 'Email', rubaValor: 'm.pereyra@ruba.org', faroValor: 'pereyra@faro.bvvb.org.ar' },
     ],
   },

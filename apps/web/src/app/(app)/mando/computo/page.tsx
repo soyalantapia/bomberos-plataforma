@@ -22,10 +22,18 @@ import {
 import { PageHero } from '../../../../components/shared/page-hero';
 import { calcularComputoMensual } from '../../../../lib/utils/computo';
 import { fmtMesPeriodo } from '../../../../lib/utils/date';
+import { demoToday } from '../../../../lib/utils/demo-today';
 import { fmtJerarquia, jerarquiaOrden } from '../../../../lib/utils/jerarquia';
 import { useFaroStore, selectCuartelActivo } from '../../../../store/use-faro-store';
 
-const MESES_ANIO = ['2026-01', '2026-02', '2026-03', '2026-04', '2026-05'];
+const MESES_ANIO = (() => {
+  const today = demoToday();
+  const year = today.getFullYear();
+  const upToMonth = today.getMonth() + 1; // 0-indexed
+  return Array.from({ length: upToMonth }, (_, i) => `${year}-${String(i + 1).padStart(2, '0')}`);
+})();
+
+const MES_ACTUAL = MESES_ANIO[MESES_ANIO.length - 1] ?? '';
 
 export default function ComputoPage() {
   const personas = useFaroStore((s) => s.personas);
@@ -36,7 +44,7 @@ export default function ComputoPage() {
   const [personaSel, setPersonaSel] = useState<string>('');
 
   const computo = useMemo(
-    () => (cuartel ? calcularComputoMensual(asistencias, cuartel.id, '2026-05') : []),
+    () => (cuartel ? calcularComputoMensual(asistencias, cuartel.id, MES_ACTUAL) : []),
     [asistencias, cuartel],
   );
 
@@ -73,8 +81,8 @@ export default function ComputoPage() {
     return MESES_ANIO.map((mes, idx) => {
       const c = cuartel ? calcularComputoMensual(asistencias, cuartel.id, mes) : [];
       const tot = c.reduce((a, x) => a + x.total, 0);
-      // Como solo tenemos data de mayo, simulamos meses anteriores con variación determinística
-      const factor = mes === '2026-05' ? 1 : 0.6 + ((idx * 0.137 + mes.length * 0.05) % 0.4);
+      // Como solo tenemos data del mes actual, simulamos meses anteriores con variación determinística
+      const factor = mes === MES_ACTUAL ? 1 : 0.6 + ((idx * 0.137 + mes.length * 0.05) % 0.4);
       return { mes, total: Math.round((tot || totales.total) * factor) };
     });
   }, [asistencias, cuartel, totales.total]);
@@ -90,7 +98,7 @@ export default function ComputoPage() {
     <div className="mx-auto max-w-7xl space-y-5">
       <PageHero
         objetivo="Vista Mando · Cómputo mensual"
-        titulo={`${totales.total} hs operativas · mayo 2026`}
+        titulo={`${totales.total} hs operativas · ${fmtMesPeriodo(MES_ACTUAL)}`}
         descripcion="Calculado en vivo desde asistencias y servicios. Mensual, anual o detalle por persona."
         icono={<Calculator size={26} />}
         meta={
@@ -148,7 +156,7 @@ export default function ComputoPage() {
           <Card>
             <CardHeader>
               <CardTitle>
-                {fmtMesPeriodo('2026-05')} · {filas.length} personas con horas
+                {fmtMesPeriodo(MES_ACTUAL)} · {filas.length} personas con horas
               </CardTitle>
             </CardHeader>
             <CardContent className="p-0">

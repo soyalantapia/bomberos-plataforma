@@ -312,8 +312,8 @@ export default function FichaAuditView() {
               </div>
               <dl className="space-y-1.5 text-xs">
                 <div className="flex justify-between">
-                  <dt className="text-slate-500">IP origen</dt>
-                  <dd className="font-mono text-slate-700">186.x.x.x</dd>
+                  <dt className="text-slate-500">Origen</dt>
+                  <dd className="text-slate-700">App web · Argentina</dd>
                 </div>
                 <div className="flex justify-between">
                   <dt className="text-slate-500">Dispositivo</dt>

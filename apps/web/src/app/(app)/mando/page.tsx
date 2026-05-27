@@ -339,7 +339,7 @@ export default function MandoDashboard() {
                     key={s.id}
                     initial={{ opacity: 0, x: -8 }}
                     animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.05 + idx * 0.04, duration: 0.3 }}
+                    transition={{ delay: Math.min(idx * 0.02, 0.12), duration: 0.2 }}
                     className="flex items-center gap-3 py-3"
                   >
                     <div className="bg-fire-100 text-fire-700 grid h-10 w-10 place-items-center rounded-lg text-xs font-bold uppercase">

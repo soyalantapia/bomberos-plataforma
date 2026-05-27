@@ -208,7 +208,7 @@ const seedAudit: AuditEvent[] = [
     actorPerfil: 'mando',
     action: 'login',
     entityType: 'Sesion',
-    entityId: 'sess-' + Math.random().toString(36).slice(2, 8),
+    entityId: 'sess-a3f9b2',
     timestamp: '2026-05-24T06:30:00-03:00',
   },
 ];
