@@ -173,7 +173,7 @@ export default function ICSPage() {
   }
 
   function ejecutarPAR() {
-    const ts = new Date().toLocaleTimeString('es-AR').slice(0, 5);
+    const ts = demoToday().toLocaleTimeString('es-AR').slice(0, 5);
     const asignados = Object.values(asignaciones).filter(Boolean).length;
     const nuevo: EventoICS = {
       id: `e-${Date.now()}`,
