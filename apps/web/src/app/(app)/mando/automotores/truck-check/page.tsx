@@ -35,6 +35,7 @@ import { useMemo, useState } from 'react';
 import { ConfirmDialog } from '../../../../../components/shared/confirm-dialog';
 import { PageHero } from '../../../../../components/shared/page-hero';
 import { useFaroStore } from '../../../../../store/use-faro-store';
+import { demoToday } from '../../../../../lib/utils/demo-today';
 
 type Estado = 'ok' | 'observacion' | 'falla' | 'pendiente';
 type Fase = 'prechek' | 'checklist' | 'firma' | 'final';
@@ -256,7 +257,7 @@ export default function TruckCheckPage() {
         nota: i.nota,
         foto: i.foto,
       })),
-      ts: new Date().toISOString(),
+      ts: demoToday().toISOString(),
     };
     const json = JSON.stringify(payload);
     const buf = new TextEncoder().encode(json);
@@ -265,7 +266,7 @@ export default function TruckCheckPage() {
       .map((b) => b.toString(16).padStart(2, '0'))
       .join('');
     setHashFinal(hex);
-    setTimestampFinal(new Date().toLocaleString('es-AR'));
+    setTimestampFinal(demoToday().toLocaleString('es-AR'));
     setConfirmFirma(false);
     setFase('final');
     if (hayFallas) {
@@ -287,7 +288,7 @@ export default function TruckCheckPage() {
     toast.push({
       kind: 'info',
       title: 'Generando PDF',
-      description: `Truck-check-${movilSel}-${new Date().toISOString().slice(0, 10)}.pdf`,
+      description: `Truck-check-${movilSel}-${demoToday().toISOString().slice(0, 10)}.pdf`,
     });
   }
 

@@ -18,6 +18,7 @@ import { Badge, Button, Card, CardContent, Kpi, cn, useToast } from '@faro/ui';
 import { PageHero } from '../../../../components/shared/page-hero';
 import { exportarCsv } from '../../../../lib/utils/export-csv';
 import { useFaroStore } from '../../../../store/use-faro-store';
+import { demoToday } from '../../../../lib/utils/demo-today';
 
 interface PlantillaReporte {
   id: string;
@@ -171,7 +172,7 @@ export default function ReportesPage() {
       ['Campo', 'Valor'],
       [
         ['Reporte', titulo],
-        ['Generado', new Date().toLocaleString('es-AR')],
+        ['Generado', demoToday().toLocaleString('es-AR')],
         ['Origen', 'Faro · histórico reportes'],
       ],
     );

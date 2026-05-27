@@ -23,6 +23,7 @@ import { Avatar, Badge, Button, Card, CardContent, Kpi, cn, useToast } from '@fa
 
 import { PageHero } from '../../../../../components/shared/page-hero';
 import { useFaroStore } from '../../../../../store/use-faro-store';
+import { demoToday } from '../../../../../lib/utils/demo-today';
 
 type RolICS = 'comandante' | 'operaciones' | 'logistica' | 'seguridad' | 'informacion' | 'medico';
 
@@ -155,7 +156,7 @@ export default function ICSPage() {
     setAsignaciones((a) => ({ ...a, [rol]: personaId }));
     const persona = personas.find((p) => p.id === personaId);
     if (persona) {
-      const ts = new Date().toLocaleTimeString('es-AR').slice(0, 5);
+      const ts = demoToday().toLocaleTimeString('es-AR').slice(0, 5);
       const nuevo: EventoICS = {
         id: `e-${Date.now()}`,
         ts,

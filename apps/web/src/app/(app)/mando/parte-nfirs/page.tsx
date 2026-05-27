@@ -264,7 +264,7 @@ export default function ParteNFIRSPage() {
             </motion.div>
             <h2 className="mt-4 text-2xl font-bold text-slate-900">Parte firmado y archivado</h2>
             <p className="mt-1 text-sm text-slate-600">
-              {data.numero} · {new Date().toLocaleString('es-AR')}
+              {data.numero} · {demoToday().toLocaleString('es-AR')}
             </p>
 
             <div className="bg-brand-50 border-brand-100 mx-auto mt-4 max-w-md rounded-lg border p-3 text-left">
