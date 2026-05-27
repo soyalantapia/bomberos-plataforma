@@ -17,11 +17,14 @@ import {
   Button,
   Card,
   CardContent,
+  Dialog,
   Kpi,
+  Label,
   Tabs,
   TabsContent,
   TabsList,
   TabsTrigger,
+  Textarea,
   cn,
   useToast,
 } from '@faro/ui';
@@ -185,26 +188,14 @@ const CAT_LABEL: Record<Categoria, string> = {
 export default function AprobacionesPage() {
   const [items, setItems] = useState<Solicitud[]>(SEED);
   const [tab, setTab] = useState<'todas' | Categoria>('todas');
+  const [motivoDialog, setMotivoDialog] = useState<{
+    id: string;
+    accion: 'aprobar' | 'rechazar';
+  } | null>(null);
+  const [motivoTexto, setMotivoTexto] = useState('');
   const toast = useToast();
 
-  function decidir(id: string, accion: 'aprobar' | 'rechazar') {
-    const item = items.find((s) => s.id === id);
-    // Para sanciones o rechazos pedimos un motivo
-    if (item?.categoria === 'sancion' || accion === 'rechazar') {
-      const motivo = window.prompt(
-        accion === 'aprobar'
-          ? '¿Por qué aprobás esta sanción? (queda registrado)'
-          : '¿Por qué rechazás esta solicitud? (queda registrado)',
-      );
-      if (!motivo || motivo.trim().length < 4) {
-        toast.push({
-          kind: 'warn',
-          title: 'Necesitamos un motivo',
-          description: 'Escribí al menos un par de palabras.',
-        });
-        return;
-      }
-    }
+  function aplicarDecision(id: string, accion: 'aprobar' | 'rechazar') {
     setItems((arr) =>
       arr.map((s) =>
         s.id === id ? { ...s, estado: accion === 'aprobar' ? 'aprobada' : 'rechazada' } : s,
@@ -215,6 +206,37 @@ export default function AprobacionesPage() {
       title: accion === 'aprobar' ? 'Aprobada' : 'Rechazada',
       description: 'Queda registrada con tu firma.',
     });
+  }
+
+  function decidir(id: string, accion: 'aprobar' | 'rechazar') {
+    const item = items.find((s) => s.id === id);
+    // Para sanciones o rechazos pedimos un motivo
+    if (item?.categoria === 'sancion' || accion === 'rechazar') {
+      setMotivoDialog({ id, accion });
+      setMotivoTexto('');
+      return;
+    }
+    aplicarDecision(id, accion);
+  }
+
+  function confirmarConMotivo() {
+    if (!motivoDialog) return;
+    if (motivoTexto.trim().length < 4) {
+      toast.push({
+        kind: 'warn',
+        title: 'Necesitamos un motivo',
+        description: 'Escribí al menos un par de palabras.',
+      });
+      return;
+    }
+    aplicarDecision(motivoDialog.id, motivoDialog.accion);
+    setMotivoDialog(null);
+    setMotivoTexto('');
+  }
+
+  function cerrarMotivoDialog() {
+    setMotivoDialog(null);
+    setMotivoTexto('');
   }
 
   const filtrado = useMemo(
@@ -438,6 +460,48 @@ export default function AprobacionesPage() {
           </div>
         </CardContent>
       </Card>
+
+      <Dialog
+        open={!!motivoDialog}
+        onClose={cerrarMotivoDialog}
+        title={
+          motivoDialog?.accion === 'aprobar' ? 'Motivo de aprobación' : 'Motivo del rechazo'
+        }
+        description={
+          motivoDialog?.accion === 'aprobar'
+            ? 'Estás aprobando una sanción. Queda registrado con tu firma.'
+            : 'Queda registrado y la persona lo recibe por notificación.'
+        }
+        size="sm"
+        footer={
+          <div className="flex justify-end gap-2">
+            <Button intent="ghost" onClick={cerrarMotivoDialog}>
+              Cancelar
+            </Button>
+            <Button
+              intent={motivoDialog?.accion === 'aprobar' ? 'primary' : 'danger'}
+              onClick={confirmarConMotivo}
+            >
+              Confirmar
+            </Button>
+          </div>
+        }
+      >
+        <div className="space-y-2">
+          <Label>Motivo *</Label>
+          <Textarea
+            value={motivoTexto}
+            onChange={(e) => setMotivoTexto(e.target.value)}
+            rows={3}
+            placeholder={
+              motivoDialog?.accion === 'aprobar'
+                ? 'Ej: Cumple antigüedad y curso de mando aprobado'
+                : 'Ej: Documentación incompleta, falta certificado médico'
+            }
+          />
+          <p className="text-xs text-slate-500">Mínimo 4 caracteres.</p>
+        </div>
+      </Dialog>
     </div>
   );
 }

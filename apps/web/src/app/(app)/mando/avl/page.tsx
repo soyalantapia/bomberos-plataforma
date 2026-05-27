@@ -31,7 +31,7 @@ interface MovilLive {
   jefe: string;
   servicio?: string;
   desde: string; // ts del estado actual
-  // Para NFPA 1710
+  // Para Tiempo objetivo
   turnoutSec?: number; // tiempo de despacho (60s)
   travelSec?: number; // tiempo en ruta
 }
@@ -163,7 +163,7 @@ export default function AVLPage() {
 
   const en_emergencia = conteoPorEstado.en_ruta + conteoPorEstado.en_escena;
 
-  // NFPA 1710 thresholds
+  // Tiempo objetivo thresholds
   const nfpa1710 = (sec: number) => (sec <= 60 ? 'ok' : sec <= 90 ? 'warn' : 'risk');
 
   return (

@@ -46,7 +46,7 @@ const CAMPOS_IA: CampoExtraido[] = [
   { campo: 'Móvil', valor: 'BV-3', fuente: 'voz', confianza: 0.99 },
   { campo: 'Dotación', valor: '4 personas', fuente: 'voz', confianza: 0.94 },
   {
-    campo: 'Tipo NFPA',
+    campo: 'Tipo de incidente',
     valor: '111 · Incendio estructural vivienda',
     fuente: 'voz',
     confianza: 0.93,
@@ -60,7 +60,7 @@ const CAMPOS_IA: CampoExtraido[] = [
   },
   {
     campo: 'Tiempo respuesta',
-    valor: '4 min (NFPA 1710: OK)',
+    valor: '4 min (Tiempo objetivo: cumplido)',
     fuente: 'voz',
     confianza: 0.97,
   },
@@ -230,7 +230,7 @@ export default function AsistenteParteAIPage() {
               <Loader2 size={32} className="text-brand-600 mx-auto animate-spin" />
               <h2 className="text-brand-900 mt-3 font-bold">Identificando los datos del parte…</h2>
               <p className="text-brand-900/70 mt-1 text-sm">
-                Identifica direcciones, horarios, códigos NFPA, causas probables...
+                Identifica direcciones, horarios, tipos de incidente, causas probables...
               </p>
             </CardContent>
           </Card>

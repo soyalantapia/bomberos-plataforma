@@ -19,7 +19,7 @@ const buttonStyles = cva(
           'bg-status-ok text-white hover:opacity-90 focus-visible:outline-status-ok shadow-sm',
       },
       size: {
-        sm: 'h-9 px-3 text-sm rounded-md',
+        sm: 'h-11 sm:h-9 px-3 text-sm rounded-md',
         md: 'h-11 px-4 text-base rounded-lg',
         lg: 'h-14 px-6 text-lg rounded-glove',
         xl: 'h-16 px-8 text-xl rounded-glove',

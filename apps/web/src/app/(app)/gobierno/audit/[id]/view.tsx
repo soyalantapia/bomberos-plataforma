@@ -266,7 +266,7 @@ export default function FichaAuditView() {
           </CardContent>
         </Card>
 
-        {/* Hash cripto */}
+        {/* Comprobante único */}
         <div className="space-y-3">
           <Card>
             <CardContent className="p-4">
@@ -334,7 +334,7 @@ export default function FichaAuditView() {
           <Card>
             <CardContent className="space-y-2 p-3">
               <Button intent="secondary" size="sm" fullWidth>
-                <Copy size={12} /> Exportar JSON
+                <Copy size={12} /> Exportar datos
               </Button>
               <Button intent="secondary" size="sm" fullWidth>
                 <FileSearch size={12} /> Ver eventos relacionados

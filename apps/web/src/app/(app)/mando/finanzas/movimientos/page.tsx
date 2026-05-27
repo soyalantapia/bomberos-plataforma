@@ -1,6 +1,6 @@
 'use client';
 
-import { Badge, Button, Card, CardContent, Input, Kpi, cn, useToast } from '@faro/ui';
+import { Badge, Button, Card, CardContent, Dialog, Input, Kpi, Label, cn, useToast } from '@faro/ui';
 import {
   ArrowDownRight,
   ArrowLeftRight,
@@ -18,7 +18,6 @@ import { useMemo, useState } from 'react';
 
 import { NuevoMovimientoDialog } from '../../../../../components/finanzas/nuevo-movimiento-dialog';
 import { MEDIO_LABEL, ars, arsCompact, fechaCorta } from '../../../../../components/finanzas/utils';
-import { ConfirmDialog } from '../../../../../components/shared/confirm-dialog';
 import { EmptyState } from '../../../../../components/shared/empty-state';
 import { PageHero } from '../../../../../components/shared/page-hero';
 import { useFaroStore } from '../../../../../store/use-faro-store';
@@ -27,6 +26,13 @@ import type { MovimientoFinanciero } from '@faro/types';
 
 type FiltroTipo = 'todos' | 'ingreso' | 'egreso' | 'transferencia';
 type FiltroEstado = 'todos' | 'borrador' | 'conciliado' | 'anulado';
+
+const estadoLabel: Record<MovimientoFinanciero['estado'], string> = {
+  conciliado: 'Confirmado',
+  borrador: 'Borrador',
+  anulado: 'Anulado',
+  rechazado: 'Rechazado',
+};
 
 export default function MovimientosPage() {
   const toast = useToast();
@@ -417,7 +423,7 @@ export default function MovimientosPage() {
                                       : 'neutral'
                               }
                             >
-                              {m.estado}
+                              {estadoLabel[m.estado] ?? m.estado}
                             </Badge>
                           </td>
                           <td className="px-3 py-2 text-right">
@@ -469,38 +475,50 @@ export default function MovimientosPage() {
 
       <NuevoMovimientoDialog open={openNuevo} onClose={() => setOpenNuevo(false)} />
 
-      <ConfirmDialog
+      <Dialog
         open={!!confirmAnular}
         onClose={() => {
           setConfirmAnular(null);
           setMotivoAnular('');
         }}
-        onConfirm={handleAnular}
-        titulo="¿Anular movimiento?"
-        descripcion={
+        title="¿Anular movimiento?"
+        description={
           confirmAnular
-            ? `Vas a anular "${confirmAnular.descripcion}" por ${ars.format(confirmAnular.monto)}. El saldo se ajusta automáticamente y queda registrado con el motivo. No se borra del historial.`
+            ? `${confirmAnular.descripcion} · ${ars.format(confirmAnular.monto)}`
             : ''
         }
-        variant="destructive"
-        confirmarLabel="Sí, anular"
-      />
-
-      {confirmAnular && (
-        <div className="pointer-events-none fixed inset-x-4 bottom-24 z-50 mx-auto max-w-md sm:bottom-32">
-          <div className="pointer-events-auto rounded-lg bg-white p-3 shadow-xl ring-1 ring-slate-200">
-            <label className="text-xs font-semibold text-slate-700">Motivo de anulación *</label>
-            <input
-              autoFocus
-              type="text"
+        size="sm"
+        footer={
+          <div className="flex justify-end gap-2">
+            <Button
+              intent="ghost"
+              onClick={() => {
+                setConfirmAnular(null);
+                setMotivoAnular('');
+              }}
+            >
+              Cancelar
+            </Button>
+            <Button intent="danger" onClick={handleAnular}>
+              Anular
+            </Button>
+          </div>
+        }
+      >
+        <div className="space-y-3">
+          <p className="text-sm text-slate-600">
+            El saldo se ajusta automáticamente. Queda registrado con el motivo.
+          </p>
+          <div>
+            <Label>Motivo *</Label>
+            <Input
               value={motivoAnular}
               onChange={(e) => setMotivoAnular(e.target.value)}
-              placeholder="Ej: Error de carga, duplicado, factura rechazada"
-              className="focus:border-brand-400 mt-1 w-full rounded-md border border-slate-200 px-3 py-2 text-sm outline-none focus:ring-2"
+              placeholder="Ej: Error de carga, duplicado..."
             />
           </div>
         </div>
-      )}
+      </Dialog>
     </>
   );
 }

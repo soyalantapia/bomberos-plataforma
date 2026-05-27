@@ -70,11 +70,11 @@ export default function ComputoPage() {
 
   // Computo anual: agregado por mes (simulado a partir del mes actual)
   const anual = useMemo(() => {
-    return MESES_ANIO.map((mes) => {
+    return MESES_ANIO.map((mes, idx) => {
       const c = cuartel ? calcularComputoMensual(asistencias, cuartel.id, mes) : [];
       const tot = c.reduce((a, x) => a + x.total, 0);
-      // Como solo tenemos data de mayo, simulamos meses anteriores con razonable variación
-      const factor = mes === '2026-05' ? 1 : 0.6 + Math.random() * 0.4;
+      // Como solo tenemos data de mayo, simulamos meses anteriores con variación determinística
+      const factor = mes === '2026-05' ? 1 : 0.6 + ((idx * 0.137 + mes.length * 0.05) % 0.4);
       return { mes, total: Math.round((tot || totales.total) * factor) };
     });
   }, [asistencias, cuartel, totales.total]);

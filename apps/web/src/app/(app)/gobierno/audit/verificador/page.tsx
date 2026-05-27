@@ -316,7 +316,7 @@ export default function VerificadorPage() {
                           </div>
                           <div className="mt-2 grid grid-cols-1 gap-1 font-mono text-[10px]">
                             <div className="break-all rounded bg-slate-100 px-2 py-1">
-                              <span className="text-slate-500">anterior:</span>{' '}
+                              <span className="text-slate-500">Comprobante anterior:</span>{' '}
                               <span className="text-slate-700">{entry.prevHash}</span>
                             </div>
                             <div
@@ -327,7 +327,8 @@ export default function VerificadorPage() {
                                   : 'bg-brand-50 text-brand-700',
                               )}
                             >
-                              <span className="text-slate-500">actual:</span> {entry.hash}
+                              <span className="text-slate-500">Comprobante actual:</span>{' '}
+                              {entry.hash}
                             </div>
                           </div>
                           {broken && (

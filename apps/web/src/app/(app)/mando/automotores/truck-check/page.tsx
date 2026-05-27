@@ -29,6 +29,7 @@ import {
   Truck,
   X,
 } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 import { useMemo, useState } from 'react';
 
 import { ConfirmDialog } from '../../../../../components/shared/confirm-dialog';
@@ -97,6 +98,7 @@ function initItems(): ItemCheck[] {
 }
 
 export default function TruckCheckPage() {
+  const router = useRouter();
   const toast = useToast();
   const moviles = useFaroStore((s) => s.moviles);
   const sesion = useFaroStore((s) => s.sesion);
@@ -123,6 +125,7 @@ export default function TruckCheckPage() {
   const [fotoBuffer, setFotoBuffer] = useState<string | undefined>(undefined);
 
   const [confirmFirma, setConfirmFirma] = useState(false);
+  const [confirmTodoOk, setConfirmTodoOk] = useState(false);
   const [hashFinal, setHashFinal] = useState<string | null>(null);
   const [timestampFinal, setTimestampFinal] = useState<string | null>(null);
 
@@ -175,11 +178,12 @@ export default function TruckCheckPage() {
   }
 
   function marcarTodoOk() {
-    const ok = window.confirm(
-      '¿Seguro que querés marcar los 31 ítems como OK? Después podés volver a marcar observaciones o fallas si hace falta.',
-    );
-    if (!ok) return;
+    setConfirmTodoOk(true);
+  }
+
+  function aplicarTodoOk() {
     setItems((arr) => arr.map((i): ItemCheck => ({ ...i, estado: 'ok' })));
+    setConfirmTodoOk(false);
     toast.push({
       kind: 'success',
       title: 'Marcados todos en OK',
@@ -525,7 +529,7 @@ export default function TruckCheckPage() {
           <Button intent="secondary" onClick={descargarPdf}>
             <Download size={14} /> Descargar PDF
           </Button>
-          <Button intent="secondary" onClick={() => window.history.back()}>
+          <Button intent="secondary" onClick={() => router.back()}>
             <FileText size={14} /> Volver a automotores
           </Button>
         </div>
@@ -752,6 +756,17 @@ export default function TruckCheckPage() {
           </Button>
         </div>
       </Dialog>
+
+      {/* Confirm marcar todo OK */}
+      <ConfirmDialog
+        open={confirmTodoOk}
+        onClose={() => setConfirmTodoOk(false)}
+        onConfirm={aplicarTodoOk}
+        titulo="¿Marcar los 31 ítems como OK?"
+        descripcion="Después podés volver a marcar observaciones o fallas si hace falta."
+        confirmarLabel="Sí, marcar todo OK"
+        variant="warning"
+      />
 
       {/* Confirm firma */}
       <ConfirmDialog

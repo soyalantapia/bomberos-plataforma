@@ -6,6 +6,7 @@ import { useMemo, useState } from 'react';
 import { Badge, Button, Card, CardContent, Kpi, cn, useToast } from '@faro/ui';
 
 import { PageHero } from '../../../../components/shared/page-hero';
+import { demoToday } from '../../../../lib/utils/demo-today';
 
 interface Evento {
   fecha: string;
@@ -69,7 +70,7 @@ function daysInMonth(y: number, m: number) {
 }
 
 export default function AgendaPage() {
-  const today = new Date('2026-05-24');
+  const today = demoToday();
   const [refYear, setRefYear] = useState(today.getFullYear());
   const [refMonth, setRefMonth] = useState(today.getMonth());
   const toast = useToast();

@@ -333,12 +333,12 @@ export default function SkillsMatrixPage() {
                   inscribir 6 voluntarios al próximo curso (18/06).
                 </li>
                 <li>
-                  <strong>3 personas tienen Rescate vehicular por vencer en &lt;60 días.</strong>{' '}
-                  Recomendamos cursar reciclaje grupal con ANB.
+                  <strong>3 personas tienen Rescate vehicular por vencer en menos de 60 días.</strong>{' '}
+                  Conviene cursar el reciclaje en grupo.
                 </li>
                 <li>
-                  <strong>Brecha de género:</strong> 0% de mujeres en HAZMAT. Considerar programa
-                  específico de inscripción.
+                  <strong>Diversidad de género:</strong> aún ninguna mujer está certificada en
+                  Materiales peligrosos. Considerar invitarlas al próximo curso.
                 </li>
               </ul>
             </div>

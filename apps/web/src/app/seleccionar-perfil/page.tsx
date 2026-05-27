@@ -1,8 +1,8 @@
 'use client';
 
 import { ArrowRight, Check, LogOut, HardHat, Shield, FolderCog, Gavel, Globe2 } from 'lucide-react';
-import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { usePathname, useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
 
 import { Avatar, Button, Card, cn, StatusPill } from '@faro/ui';
 
@@ -23,6 +23,7 @@ const perfilIcon: Record<Perfil, React.ReactNode> = {
 
 export default function SeleccionarPerfil() {
   const router = useRouter();
+  const pathname = usePathname();
   const sesion = useFaroStore((s) => s.sesion);
   const persona = useFaroStore(selectPersonaActual);
   const cuarteles = useFaroStore((s) => s.cuarteles);
@@ -35,10 +36,13 @@ export default function SeleccionarPerfil() {
   const [perfilSel, setPerfilSel] = useState<Perfil | null>(sesion?.perfilActivo ?? null);
   const [cuartelSel, setCuartelSel] = useState<string>(sesion?.cuartelId ?? CUARTEL_PRINCIPAL_ID);
 
-  if (!sesion || !persona) {
-    if (typeof window !== 'undefined') router.replace('/login');
-    return null;
-  }
+  useEffect(() => {
+    if (!sesion || !persona) {
+      if (pathname !== '/login') router.replace('/login');
+    }
+  }, [sesion, persona, pathname, router]);
+
+  if (!sesion || !persona) return null;
 
   function entrar() {
     if (!perfilSel || !persona) return;
@@ -49,7 +53,8 @@ export default function SeleccionarPerfil() {
     } else {
       cambiarPerfil(perfilSel);
     }
-    router.push(perfilHomePath[perfilSel]);
+    const destino = perfilHomePath[perfilSel];
+    if (pathname !== destino) router.replace(destino);
   }
 
   function entrarComoFederacion() {

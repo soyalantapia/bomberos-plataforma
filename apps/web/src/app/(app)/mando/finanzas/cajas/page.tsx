@@ -169,8 +169,17 @@ export default function CajasPage() {
                 key={c.id}
                 initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="cursor-pointer"
+                className="cursor-pointer focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-600 rounded-xl"
                 onClick={() => setCajaSel(c)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    setCajaSel(c);
+                  }
+                }}
+                role="button"
+                tabIndex={0}
+                aria-label={`Ver detalle de caja ${c.nombre}`}
               >
                 <Card className="overflow-hidden transition-all hover:-translate-y-0.5 hover:shadow-lg">
                   <div className={cn('bg-gradient-to-br p-5 text-white', TIPO_COLOR[c.tipo])}>

@@ -19,6 +19,7 @@ import { useMemo, useState } from 'react';
 
 import { ars, arsCompact } from '../../../../../components/finanzas/utils';
 import { PageHero } from '../../../../../components/shared/page-hero';
+import { demoToday } from '../../../../../lib/utils/demo-today';
 import { useFaroStore } from '../../../../../store/use-faro-store';
 
 type ReporteTipo = 'balance' | 'resultados' | 'flujo' | 'compliance' | 'iva';
@@ -32,7 +33,7 @@ export default function ReportesPage() {
   const [periodo, setPeriodo] = useState<'mes' | 'trimestre' | 'anio'>('mes');
 
   const desde = useMemo(() => {
-    const d = new Date('2026-05-25');
+    const d = demoToday();
     if (periodo === 'mes') d.setDate(1);
     if (periodo === 'trimestre') {
       d.setMonth(d.getMonth() - 3);

@@ -47,6 +47,7 @@ export default function RendicionPage() {
   const rendicion = useFaroStore(selectRendicionActual);
   const cuartel = useFaroStore(selectCuartelActivo);
   const persona = useFaroStore(selectPersonaActual);
+  const servicios = useFaroStore((s) => s.servicios);
   const presentar = useFaroStore((s) => s.presentarRendicion);
   const toast = useToast();
   const [copilotoOpen, setCopilotoOpen] = useState(false);
@@ -55,6 +56,14 @@ export default function RendicionPage() {
   const [confirmaOpen, setConfirmaOpen] = useState(false);
   const [confirmText, setConfirmText] = useState('');
   const [tab, setTab] = useState('estado');
+
+  const periodoMes = rendicion?.periodo ?? '2026-05';
+  const serviciosMes = servicios.filter(
+    (s) => s.cuartelId === cuartel?.id && s.horaSalida.startsWith(periodoMes),
+  );
+  const serviciosValidados = serviciosMes.filter((s) => s.estado === 'validado').length;
+  const serviciosPendientes = serviciosMes.filter((s) => s.estado === 'pendiente_validacion').length;
+  const serviciosTexto = `${serviciosMes.length} (validados ${serviciosValidados}/pendientes ${serviciosPendientes})`;
 
   async function abrirCopiloto() {
     if (!rendicion) return;
@@ -239,7 +248,7 @@ export default function RendicionPage() {
 
                   <dl className="space-y-2 text-sm">
                     {[
-                      { k: 'Servicios del período', v: '10 (validados 8 / pendientes 2)' },
+                      { k: 'Servicios del período', v: serviciosTexto },
                       { k: 'Personal activo', v: '17 + 1 en licencia' },
                       { k: 'Horas accidentales', v: '47 hs' },
                       { k: 'Horas guardia', v: '36 hs' },
@@ -289,10 +298,6 @@ export default function RendicionPage() {
                   </div>
                 </div>
               </div>
-              <p className="mt-3 text-xs text-slate-500">
-                [HIPÓTESIS] El formato exacto se valida con la Federación. Por ahora simulamos
-                campos creíbles.
-              </p>
             </CardContent>
           </Card>
         </TabsContent>

@@ -2,17 +2,20 @@
 
 import { motion } from 'framer-motion';
 import { AlertTriangle, CheckCircle2, Download, Flame, Map as MapIcon, Users } from 'lucide-react';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 
 import { Badge, Button, Card, CardContent, Kpi, cn, useToast } from '@faro/ui';
 
 import { PageHero } from '../../../../components/shared/page-hero';
 import { MapView } from '../../../../components/shared/map-view';
+import { useFaroStore } from '../../../../store/use-faro-store';
+
+type Region = 'norte' | 'sur' | 'este' | 'oeste';
 
 interface CuartelProvincial {
   id: string;
   nombre: string;
-  region: 'norte' | 'sur' | 'este' | 'oeste';
+  region: Region;
   lat: number;
   lng: number;
   voluntarios: number;
@@ -22,132 +25,54 @@ interface CuartelProvincial {
   alertas: number;
 }
 
-const CUARTELES: CuartelProvincial[] = [
-  {
-    id: 'c-vb',
-    nombre: 'Villa Ballester',
-    region: 'norte',
-    lat: -34.5476,
-    lng: -58.5556,
-    voluntarios: 38,
-    serviciosMes: 21,
-    cumplimiento: 87,
-    estado: 'ok',
-    alertas: 2,
-  },
-  {
-    id: 'c-sa',
-    nombre: 'San Andrés',
-    region: 'norte',
-    lat: -34.5634,
-    lng: -58.545,
-    voluntarios: 31,
-    serviciosMes: 18,
-    cumplimiento: 92,
-    estado: 'ok',
-    alertas: 1,
-  },
-  {
-    id: 'c-jls',
-    nombre: 'José León Suárez',
-    region: 'norte',
-    lat: -34.5285,
-    lng: -58.568,
-    voluntarios: 24,
-    serviciosMes: 15,
-    cumplimiento: 78,
-    estado: 'warn',
-    alertas: 4,
-  },
-  {
-    id: 'c-sm',
-    nombre: 'San Martín Centro',
-    region: 'norte',
-    lat: -34.572,
-    lng: -58.541,
-    voluntarios: 52,
-    serviciosMes: 34,
-    cumplimiento: 95,
-    estado: 'ok',
-    alertas: 0,
-  },
-  {
-    id: 'c-vd',
-    nombre: 'Villa Devoto',
-    region: 'oeste',
-    lat: -34.59,
-    lng: -58.51,
-    voluntarios: 41,
-    serviciosMes: 29,
-    cumplimiento: 84,
-    estado: 'ok',
-    alertas: 3,
-  },
-  {
-    id: 'c-li',
-    nombre: 'Liniers',
-    region: 'oeste',
-    lat: -34.638,
-    lng: -58.518,
-    voluntarios: 27,
-    serviciosMes: 22,
-    cumplimiento: 65,
-    estado: 'risk',
-    alertas: 7,
-  },
-  {
-    id: 'c-flo',
-    nombre: 'Florida',
-    region: 'norte',
-    lat: -34.529,
-    lng: -58.493,
-    voluntarios: 33,
-    serviciosMes: 19,
-    cumplimiento: 88,
-    estado: 'ok',
-    alertas: 2,
-  },
-  {
-    id: 'c-mu',
-    nombre: 'Munro',
-    region: 'norte',
-    lat: -34.529,
-    lng: -58.522,
-    voluntarios: 29,
-    serviciosMes: 16,
-    cumplimiento: 71,
-    estado: 'warn',
-    alertas: 5,
-  },
-  {
-    id: 'c-tig',
-    nombre: 'Tigre',
-    region: 'norte',
-    lat: -34.426,
-    lng: -58.581,
-    voluntarios: 47,
-    serviciosMes: 28,
-    cumplimiento: 91,
-    estado: 'ok',
-    alertas: 1,
-  },
-  {
-    id: 'c-pacheco',
-    nombre: 'General Pacheco',
-    region: 'norte',
-    lat: -34.456,
-    lng: -58.62,
-    voluntarios: 25,
-    serviciosMes: 12,
-    cumplimiento: 60,
-    estado: 'risk',
-    alertas: 9,
-  },
-];
+function inferirRegion(region: string): Region {
+  const r = region.toLowerCase();
+  if (r.includes('norte')) return 'norte';
+  if (r.includes('sur')) return 'sur';
+  if (r.includes('este')) return 'este';
+  if (r.includes('oeste')) return 'oeste';
+  return 'norte';
+}
 
 export default function MapaFederacionPage() {
   const toast = useToast();
-  const [filtroRegion, setFiltroRegion] = useState<'todas' | CuartelProvincial['region']>('todas');
+  const cuarteles = useFaroStore((s) => s.cuarteles);
+  const personas = useFaroStore((s) => s.personas);
+  const servicios = useFaroStore((s) => s.servicios);
+  const [filtroRegion, setFiltroRegion] = useState<'todas' | Region>('todas');
+
+  const CUARTELES = useMemo<CuartelProvincial[]>(
+    () =>
+      cuarteles.map((c) => {
+        const voluntarios = personas.filter(
+          (p) => p.cuartelId === c.id && p.estado === 'activo',
+        ).length;
+        const serviciosMes = servicios.filter(
+          (s) => s.cuartelId === c.id && s.horaSalida.startsWith('2026-05'),
+        ).length;
+        const estado: CuartelProvincial['estado'] =
+          c.cumplimiento === 'ok' ? 'ok' : c.cumplimiento === 'warn' ? 'warn' : 'risk';
+        const alertas =
+          estado === 'risk'
+            ? Math.max(1, Math.round((100 - c.porcentajeRendicion) / 10))
+            : estado === 'warn'
+              ? Math.max(1, Math.round((100 - c.porcentajeRendicion) / 15))
+              : 0;
+        return {
+          id: c.id,
+          nombre: c.nombre,
+          region: inferirRegion(c.region),
+          lat: c.lat,
+          lng: c.lng,
+          voluntarios,
+          serviciosMes,
+          cumplimiento: c.porcentajeRendicion,
+          estado,
+          alertas,
+        };
+      }),
+    [cuarteles, personas, servicios],
+  );
 
   const filtrados =
     filtroRegion === 'todas' ? CUARTELES : CUARTELES.filter((c) => c.region === filtroRegion);
@@ -158,9 +83,9 @@ export default function MapaFederacionPage() {
   const risk = CUARTELES.filter((c) => c.estado === 'risk').length;
   const voluntariosTotal = CUARTELES.reduce((a, c) => a + c.voluntarios, 0);
   const serviciosMes = CUARTELES.reduce((a, c) => a + c.serviciosMes, 0);
-  const cumplimientoProm = Math.round(
-    CUARTELES.reduce((a, c) => a + c.cumplimiento, 0) / CUARTELES.length,
-  );
+  const cumplimientoProm = CUARTELES.length
+    ? Math.round(CUARTELES.reduce((a, c) => a + c.cumplimiento, 0) / CUARTELES.length)
+    : 0;
 
   return (
     <div className="mx-auto max-w-7xl space-y-5">

@@ -40,9 +40,9 @@ const TIPOS_INCIDENTE = {
   '323': 'Rescate vertical · altura/profundidad',
   '361': 'Emergencia médica · básica',
   '362': 'Emergencia médica · trauma',
-  '400': 'HAZMAT · genérico',
-  '411': 'HAZMAT · derrame gas',
-  '412': 'HAZMAT · derrame combustible',
+  '400': 'Materiales peligrosos · genérico',
+  '411': 'Materiales peligrosos · derrame de gas',
+  '412': 'Materiales peligrosos · derrame de combustible',
   '500': 'Servicio comunitario',
   '622': 'Asistencia ciudadanos',
   '700': 'Falsa alarma · sistema automático',
@@ -111,8 +111,10 @@ export default function ParteNFIRSPage() {
   const [confirmaFirma, setConfirmaFirma] = useState(false);
   const [hashFirma, setHashFirma] = useState<string>('');
 
+  const [numeroInicial] = useState(() => 'PS-2026-' + Math.random().toString().slice(2, 8));
+
   const [data, setData] = useState<ParteData>({
-    numero: 'PS-2026-' + Math.random().toString().slice(2, 8),
+    numero: numeroInicial,
     tipo: '111',
     propiedad: '419 · Vivienda unifamiliar',
     causa: 'Cocina · grasa/aceite',
@@ -236,8 +238,8 @@ export default function ParteNFIRSPage() {
     setFirmado(true);
     toast.push({
       kind: 'success',
-      title: 'Parte firmado digitalmente',
-      description: `Hash sellado · ${hex.slice(0, 16)}...`,
+      title: 'Parte firmado',
+      description: 'Quedó registrado de forma permanente.',
     });
   }
 
@@ -758,7 +760,7 @@ export default function ParteNFIRSPage() {
 
                     {!otpRequest ? (
                       <Button intent="primary" onClick={pedirOTP} className="mt-3">
-                        <KeyRound size={14} /> Solicitar OTP
+                        <KeyRound size={14} /> Pedir código al celular
                       </Button>
                     ) : (
                       <div className="mt-3 flex flex-wrap items-center gap-2">
@@ -785,7 +787,6 @@ export default function ParteNFIRSPage() {
                         >
                           <Check size={14} /> Firmar parte
                         </Button>
-                        <span className="text-xs text-slate-500">Demo: 000000</span>
                       </div>
                     )}
                     {errors.otp && (

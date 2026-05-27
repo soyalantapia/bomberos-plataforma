@@ -28,6 +28,7 @@ import { PageHero } from '../../../../components/shared/page-hero';
 import { FiltersBar, type FilterChip } from '../../../../components/shared/filters-bar';
 import { MapView } from '../../../../components/shared/map-view';
 import { fmtFechaHora, fmtHora } from '../../../../lib/utils/date';
+import { demoToday } from '../../../../lib/utils/demo-today';
 import { tipoServicioLabel } from '../../../../lib/utils/tipo-servicio';
 import {
   useFaroStore,
@@ -234,7 +235,7 @@ export default function OperacionesPage() {
         </div>
         <div className="grid grid-cols-7 gap-px bg-slate-100 sm:gap-1 sm:bg-transparent sm:p-1.5">
           {(() => {
-            const hoy = new Date('2026-05-24');
+            const hoy = demoToday();
             const dias = Array.from({ length: 7 }).map((_, i) => {
               const d = new Date(hoy);
               d.setDate(hoy.getDate() - (6 - i));

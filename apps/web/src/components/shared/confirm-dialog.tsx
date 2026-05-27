@@ -68,14 +68,12 @@ export function ConfirmDialog({
   const cfg = VARIANT_CONFIG[variant];
 
   return (
-    <Dialog open={open} onClose={onClose}>
-      <div className="text-center">
-        <div className={cn('mx-auto grid h-14 w-14 place-items-center rounded-full', cfg.iconBg)}>
-          {variant === 'destructive' ? <ShieldAlert size={22} /> : cfg.icon}
-        </div>
-        <h3 className="mt-3 text-lg font-bold text-slate-900">{titulo}</h3>
-        <p className="mt-1 text-sm text-slate-600">{descripcion}</p>
-        <div className="mt-5 flex flex-col-reverse gap-2 sm:flex-row sm:justify-center">
+    <Dialog
+      open={open}
+      onClose={onClose}
+      size="sm"
+      footer={
+        <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
           <Button intent="ghost" onClick={onClose} disabled={loading}>
             {cancelarLabel}
           </Button>
@@ -88,6 +86,14 @@ export function ConfirmDialog({
             {loading ? 'Procesando...' : confirmarLabel}
           </Button>
         </div>
+      }
+    >
+      <div className="text-center">
+        <div className={cn('mx-auto grid h-14 w-14 place-items-center rounded-full', cfg.iconBg)}>
+          {variant === 'destructive' ? <ShieldAlert size={22} /> : cfg.icon}
+        </div>
+        <h3 className="mt-3 text-lg font-bold text-slate-900">{titulo}</h3>
+        <p className="mt-1 text-sm text-slate-600">{descripcion}</p>
       </div>
     </Dialog>
   );

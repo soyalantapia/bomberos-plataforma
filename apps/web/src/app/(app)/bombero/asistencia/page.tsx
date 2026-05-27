@@ -1,7 +1,7 @@
 'use client';
 
 import { CheckCircle2, Clock, Flame, LogOut, MapPin, Shield, Target } from 'lucide-react';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 import type { TipoAsistencia } from '@faro/types';
 
@@ -50,7 +50,20 @@ export default function AsistenciaBombero() {
   );
   const toast = useToast();
 
-  const [marcado, setMarcado] = useState<{ in?: string; out?: string }>({});
+  const [marcado, setMarcado] = useState<{ in?: string; out?: string }>(() => {
+    if (typeof window === 'undefined') return {};
+    try {
+      return JSON.parse(localStorage.getItem('asistencia-bombero') ?? '{}');
+    } catch {
+      return {};
+    }
+  });
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    localStorage.setItem('asistencia-bombero', JSON.stringify(marcado));
+  }, [marcado]);
+
   const [tab, setTab] = useState<TabHist>('todos');
   // Demo: alternar entre estar adentro y afuera de la geocerca
   const [adentro, setAdentro] = useState(true);
@@ -214,7 +227,7 @@ export default function AsistenciaBombero() {
               onClick={() => setAdentro((a) => !a)}
               className="text-brand-700 hover:text-brand-900 text-xs font-medium underline-offset-2 hover:underline"
             >
-              Simular {adentro ? 'salida' : 'entrada'}
+              Marcar {adentro ? 'salida' : 'entrada'}
             </button>
           </div>
           <MapView

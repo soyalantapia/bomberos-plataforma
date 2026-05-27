@@ -81,7 +81,7 @@ export function NuevoMovimientoDialog({ open, onClose, tipoInicial = 'egreso' }:
     onClose();
   }
 
-  function validar(): boolean {
+  function validar(): Record<string, string> {
     const e: Record<string, string> = {};
     const m = Number(monto);
     if (!monto || isNaN(m) || m <= 0) e.monto = 'Monto debe ser mayor a 0';
@@ -94,15 +94,16 @@ export function NuevoMovimientoDialog({ open, onClose, tipoInicial = 'egreso' }:
     if (!descripcion || descripcion.trim().length < 5) e.descripcion = 'Mínimo 5 caracteres';
     if (cuit && !/^\d{2}-?\d{8}-?\d{1}$/.test(cuit)) e.cuit = 'CUIT inválido (XX-XXXXXXXX-X)';
     setErrors(e);
-    return Object.keys(e).length === 0;
+    return e;
   }
 
   function guardar(comoBorrador: boolean) {
-    if (!validar()) {
+    const errs = validar();
+    if (Object.keys(errs).length > 0) {
       toast.push({
         kind: 'warn',
         title: 'Revisá el formulario',
-        description: Object.values(errors)[0],
+        description: Object.values(errs)[0],
       });
       return;
     }

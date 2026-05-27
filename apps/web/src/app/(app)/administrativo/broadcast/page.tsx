@@ -14,7 +14,7 @@ import {
   Send,
   Users,
 } from 'lucide-react';
-import { useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 
 import { Avatar, Badge, Button, Card, CardContent, Kpi, cn, useToast } from '@faro/ui';
 
@@ -89,8 +89,53 @@ export default function BroadcastPage() {
   const [programar, setProgramar] = useState(false);
   const [fechaProg, setFechaProg] = useState('');
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const audienciaSel = AUDIENCIAS.find((a) => a.id === audiencia)!;
+
+  // KPIs derivados del histórico mock. TODO: pull from store cuando exista slice.
+  const kpis = useMemo(() => {
+    const enviadosHoy = RECIENTES.filter((b) => /^Hoy|Hace\s+\d+\s*h/i.test(b.enviado)).length;
+    const enviadosSemana = RECIENTES.filter((b) => !/\d+\s*sem|mes/i.test(b.enviado)).length;
+    return { hoy: enviadosHoy, semana: enviadosSemana };
+  }, []);
+
+  function insertarFormato(prefijo: string, sufijo = prefijo) {
+    const ta = textareaRef.current;
+    if (!ta) {
+      setCuerpo((c) => c + prefijo + sufijo);
+      return;
+    }
+    const start = ta.selectionStart ?? cuerpo.length;
+    const end = ta.selectionEnd ?? cuerpo.length;
+    const selected = cuerpo.slice(start, end);
+    const nuevo = cuerpo.slice(0, start) + prefijo + selected + sufijo + cuerpo.slice(end);
+    setCuerpo(nuevo);
+    requestAnimationFrame(() => {
+      ta.focus();
+      const pos = start + prefijo.length + selected.length;
+      ta.setSelectionRange(pos, pos);
+    });
+  }
+
+  function insertarLineaPrefijo(prefijo: string) {
+    const ta = textareaRef.current;
+    if (!ta) {
+      setCuerpo((c) => (c.length > 0 && !c.endsWith('\n') ? c + '\n' : c) + prefijo);
+      return;
+    }
+    const start = ta.selectionStart ?? cuerpo.length;
+    const before = cuerpo.slice(0, start);
+    const after = cuerpo.slice(start);
+    const sep = before.length === 0 || before.endsWith('\n') ? '' : '\n';
+    const nuevo = before + sep + prefijo + after;
+    setCuerpo(nuevo);
+    requestAnimationFrame(() => {
+      ta.focus();
+      const pos = before.length + sep.length + prefijo.length;
+      ta.setSelectionRange(pos, pos);
+    });
+  }
 
   function enviar() {
     const result = validate(broadcastSchema, {
@@ -130,8 +175,8 @@ export default function BroadcastPage() {
         icono={<Megaphone size={26} />}
         meta={
           <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
-            <Kpi label="Hoy" value={4} hint="enviados" intent="brand" />
-            <Kpi label="Esta semana" value={12} intent="neutral" />
+            <Kpi label="Hoy" value={kpis.hoy} hint="enviados" intent="brand" />
+            <Kpi label="Esta semana" value={kpis.semana} intent="neutral" />
             <Kpi label="Apertura prom." value="92%" hint="leídos" intent="ok" />
             <Kpi label="Tu sección" value="Operativa" hint="22 personas" intent="brand" />
           </div>
@@ -208,30 +253,39 @@ export default function BroadcastPage() {
                 <div className="flex items-center gap-1 border-b border-slate-100 bg-slate-50 px-2 py-1">
                   <button
                     type="button"
+                    onClick={() => insertarFormato('**')}
+                    aria-label="Negrita"
                     className="grid h-7 w-7 place-items-center rounded text-slate-600 hover:bg-white"
                   >
                     <Bold size={12} />
                   </button>
                   <button
                     type="button"
+                    onClick={() => insertarFormato('*')}
+                    aria-label="Cursiva"
                     className="grid h-7 w-7 place-items-center rounded text-slate-600 hover:bg-white"
                   >
                     <Italic size={12} />
                   </button>
                   <button
                     type="button"
+                    onClick={() => insertarLineaPrefijo('- ')}
+                    aria-label="Lista"
                     className="grid h-7 w-7 place-items-center rounded text-slate-600 hover:bg-white"
                   >
                     <List size={12} />
                   </button>
                   <button
                     type="button"
+                    onClick={() => insertarLineaPrefijo('[Adjunto] ')}
+                    aria-label="Adjuntar"
                     className="grid h-7 w-7 place-items-center rounded text-slate-600 hover:bg-white"
                   >
                     <Paperclip size={12} />
                   </button>
                 </div>
                 <textarea
+                  ref={textareaRef}
                   value={cuerpo}
                   onChange={(e) => {
                     setCuerpo(e.target.value);

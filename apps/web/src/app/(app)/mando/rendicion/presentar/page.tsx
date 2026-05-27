@@ -93,6 +93,8 @@ export default function PresentarRendicionPage() {
   const cuartel = useFaroStore(selectCuartelActivo);
   const rendicion = useFaroStore(selectRendicionActual);
   const persona = useFaroStore(selectPersonaActual);
+  const sesion = useFaroStore((s) => s.sesion);
+  const presentarRendicion = useFaroStore((s) => s.presentarRendicion);
   const toast = useToast();
 
   const [paso, setPaso] = useState<Paso>(1);
@@ -119,6 +121,9 @@ export default function PresentarRendicionPage() {
       setPresentada(true);
       const cod = 'RND-' + Date.now().toString().slice(-8);
       setComprobante(cod);
+      if (rendicion) {
+        presentarRendicion(rendicion.id, sesion?.personaId ?? persona?.id ?? 'persona-1');
+      }
       toast.push({
         kind: 'success',
         title: 'Rendición presentada al Sistema Nacional',

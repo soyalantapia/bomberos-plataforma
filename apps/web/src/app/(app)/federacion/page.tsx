@@ -1,6 +1,7 @@
 'use client';
 
 import { AlertTriangle, Flag, Map, MapPin, TrendingUp, Users } from 'lucide-react';
+import Link from 'next/link';
 import { useState } from 'react';
 
 import { Badge, Card, CardContent, CardHeader, CardTitle, cn, Kpi, StatusPill } from '@faro/ui';
@@ -21,10 +22,16 @@ export default function TableroFederacion() {
   const enRegla = cuarteles.filter((c) => c.cumplimiento === 'ok');
   const totalServicios = servicios.length;
   const totalPersonal = personas.filter((p) => p.estado === 'activo').length;
-  const promedio = Math.round(
-    cuarteles.reduce((acc, c) => acc + c.porcentajeRendicion, 0) / cuarteles.length,
-  );
+  const promedio = cuarteles.length
+    ? Math.round(cuarteles.reduce((acc, c) => acc + c.porcentajeRendicion, 0) / cuarteles.length)
+    : 0;
   const ranking = [...cuarteles].sort((a, b) => b.porcentajeRendicion - a.porcentajeRendicion);
+  const peorCuartel = [...cuarteles].sort(
+    (a, b) => a.porcentajeRendicion - b.porcentajeRendicion,
+  )[0];
+  const segundoPeor = [...cuarteles].sort(
+    (a, b) => a.porcentajeRendicion - b.porcentajeRendicion,
+  )[1];
 
   return (
     <div className="mx-auto max-w-6xl space-y-5">
@@ -35,7 +42,7 @@ export default function TableroFederacion() {
             ? `${enRiesgo.length} cuartel${enRiesgo.length === 1 ? '' : 'es'} en riesgo`
             : `Región al ${promedio}%`
         }
-        descripcion="Estado del mes y los cuarteles que necesitan acción. Tocá un cuartel para abrirlo y mandar recordatorios."
+        descripcion="Estado del mes y los cuarteles que necesitan acción."
         icono={<Flag size={26} />}
         variant={enRiesgo.length > 0 ? 'critical' : promedio >= 90 ? 'success' : 'default'}
         meta={
@@ -137,9 +144,10 @@ export default function TableroFederacion() {
               {cuarteles.map((c) => {
                 const mostrarCiudad = c.ciudad && c.ciudad.toLowerCase() !== c.nombre.toLowerCase();
                 return (
-                  <div
+                  <Link
                     key={c.id}
-                    className="flex cursor-pointer flex-col items-center rounded-xl border border-slate-200 p-4 text-center transition-all hover:-translate-y-0.5 hover:shadow-md"
+                    href="/federacion/cumplimiento"
+                    className="flex flex-col items-center rounded-xl border border-slate-200 p-4 text-center transition-all hover:-translate-y-0.5 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-brand-400"
                   >
                     <div
                       className={cn(
@@ -154,7 +162,7 @@ export default function TableroFederacion() {
                     </div>
                     <div className="font-semibold text-slate-900">{c.nombre}</div>
                     {mostrarCiudad && <div className="text-xs text-slate-500">{c.ciudad}</div>}
-                  </div>
+                  </Link>
                 );
               })}
             </div>
@@ -269,8 +277,25 @@ export default function TableroFederacion() {
               <div className="text-brand-900 font-semibold">Resumen de la región</div>
               <p className="text-brand-900/90 mt-1 text-sm">
                 Norte GBA con {cuarteles.length} cuarteles y un cumplimiento promedio del {promedio}
-                %. <strong>San Isidro</strong> está en riesgo de no llegar a la rendición.{' '}
-                <strong>Villa Ballester</strong> avanza pero le faltan firmas del Comandante.
+                %.{' '}
+                {peorCuartel && (
+                  <>
+                    <strong>{peorCuartel.nombre}</strong>
+                    {peorCuartel.cumplimiento === 'risk'
+                      ? ' está en riesgo de no llegar a la rendición'
+                      : peorCuartel.cumplimiento === 'warn'
+                        ? ' necesita atención para llegar al objetivo'
+                        : ` lidera el ranking con ${peorCuartel.porcentajeRendicion}%`}
+                    .
+                  </>
+                )}
+                {segundoPeor && segundoPeor.cumplimiento !== 'ok' && (
+                  <>
+                    {' '}
+                    <strong>{segundoPeor.nombre}</strong> avanza pero todavía está al{' '}
+                    {segundoPeor.porcentajeRendicion}%.
+                  </>
+                )}
               </p>
             </div>
           </div>
@@ -287,7 +312,7 @@ export default function TableroFederacion() {
             href: '/federacion/mapa',
             icon: <Map size={18} />,
             titulo: 'Mapa provincial',
-            descripcion: '10 cuarteles · ranking · exportar PDF',
+            descripcion: `${cuarteles.length} cuarteles · ranking · exportar PDF`,
             color: 'bg-brand-700',
             nuevo: true,
           },

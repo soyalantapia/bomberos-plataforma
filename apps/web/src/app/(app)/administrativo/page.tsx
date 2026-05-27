@@ -119,7 +119,7 @@ export default function PadronPage() {
             <Kpi
               label="Activos"
               value={activos}
-              hint={`${Math.round((activos / personas.length) * 100)}%`}
+              hint={personas.length > 0 ? `${Math.round((activos / personas.length) * 100)}%` : '—'}
               intent="ok"
             />
             <Kpi

@@ -6,9 +6,11 @@ import { useMemo } from 'react';
 import { Badge, Card, CardContent, Kpi, StatusPill, cn, useToast } from '@faro/ui';
 
 import { PageHero } from '../../../../components/shared/page-hero';
+import { demoToday } from '../../../../lib/utils/demo-today';
 import { useFaroStore } from '../../../../store/use-faro-store';
 
 const PLAZO_LIMITE = '10/06/2026';
+const PLAZO_FECHA = new Date('2026-06-10T00:00:00');
 
 export default function CumplimientoFed() {
   const cuarteles = useFaroStore((s) => s.cuarteles);
@@ -26,7 +28,10 @@ export default function CumplimientoFed() {
   const atencion = cuarteles.filter((c) => c.cumplimiento === 'warn').length;
   const enRegla = cuarteles.filter((c) => c.cumplimiento === 'ok').length;
 
-  const diasAlPlazo = 17;
+  const diasAlPlazo = Math.max(
+    0,
+    Math.round((PLAZO_FECHA.getTime() - demoToday().getTime()) / 86_400_000),
+  );
 
   return (
     <div className="mx-auto max-w-6xl space-y-5">

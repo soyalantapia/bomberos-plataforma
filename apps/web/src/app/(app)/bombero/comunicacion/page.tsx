@@ -16,6 +16,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { Avatar, Badge, Card, Kpi, cn, useToast } from '@faro/ui';
 
 import { PageHero } from '../../../../components/shared/page-hero';
+import { selectPersonaActual, useFaroStore } from '../../../../store/use-faro-store';
 
 interface Aviso {
   id: string;
@@ -81,12 +82,13 @@ const avisos: Aviso[] = [
   },
 ];
 
-const chatsInicial: Chat[] = [
+function buildChatsInicial(autor: string): Chat[] {
+  return [
   {
     id: 'ch1',
     nombre: 'Cuartel general',
     ultimoMensaje: 'Mañana 7am en Pueyrredón. Llevar EPP completo.',
-    autor: 'Mariana Pereyra',
+    autor,
     cuando: '14:32',
     sinLeer: 3,
     tipo: 'cuartel',
@@ -123,6 +125,7 @@ const chatsInicial: Chat[] = [
     integrantes: 6,
   },
 ];
+}
 
 const CHAT_STYLE: Record<Chat['tipo'], { color: string; icono: React.ReactNode }> = {
   cuartel: { color: 'bg-brand-600', icono: <Users2 size={18} /> },
@@ -131,7 +134,8 @@ const CHAT_STYLE: Record<Chat['tipo'], { color: string; icono: React.ReactNode }
   rescate: { color: 'bg-status-risk', icono: <Heart size={18} /> },
 };
 
-const HISTORIAL: Record<string, Mensaje[]> = {
+function buildHistorial(autor: string): Record<string, Mensaje[]> {
+  return {
   ch1: [
     {
       id: 'm-ch1-1',
@@ -149,7 +153,7 @@ const HISTORIAL: Record<string, Mensaje[]> = {
     },
     {
       id: 'm-ch1-3',
-      autor: 'Mariana Pereyra',
+      autor,
       texto: 'Mañana 7am en Pueyrredón. Llevar EPP completo.',
       ts: '14:32',
       mio: false,
@@ -228,12 +232,17 @@ const HISTORIAL: Record<string, Mensaje[]> = {
     },
   ],
 };
+}
 
 // Respuestas automáticas según contenido
-function generarRespuesta(chatId: string, _texto: string): { autor: string; texto: string } {
+function generarRespuesta(
+  chatId: string,
+  _texto: string,
+  autorPrincipal: string,
+): { autor: string; texto: string } {
   const respuestasPorChat: Record<string, Array<{ autor: string; texto: string }>> = {
     ch1: [
-      { autor: 'Mariana Pereyra', texto: 'Recibido 👍' },
+      { autor: autorPrincipal, texto: 'Recibido 👍' },
       { autor: 'Sebastián Ruiz', texto: 'Anotado.' },
       {
         autor: 'Roberto González',
@@ -254,10 +263,12 @@ function generarRespuesta(chatId: string, _texto: string): { autor: string; text
 
 export default function ComunicacionPage() {
   const toast = useToast();
+  const persona = useFaroStore(selectPersonaActual);
+  const autor = persona ? `${persona.nombre} ${persona.apellido}` : 'Vos';
   const [seleccionado, setSeleccionado] = useState<string>('ch1');
   const [draft, setDraft] = useState('');
-  const [historial, setHistorial] = useState<Record<string, Mensaje[]>>(HISTORIAL);
-  const [chats, setChats] = useState<Chat[]>(chatsInicial);
+  const [historial, setHistorial] = useState<Record<string, Mensaje[]>>(() => buildHistorial(autor));
+  const [chats, setChats] = useState<Chat[]>(() => buildChatsInicial(autor));
   const [escribiendo, setEscribiendo] = useState<Record<string, boolean>>({});
   const scrollRef = useRef<HTMLDivElement>(null);
 
@@ -321,7 +332,7 @@ export default function ComunicacionPage() {
 
     setTimeout(
       () => {
-        const respuesta = generarRespuesta(seleccionado, texto);
+        const respuesta = generarRespuesta(seleccionado, texto, autor);
         const horaResp = `${String(new Date().getHours()).padStart(2, '0')}:${String(new Date().getMinutes()).padStart(2, '0')}`;
         const respId = `m-${seleccionado}-${Date.now()}-resp`;
         setHistorial((h) => ({
@@ -564,6 +575,7 @@ export default function ComunicacionPage() {
                 value={draft}
                 onChange={(e) => setDraft(e.target.value)}
                 placeholder={`Escribir a ${chatActivo.nombre}...`}
+                aria-label={`Mensaje para ${chatActivo.nombre}`}
                 className="focus:border-brand-400 focus:ring-brand-100 flex-1 rounded-full border border-slate-200 bg-white px-4 py-2 text-sm outline-none focus:ring-2"
               />
               <button

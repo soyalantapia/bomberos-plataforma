@@ -18,6 +18,7 @@ import { useMemo, useState } from 'react';
 import { Avatar, Badge, Button, Card, CardContent, Kpi, cn, useToast } from '@faro/ui';
 
 import { PageHero } from '../../../../components/shared/page-hero';
+import { demoToday } from '../../../../lib/utils/demo-today';
 import { useFaroStore } from '../../../../store/use-faro-store';
 
 interface AptitudMedica {
@@ -81,7 +82,7 @@ const APTITUDES_MOCK: Record<string, AptitudMedica> = {
     cardiologica: 'apto',
     oftalmologica: 'apto',
     pulmonar: 'apto',
-    observaciones: 'Trámite vencido hace 5 meses. SUSPENDER de operativos.',
+    observaciones: 'Trámite vencido hace 5 meses. Suspender de operativos.',
   },
 };
 
@@ -113,7 +114,7 @@ const ESTADO_CONFIG = {
 };
 
 function diasHasta(fecha: string) {
-  const hoy = new Date('2026-05-24');
+  const hoy = demoToday();
   const f = new Date(fecha);
   return Math.round((f.getTime() - hoy.getTime()) / 86400000);
 }
@@ -313,7 +314,7 @@ export default function AptitudMedicaPage() {
                           <div className="flex items-center justify-between">
                             <span className="text-slate-600">
                               <Activity size={11} className="mr-1 inline" />
-                              Capacidad física
+                              Capacidad aeróbica (VO₂max)
                             </span>
                             <span
                               className={cn(

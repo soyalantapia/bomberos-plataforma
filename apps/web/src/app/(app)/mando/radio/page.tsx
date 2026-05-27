@@ -203,7 +203,7 @@ export default function RadioPage() {
             <input
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder="Buscar en transcripciones... (búsqueda full-text por IA)"
+              placeholder="Buscar por palabra clave en las grabaciones"
               className="focus:border-brand-400 w-full rounded-lg border border-slate-200 bg-white py-2 pl-9 pr-3 text-sm outline-none focus:ring-2"
             />
           </div>

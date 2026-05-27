@@ -38,6 +38,7 @@ import {
 } from '@faro/ui';
 
 import { OCRWizard } from '../../../../../components/ai/ocr-wizard';
+import { EmptyState } from '../../../../../components/shared/empty-state';
 import { PageHero } from '../../../../../components/shared/page-hero';
 import { calcularComputoMensual } from '../../../../../lib/utils/computo';
 import {
@@ -315,33 +316,12 @@ export default function FichaPersonaView() {
                   + Agregar
                 </Button>
               </div>
-              <div className="space-y-2">
-                {[
-                  { rel: 'Cónyuge', nombre: 'Juan Pereyra', dni: '23.450.876', heredero: true },
-                  {
-                    rel: 'Hijo/a',
-                    nombre: 'Camila Pereyra',
-                    dni: '54.892.301',
-                    heredero: true,
-                    edad: 12,
-                  },
-                  { rel: 'Madre', nombre: 'Elena González', dni: '11.234.567', heredero: false },
-                ].map((f, idx) => (
-                  <div
-                    key={idx}
-                    className="flex items-center gap-3 rounded-lg border border-slate-200 bg-white p-3"
-                  >
-                    <Avatar name={f.nombre} size={36} />
-                    <div className="min-w-0 flex-1">
-                      <div className="font-medium text-slate-900">{f.nombre}</div>
-                      <div className="mt-0.5 text-xs text-slate-600">
-                        {f.rel} · DNI {f.dni} {f.edad && `· ${f.edad} años`}
-                      </div>
-                    </div>
-                    {f.heredero && <Badge intent="brand">Heredero</Badge>}
-                  </div>
-                ))}
-              </div>
+              <EmptyState
+                inline
+                icon={<Users size={28} />}
+                titulo="Sin datos cargados"
+                descripcion="Esta sección se completará desde la ficha de Recursos Humanos."
+              />
               <p className="mt-3 text-xs text-slate-500">
                 Los herederos figuran en la planilla del Fondo · cambios requieren un código al
                 celular del titular.
@@ -354,51 +334,12 @@ export default function FichaPersonaView() {
           <Card>
             <CardContent className="p-5">
               <h3 className="mb-4 font-bold text-slate-900">Historial laboral y movimientos</h3>
-              <div className="relative">
-                <div className="absolute bottom-2 left-3 top-2 w-px bg-slate-200" />
-                {[
-                  {
-                    fecha: fmtFechaCorta(persona.fechaIngreso),
-                    tit: 'Ingreso al cuartel',
-                    det: 'Como cadete · folio 12',
-                  },
-                  {
-                    fecha: '15/03/2010',
-                    tit: 'Pase a Bombero efectivo',
-                    det: 'Tras aprobar curso básico',
-                  },
-                  { fecha: '10/08/2015', tit: 'Ascenso a Cabo', det: 'Pliego N° 142/2015' },
-                  {
-                    fecha: '22/04/2020',
-                    tit: 'Ascenso a Sargento Ayudante',
-                    det: 'Pliego N° 87/2020',
-                  },
-                  {
-                    fecha: '01/01/2023',
-                    tit: `Ascenso a ${fmtJerarquia(persona.jerarquia)}`,
-                    det: 'Cargo actual',
-                  },
-                ].map((h, idx, arr) => {
-                  const isLast = idx === arr.length - 1;
-                  return (
-                    <div key={idx} className="relative pb-4 pl-9 last:pb-0">
-                      <div
-                        className={cn(
-                          'absolute left-0 grid h-6 w-6 place-items-center rounded-full ring-4 ring-white',
-                          isLast ? 'bg-status-ok text-white' : 'bg-slate-300 text-slate-600',
-                        )}
-                      >
-                        {isLast && <ShieldCheck size={12} />}
-                      </div>
-                      <div className="text-[10px] uppercase tracking-wide text-slate-500">
-                        {h.fecha}
-                      </div>
-                      <div className="mt-0.5 text-sm font-semibold text-slate-900">{h.tit}</div>
-                      <div className="text-xs text-slate-600">{h.det}</div>
-                    </div>
-                  );
-                })}
-              </div>
+              <EmptyState
+                inline
+                icon={<Users size={28} />}
+                titulo="Sin datos cargados"
+                descripcion="Esta sección se completará desde la ficha de Recursos Humanos."
+              />
             </CardContent>
           </Card>
         </TabsContent>
@@ -407,48 +348,12 @@ export default function FichaPersonaView() {
           <Card>
             <CardContent className="p-5">
               <h3 className="mb-3 font-bold text-slate-900">Formación académica</h3>
-              <dl className="space-y-2">
-                {[
-                  {
-                    nivel: 'Primario',
-                    estado: 'Completo',
-                    inst: 'Escuela N° 3 Villa Ballester',
-                    anio: '1995',
-                  },
-                  { nivel: 'Secundario', estado: 'Completo', inst: 'EEM N° 12', anio: '2003' },
-                  {
-                    nivel: 'Terciario',
-                    estado: 'En curso',
-                    inst: 'Instituto Tec. del Norte',
-                    anio: 'Tec. en Seguridad',
-                  },
-                  { nivel: 'Universitario', estado: '—', inst: '—', anio: '—' },
-                  { nivel: 'Grado', estado: '—', inst: '—', anio: '—' },
-                ].map((n) => (
-                  <div
-                    key={n.nivel}
-                    className="flex items-center justify-between rounded-lg border border-slate-200 p-3"
-                  >
-                    <div>
-                      <div className="font-semibold text-slate-900">{n.nivel}</div>
-                      <div className="mt-0.5 text-xs text-slate-600">
-                        {n.inst} {n.anio !== '—' && `· ${n.anio}`}
-                      </div>
-                    </div>
-                    <Badge
-                      intent={
-                        n.estado === 'Completo'
-                          ? 'ok'
-                          : n.estado === 'En curso'
-                            ? 'warn'
-                            : 'neutral'
-                      }
-                    >
-                      {n.estado}
-                    </Badge>
-                  </div>
-                ))}
-              </dl>
+              <EmptyState
+                inline
+                icon={<Users size={28} />}
+                titulo="Sin datos cargados"
+                descripcion="Esta sección se completará desde la ficha de Recursos Humanos."
+              />
             </CardContent>
           </Card>
         </TabsContent>

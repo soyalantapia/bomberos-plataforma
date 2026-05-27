@@ -18,7 +18,7 @@ import {
   Trees,
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { useMemo, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 
 import { Button, Card, cn, Input, Label, SectionHeader, Textarea, useToast } from '@faro/ui';
 
@@ -91,37 +91,42 @@ export default function RegistrarServicio() {
   }
   const [adjuntos, setAdjuntos] = useState<Adjunto[]>([]);
   const [arrastrando, setArrastrando] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
-  function agregarAdjuntoDemo(tipoArchivo: Adjunto['tipo']) {
-    const nombres = {
-      foto: ['frente_inmueble.jpg', 'interior_lado_derecho.jpg', 'matafuegos_usados.jpg'],
-      doc: ['parte_servicio.pdf', 'acta_policia.pdf'],
-      video: ['movil_en_ruta.mp4'],
-    } as const;
-    const colores = {
+  function inferirTipoArchivo(file: File): Adjunto['tipo'] {
+    if (file.type.startsWith('image/')) return 'foto';
+    if (file.type.startsWith('video/')) return 'video';
+    return 'doc';
+  }
+
+  function agregarAdjuntosReales(files: FileList) {
+    const colores: Record<Adjunto['tipo'], string> = {
       foto: 'bg-brand-100 text-brand-700',
       doc: 'bg-status-warn-bg text-status-warn-fg',
       video: 'bg-fire-100 text-fire-700',
-    } as const;
-    const pool = nombres[tipoArchivo];
-    const usados = adjuntos.filter((a) => a.tipo === tipoArchivo).length;
-    const nombre = pool[Math.min(usados, pool.length - 1)] ?? 'archivo.bin';
-    const pesoKb =
-      tipoArchivo === 'foto'
-        ? Math.round(800 + Math.random() * 1500)
-        : tipoArchivo === 'doc'
-          ? Math.round(150 + Math.random() * 350)
-          : Math.round(5000 + Math.random() * 15000);
-    setAdjuntos((a) => [
-      ...a,
-      {
+    };
+    const nuevos: Adjunto[] = Array.from(files).map((f) => {
+      const tipoArchivo = inferirTipoArchivo(f);
+      return {
         id: `adj-${Date.now()}-${Math.random()}`,
-        nombre,
+        nombre: f.name,
         tipo: tipoArchivo,
-        pesoKb,
+        pesoKb: Math.max(1, Math.round(f.size / 1024)),
         color: colores[tipoArchivo],
-      },
-    ]);
+      };
+    });
+    setAdjuntos((a) => [...a, ...nuevos]);
+    if (nuevos.length > 0) {
+      toast.push({
+        kind: 'success',
+        title: `${nuevos.length} archivo${nuevos.length === 1 ? '' : 's'} adjuntado${nuevos.length === 1 ? '' : 's'}`,
+        description: nuevos.map((n) => n.nombre).join(', '),
+      });
+    }
+  }
+
+  function abrirSelectorArchivos() {
+    fileInputRef.current?.click();
   }
 
   function eliminarAdjunto(id: string) {
@@ -206,6 +211,14 @@ export default function RegistrarServicio() {
   const progress = step === 'listo' ? 100 : Math.round((currentIdx / (stepOrder.length - 1)) * 100);
 
   function avanzar() {
+    if (step === 'horarios' && horaSalida && horaRegreso && horaSalida >= horaRegreso) {
+      toast.push({
+        kind: 'warn',
+        title: 'Horario inválido',
+        description: 'La hora de regreso debe ser después de la salida.',
+      });
+      return;
+    }
     const next = stepOrder[currentIdx + 1];
     if (next) setStep(next);
   }
@@ -250,6 +263,10 @@ export default function RegistrarServicio() {
     if (step === 'ubicacion') return direccion.trim().length >= 3;
     if (step === 'movil') return !!movilId;
     if (step === 'dotacion') return dotacionIds.length > 0;
+    if (step === 'horarios') {
+      if (horaSalida && horaRegreso && horaSalida >= horaRegreso) return false;
+      return true;
+    }
     return true;
   }
 
@@ -453,7 +470,15 @@ export default function RegistrarServicio() {
                   type="time"
                   value={horaRegreso}
                   onChange={(e) => setHoraRegreso(e.target.value)}
+                  aria-invalid={
+                    !!(horaSalida && horaRegreso && horaSalida >= horaRegreso)
+                  }
                 />
+                {horaSalida && horaRegreso && horaSalida >= horaRegreso && (
+                  <p className="text-status-risk-fg mt-1 text-xs font-medium">
+                    La hora de regreso debe ser después de la salida.
+                  </p>
+                )}
               </div>
               <div>
                 <Label htmlFor="notas">Notas (opcional)</Label>
@@ -471,6 +496,20 @@ export default function RegistrarServicio() {
                 <p className="mt-1 text-xs text-slate-500">
                   Fotos del lugar, parte policial, video del operativo. Suben encriptados.
                 </p>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  multiple
+                  accept="image/*,video/*,.pdf"
+                  className="hidden"
+                  onChange={(e) => {
+                    if (e.target.files && e.target.files.length > 0) {
+                      agregarAdjuntosReales(e.target.files);
+                    }
+                    // Reset para permitir adjuntar el mismo archivo de nuevo
+                    e.target.value = '';
+                  }}
+                />
                 <div
                   onDragOver={(e) => {
                     e.preventDefault();
@@ -480,14 +519,8 @@ export default function RegistrarServicio() {
                   onDrop={(e) => {
                     e.preventDefault();
                     setArrastrando(false);
-                    // Demo: simular subida de la imagen arrastrada
                     if (e.dataTransfer.files.length > 0) {
-                      agregarAdjuntoDemo('foto');
-                      toast.push({
-                        kind: 'success',
-                        title: 'Foto adjuntada',
-                        description: `${e.dataTransfer.files[0]?.name ?? 'archivo'} cargado`,
-                      });
+                      agregarAdjuntosReales(e.dataTransfer.files);
                     }
                   }}
                   className={cn(
@@ -505,21 +538,21 @@ export default function RegistrarServicio() {
                   <div className="mt-3 flex flex-wrap items-center justify-center gap-2">
                     <button
                       type="button"
-                      onClick={() => agregarAdjuntoDemo('foto')}
+                      onClick={abrirSelectorArchivos}
                       className="inline-flex h-9 items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 text-xs font-medium text-slate-700 hover:border-slate-300"
                     >
                       <Camera size={14} /> Foto
                     </button>
                     <button
                       type="button"
-                      onClick={() => agregarAdjuntoDemo('doc')}
+                      onClick={abrirSelectorArchivos}
                       className="inline-flex h-9 items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 text-xs font-medium text-slate-700 hover:border-slate-300"
                     >
                       <FileImage size={14} /> Documento
                     </button>
                     <button
                       type="button"
-                      onClick={() => agregarAdjuntoDemo('video')}
+                      onClick={abrirSelectorArchivos}
                       className="inline-flex h-9 items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 text-xs font-medium text-slate-700 hover:border-slate-300"
                     >
                       <ImagePlus size={14} /> Video

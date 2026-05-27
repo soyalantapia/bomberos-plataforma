@@ -13,13 +13,14 @@ import { PageHero } from '../../../components/shared/page-hero';
 import { FiltersBar, type FilterChip } from '../../../components/shared/filters-bar';
 import { TIPOS_NOTIF } from '../../../data/notificaciones';
 import { fmtFechaHora } from '../../../lib/utils/date';
+import { demoToday } from '../../../lib/utils/demo-today';
 import { useFaroStore } from '../../../store/use-faro-store';
 
 type TabFiltro = 'todas' | 'sin_leer' | string;
 
 function fechaRelativa(iso: string): string {
   const d = new Date(iso).getTime();
-  const ahora = new Date('2026-05-24T20:00:00-03:00').getTime();
+  const ahora = demoToday().getTime();
   const diff = ahora - d;
   const min = Math.floor(diff / 60_000);
   if (min < 60) return `hace ${min} min`;

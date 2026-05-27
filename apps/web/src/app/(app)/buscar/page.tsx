@@ -42,8 +42,11 @@ export default function BuscarPage() {
     if (q.trim().length < 2) return null;
     const qq = q.toLowerCase();
 
+    // F25 audit · filtrar por cuartel activo para no mezclar entre cuarteles
+    const cuartelId = cuartel?.id;
     const personasMatch = personas
       .filter((p) => {
+        if (cuartelId && p.cuartelId !== cuartelId) return false;
         const hay =
           `${p.nombre} ${p.apellido} ${p.legajo} ${p.funcion} ${p.email} ${p.cursos.map((c) => c.nombre).join(' ')}`.toLowerCase();
         return hay.includes(qq);
@@ -52,12 +55,14 @@ export default function BuscarPage() {
 
     const serviciosMatch = servicios
       .filter((s) => {
+        if (cuartelId && s.cuartelId !== cuartelId) return false;
         return `${tipoServicioLabel[s.tipo]} ${s.direccion}`.toLowerCase().includes(qq);
       })
       .slice(0, 4);
 
     const movilesMatch = moviles
       .filter((m) => {
+        if (cuartelId && m.cuartelId !== cuartelId) return false;
         return `${m.codigo} ${m.tipo} ${m.marca} ${m.modelo} ${m.dominio}`
           .toLowerCase()
           .includes(qq);
@@ -86,7 +91,7 @@ export default function BuscarPage() {
       moviles: movilesMatch,
       docs: docsMatch,
     };
-  }, [q, personas, servicios, moviles]);
+  }, [q, personas, servicios, moviles, cuartel?.id]);
 
   const totalResultados = resultados
     ? resultados.personas.length +

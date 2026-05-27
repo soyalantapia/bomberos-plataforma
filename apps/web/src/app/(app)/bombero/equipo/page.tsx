@@ -16,6 +16,7 @@ import { useState } from 'react';
 import { Avatar, Badge, Button, Card, CardContent, Kpi, cn } from '@faro/ui';
 
 import { PageHero } from '../../../../components/shared/page-hero';
+import { demoToday } from '../../../../lib/utils/demo-today';
 import { selectPersonaActual, useFaroStore } from '../../../../store/use-faro-store';
 
 interface EquipoEPP {
@@ -42,7 +43,7 @@ const TIPOS_EPP: Record<
   botas: { label: 'Botas para incendios', icon: <Shield size={16} />, color: 'bg-slate-700' },
   guantes: { label: 'Guantes', icon: <Shield size={16} />, color: 'bg-slate-600' },
   capucha: { label: 'Capucha ignífuga', icon: <Shield size={16} />, color: 'bg-slate-500' },
-  scba: { label: 'Equipo de aire (ERA)', icon: <Wind size={16} />, color: 'bg-brand-700' },
+  scba: { label: 'Equipo respiratorio', icon: <Wind size={16} />, color: 'bg-brand-700' },
   mascara: { label: 'Máscara facial', icon: <Wind size={16} />, color: 'bg-brand-600' },
 };
 
@@ -124,11 +125,11 @@ const EQUIPO_MOCK: EquipoEPP[] = [
     modelo: 'Air-Pak X3 Pro',
     fechaCompra: '2020-09-15',
     vencimiento: '2035-09-15',
-    qrCode: 'FARO-EPP-31456-SCBA',
+    qrCode: 'FARO-EPP-31456-AIRE',
     exposiciones: 73,
     ultimaExposicion: '2026-05-22',
     estado: 'vigente',
-    notas: 'Test hidrostático próximo: agosto 2026',
+    notas: 'Prueba de presión próxima: agosto 2026',
   },
   {
     id: 'epp-008',
@@ -144,7 +145,7 @@ const EQUIPO_MOCK: EquipoEPP[] = [
 ];
 
 function diasHasta(fecha: string) {
-  const hoy = new Date('2026-05-24');
+  const hoy = demoToday();
   const f = new Date(fecha);
   return Math.round((f.getTime() - hoy.getTime()) / 86400000);
 }

@@ -50,6 +50,7 @@ interface Guardia {
   estado: 'confirmada' | 'pendiente' | 'pasada';
 }
 
+// TODO: pull from store cuando exista slice de guardias
 const PROXIMAS_GUARDIAS: Guardia[] = [
   {
     fecha: '25 may',
@@ -67,28 +68,11 @@ const PROXIMAS_GUARDIAS: Guardia[] = [
     turno: '08-20 hs',
     movil: 'BV-5',
     dotacion: ['Mariana', 'Iván', 'Federico'],
-    estado: 'confirmada',
-  },
-  {
-    fecha: '01 jun',
-    diaSemana: 'Lun',
-    diaNum: 1,
-    turno: '20-08 hs',
-    movil: 'BV-3',
-    dotacion: ['Mariana', 'Lucía', 'Juan'],
-    estado: 'pendiente',
-  },
-  {
-    fecha: '05 jun',
-    diaSemana: 'Vie',
-    diaNum: 5,
-    turno: '08-20 hs',
-    movil: 'BV-7',
-    dotacion: ['Mariana', 'Tomás', 'Brenda'],
     estado: 'pendiente',
   },
 ];
 
+// TODO: pull from store cuando exista slice de avisos
 const AVISOS_FULL = [
   {
     emoji: '📋',
@@ -102,27 +86,6 @@ const AVISOS_FULL = [
     titulo: 'Mantenimiento Móvil BV-5',
     cuerpo: 'Mañana de 8 a 12 hs. El móvil queda fuera de servicio.',
     cuando: 'Ayer 18:00',
-    prioridad: 'normal',
-  },
-  {
-    emoji: '🩸',
-    titulo: 'Donación de sangre',
-    cuerpo: 'Sábado 25/5 · Hospital Municipal · 9 a 13 hs.',
-    cuando: 'Hace 2 días',
-    prioridad: 'normal',
-  },
-  {
-    emoji: '🎓',
-    titulo: 'Reunión de cadetes',
-    cuerpo: 'Sábado 25/5 · 17 hs · Aula 2.',
-    cuando: 'Hace 3 días',
-    prioridad: 'normal',
-  },
-  {
-    emoji: '⚠️',
-    titulo: 'Recordatorio aptitud médica',
-    cuerpo: 'Quienes tengan vencimiento próximo, agendar turno.',
-    cuando: 'Hace 4 días',
     prioridad: 'normal',
   },
 ];

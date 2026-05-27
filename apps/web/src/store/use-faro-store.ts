@@ -450,7 +450,12 @@ export const useFaroStore = create<FaroStore>()(
         cuarteles: s.cuarteles,
         notificaciones: s.notificaciones,
       }),
-      migrate: () => initialState,
+      // Merge no destructivo: si subimos versión, mantenemos lo que el user persistió
+      // y completamos los campos nuevos desde initialState. NO borramos su progreso.
+      migrate: (persisted: unknown) => {
+        if (!persisted || typeof persisted !== 'object') return initialState;
+        return { ...initialState, ...(persisted as Partial<State>) };
+      },
       onRehydrateStorage: () => (state) => {
         if (state) state.hidratado = true;
       },

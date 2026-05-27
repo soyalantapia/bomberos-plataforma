@@ -54,6 +54,7 @@ export default function OrdenInterno() {
     const adminis = personasCuartel.filter((p: Persona) => p.perfiles.includes('administrativo'));
     const etica = personasCuartel.filter((p: Persona) => p.perfiles.includes('gobierno'));
 
+    // TODO: pull tareasSemana from store cuando exista slice de tareas
     return [
       {
         id: 'sec-operativa',
@@ -62,7 +63,7 @@ export default function OrdenInterno() {
         personasIds: operativos.map((p: Persona) => p.id),
         jefeId: personasCuartel.find((p: Persona) => p.jerarquia === 'sub_comandante')?.id,
         base: 'Cuartel Central',
-        tareasSemana: 12,
+        tareasSemana: 0,
       },
       {
         id: 'sec-cadetes',
@@ -70,7 +71,7 @@ export default function OrdenInterno() {
         jerarquia: 'Formación',
         personasIds: cadetes.map((p: Persona) => p.id),
         base: 'Cuartel Central · Escuela',
-        tareasSemana: 5,
+        tareasSemana: 0,
       },
       {
         id: 'sec-admin',
@@ -79,7 +80,7 @@ export default function OrdenInterno() {
         personasIds: adminis.map((p: Persona) => p.id),
         jefeId: adminis.find((p: Persona) => p.jerarquia === 'oficial')?.id,
         base: 'Cuartel Central',
-        tareasSemana: 8,
+        tareasSemana: 0,
       },
       {
         id: 'sec-etica',
@@ -88,7 +89,7 @@ export default function OrdenInterno() {
         personasIds: etica.map((p: Persona) => p.id),
         jefeId: etica[0]?.id,
         base: 'Sala reservada',
-        tareasSemana: 3,
+        tareasSemana: 0,
       },
     ];
   }, [personasCuartel]);
@@ -114,7 +115,10 @@ export default function OrdenInterno() {
             <Kpi label="Integrantes" value={totalIntegrantes} hint="asignados" intent="ok" />
             <Kpi
               label="Tareas semana"
-              value={secciones.reduce((acc, s) => acc + s.tareasSemana, 0)}
+              value={(() => {
+                const total = secciones.reduce((acc, s) => acc + s.tareasSemana, 0);
+                return total > 0 ? total : '—';
+              })()}
               hint="activas"
               intent="warn"
               icon={<Settings size={16} />}
@@ -176,7 +180,9 @@ export default function OrdenInterno() {
                 </div>
                 <div className="mt-3 flex items-center justify-between text-xs">
                   <Badge intent="neutral">{s.personasIds.length} personas</Badge>
-                  <span className="text-slate-500">{s.tareasSemana} tareas / sem.</span>
+                  <span className="text-slate-500">
+                    {s.tareasSemana > 0 ? `${s.tareasSemana} tareas / sem.` : '— tareas'}
+                  </span>
                 </div>
               </button>
             );

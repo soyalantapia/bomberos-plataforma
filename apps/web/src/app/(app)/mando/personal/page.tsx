@@ -50,9 +50,6 @@ const RANGOS: Array<{ value: RangoFiltro; label: string; jerarquias: string[] }>
   { value: 'cadete', label: 'Cadetes', jerarquias: ['cadete'] },
 ];
 
-// Mock: estado de quién está en guardia ahora (simulado)
-const EN_GUARDIA_AHORA = new Set<string>(); // se calcula con personas[0..2]
-
 export default function PersonalMando() {
   const cuartel = useFaroStore(selectCuartelActivo);
   const allPersonas = useFaroStore((s) => s.personas);
@@ -77,9 +74,15 @@ export default function PersonalMando() {
   const disponiblesAhora = personas.filter(disponibleAhora).length;
   const conAlertas = personas.filter((p) => detectarAlertasPersona(p).length > 0).length;
 
-  // Marcamos arbitrariamente los primeros 3 activos como "en guardia ahora"
-  const personasActivas = personas.filter((p) => p.estado === 'activo');
-  personasActivas.slice(0, 3).forEach((p) => EN_GUARDIA_AHORA.add(p.id));
+  // Mock: marcamos arbitrariamente los primeros 3 activos como "en guardia ahora"
+  const enGuardiaAhora = useMemo<Set<string>>(() => {
+    const set = new Set<string>();
+    personas
+      .filter((p) => p.estado === 'activo')
+      .slice(0, 3)
+      .forEach((p) => set.add(p.id));
+    return set;
+  }, [personas]);
 
   const computo = useMemo(
     () => (cuartel ? calcularComputoMensual(allAsistencias, cuartel.id, '2026-05') : []),
@@ -425,7 +428,7 @@ export default function PersonalMando() {
               <CardContent>
                 <ul className="space-y-2">
                   {personas
-                    .filter((p) => EN_GUARDIA_AHORA.has(p.id))
+                    .filter((p) => enGuardiaAhora.has(p.id))
                     .map((p) => (
                       <li key={p.id} className="bg-fire-50 flex items-center gap-2 rounded-lg p-2">
                         <Avatar name={`${p.nombre} ${p.apellido}`} src={p.fotoUrl} size={32} />
@@ -455,7 +458,7 @@ export default function PersonalMando() {
               <CardContent>
                 <ul className="space-y-2">
                   {personas
-                    .filter((p) => disponibleAhora(p) && !EN_GUARDIA_AHORA.has(p.id))
+                    .filter((p) => disponibleAhora(p) && !enGuardiaAhora.has(p.id))
                     .slice(0, 6)
                     .map((p) => (
                       <li
@@ -474,11 +477,11 @@ export default function PersonalMando() {
                         <Badge intent="ok">Listo</Badge>
                       </li>
                     ))}
-                  {personas.filter((p) => disponibleAhora(p) && !EN_GUARDIA_AHORA.has(p.id))
+                  {personas.filter((p) => disponibleAhora(p) && !enGuardiaAhora.has(p.id))
                     .length > 6 && (
                     <li className="text-center text-xs text-slate-500">
                       +
-                      {personas.filter((p) => disponibleAhora(p) && !EN_GUARDIA_AHORA.has(p.id))
+                      {personas.filter((p) => disponibleAhora(p) && !enGuardiaAhora.has(p.id))
                         .length - 6}{' '}
                       más
                     </li>

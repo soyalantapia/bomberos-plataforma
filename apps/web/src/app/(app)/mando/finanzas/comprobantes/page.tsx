@@ -92,17 +92,46 @@ export default function ComprobantesPage() {
     setScanOpen(true);
   }
 
+  const OCR_MOCK_RESULTS = [
+    {
+      tipo: 'FA-A',
+      numero: '0042-00129631',
+      cuit: '30-54668997-0',
+      contraparte: 'YPF SA',
+      monto: 58_000,
+      fecha: '2026-05-24',
+    },
+    {
+      tipo: 'FA-B',
+      numero: '0001-00084215',
+      cuit: '30-65511224-9',
+      contraparte: 'EDENOR SA',
+      monto: 165_000,
+      fecha: '2026-05-22',
+    },
+    {
+      tipo: 'FA-A',
+      numero: '0015-00073402',
+      cuit: '30-50000675-3',
+      contraparte: 'MSA Argentina',
+      monto: 175_000,
+      fecha: '2026-05-20',
+    },
+    {
+      tipo: 'Recibo',
+      numero: 'R-2026-0532',
+      cuit: '20-12345678-9',
+      contraparte: 'Cdor. González',
+      monto: 95_000,
+      fecha: '2026-05-18',
+    },
+  ];
+
   function procesarOcr() {
     setScanStep('procesando');
     setTimeout(() => {
-      setScanResult({
-        tipo: 'FA-A',
-        numero: '0042-00129631',
-        cuit: '30-54668997-0',
-        contraparte: 'YPF SA',
-        monto: 58_000,
-        fecha: '2026-05-24',
-      });
+      const idx = Math.floor(Math.random() * OCR_MOCK_RESULTS.length);
+      setScanResult(OCR_MOCK_RESULTS[idx]!);
       setScanStep('resultado');
     }, 1500);
   }

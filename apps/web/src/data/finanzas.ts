@@ -1,3 +1,5 @@
+import { demoToday } from '../lib/utils/demo-today';
+
 import { CUARTEL_PRINCIPAL_ID } from './cuarteles';
 
 import type {
@@ -423,7 +425,7 @@ export const cajasMock: Caja[] = [
 // HELPER: generar fecha ISO restando N días
 // ============================================================
 function dh(diasAtras: number, hora = '10:00'): string {
-  const d = new Date('2026-05-25T12:00:00');
+  const d = demoToday();
   d.setDate(d.getDate() - diasAtras);
   return `${d.toISOString().slice(0, 10)}T${hora}:00`;
 }

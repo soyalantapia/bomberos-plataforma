@@ -6,6 +6,8 @@ import type {
   TipoCaja,
 } from '@faro/types';
 
+import { demoToday } from '../../lib/utils/demo-today';
+
 /** Formateador de moneda ARS */
 export const ars = new Intl.NumberFormat('es-AR', {
   style: 'currency',
@@ -91,7 +93,7 @@ export function agruparPorMes(
   movs: MovimientoFinanciero[],
   meses: number = 6,
 ): Array<{ mes: string; ingresos: number; egresos: number; saldo: number }> {
-  const hoy = new Date('2026-05-25');
+  const hoy = demoToday();
   const resultado: Array<{ mes: string; ingresos: number; egresos: number; saldo: number }> = [];
   for (let i = meses - 1; i >= 0; i--) {
     const d = new Date(hoy.getFullYear(), hoy.getMonth() - i, 1);

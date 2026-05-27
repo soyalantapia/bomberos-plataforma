@@ -170,10 +170,11 @@ export default function LoginPage() {
                 <div className="bg-brand-50 border-brand-100 flex items-start gap-2 rounded-lg border p-3 text-sm">
                   <Sparkles size={18} className="text-brand-600 mt-0.5 shrink-0" />
                   <div>
-                    <div className="text-brand-900 font-semibold">Modo demo</div>
+                    <div className="text-brand-900 font-semibold">Probar la plataforma</div>
                     <div className="text-brand-800/80">
-                      Usá <span className="font-mono font-bold">0017</span> (Sub-comandante). El
-                      código siempre es <span className="font-mono font-bold">{CODIGO_DEMO}</span>.
+                      Esta es una demo pública. Entrá con legajo{' '}
+                      <span className="font-mono font-bold">0017</span> (Sub-comandante) y código{' '}
+                      <span className="font-mono font-bold">{CODIGO_DEMO}</span>.
                     </div>
                   </div>
                 </div>

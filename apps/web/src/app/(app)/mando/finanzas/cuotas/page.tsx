@@ -104,6 +104,14 @@ export default function CuotasPage() {
 
   function handleCobrar() {
     if (!cobrando) return;
+    if (!cobroCaja) {
+      toast.push({
+        kind: 'warn',
+        title: 'No hay cuentas configuradas',
+        description: 'Agregá una caja antes de cobrar.',
+      });
+      return;
+    }
     cobrarCuota(cobrando.id, cobroMedio, cobroCaja);
     toast.push({
       kind: 'success',
@@ -356,13 +364,18 @@ export default function CuotasPage() {
             <Button intent="ghost" onClick={() => setCobrando(null)}>
               Cancelar
             </Button>
-            <Button intent="primary" onClick={handleCobrar}>
+            <Button intent="primary" onClick={handleCobrar} disabled={!cobroCaja}>
               <CheckCircle2 size={14} /> Registrar pago
             </Button>
           </div>
         }
       >
         <div className="space-y-3">
+          {cajas.length === 0 && (
+            <div className="bg-status-warn-bg text-status-warn-fg rounded-lg p-2 text-xs">
+              ⚠ No hay cuentas configuradas · agregá una caja antes de cobrar.
+            </div>
+          )}
           <div>
             <Label>¿Cómo pagó?</Label>
             <select

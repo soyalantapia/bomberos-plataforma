@@ -16,6 +16,7 @@ import { useMemo } from 'react';
 
 import { ars, arsCompact } from '../../../../../components/finanzas/utils';
 import { PageHero } from '../../../../../components/shared/page-hero';
+import { demoToday } from '../../../../../lib/utils/demo-today';
 import { useFaroStore } from '../../../../../store/use-faro-store';
 
 export default function PresupuestoPage() {
@@ -36,9 +37,9 @@ export default function PresupuestoPage() {
   }, [movimientos]);
 
   // % del año transcurrido
-  const hoy = new Date('2026-05-25');
-  const inicioAnio = new Date('2026-01-01');
-  const finAnio = new Date('2026-12-31');
+  const hoy = demoToday();
+  const inicioAnio = new Date(hoy.getFullYear(), 0, 1);
+  const finAnio = new Date(hoy.getFullYear(), 11, 31);
   const pctAnio =
     ((hoy.getTime() - inicioAnio.getTime()) / (finAnio.getTime() - inicioAnio.getTime())) * 100;
 
