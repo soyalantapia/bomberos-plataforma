@@ -27,6 +27,8 @@ import {
   detectarAlertasPersona,
   disponibleAhora,
 } from '../../../../../lib/utils/cuerpo';
+import { fmtFechaCorta } from '../../../../../lib/utils/date';
+import { demoToday } from '../../../../../lib/utils/demo-today';
 import { fmtJerarquia } from '../../../../../lib/utils/jerarquia';
 import { useFaroStore } from '../../../../../store/use-faro-store';
 
@@ -186,12 +188,12 @@ export default function FichaPersonaMandoView() {
                       'font-medium',
                       persona.salud?.aptitudVencimiento &&
                         new Date(persona.salud.aptitudVencimiento).getTime() <
-                          Date.now() + 60 * 86400000 &&
+                          demoToday().getTime() + 60 * 86400000 &&
                         'text-status-warn-fg',
                     )}
                   >
                     {persona.salud?.aptitudVencimiento
-                      ? new Date(persona.salud.aptitudVencimiento).toLocaleDateString('es-AR')
+                      ? fmtFechaCorta(persona.salud.aptitudVencimiento)
                       : '—'}
                   </dd>
                 </div>
