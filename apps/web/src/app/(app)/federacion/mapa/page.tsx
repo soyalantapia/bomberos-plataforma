@@ -9,6 +9,7 @@ import { Badge, Button, Card, CardContent, Kpi, cn, useToast } from '@faro/ui';
 import { PageHero } from '../../../../components/shared/page-hero';
 import { MapView } from '../../../../components/shared/map-view';
 import { useFaroStore } from '../../../../store/use-faro-store';
+import { mesActual } from '../../../../lib/utils/date';
 
 type Region = 'norte' | 'sur' | 'este' | 'oeste';
 
@@ -48,7 +49,7 @@ export default function MapaFederacionPage() {
           (p) => p.cuartelId === c.id && p.estado === 'activo',
         ).length;
         const serviciosMes = servicios.filter(
-          (s) => s.cuartelId === c.id && s.horaSalida.startsWith('2026-05'),
+          (s) => s.cuartelId === c.id && s.horaSalida.startsWith(mesActual()),
         ).length;
         const estado: CuartelProvincial['estado'] =
           c.cumplimiento === 'ok' ? 'ok' : c.cumplimiento === 'warn' ? 'warn' : 'risk';
