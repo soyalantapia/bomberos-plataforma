@@ -9,11 +9,12 @@ import { Badge, Card, CardContent, Kpi, StatusPill, cn } from '@faro/ui';
 import { NuevoMovilDialog } from '../../../../components/automotores/nuevo-movil-dialog';
 import { PageHero } from '../../../../components/shared/page-hero';
 import { fmtFechaCorta } from '../../../../lib/utils/date';
+import { demoToday } from '../../../../lib/utils/demo-today';
 import { useFaroStore, selectCuartelActivo } from '../../../../store/use-faro-store';
 
 function diasHasta(iso: string): number {
   const target = new Date(iso).setHours(0, 0, 0, 0);
-  const now = new Date().setHours(0, 0, 0, 0);
+  const now = demoToday().setHours(0, 0, 0, 0);
   return Math.round((target - now) / 8.64e7);
 }
 

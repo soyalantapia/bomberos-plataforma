@@ -29,6 +29,7 @@ import {
   detectarAlertasPersona,
   disponibleAhora,
 } from '../../../../lib/utils/cuerpo';
+import { mesActual } from '../../../../lib/utils/date';
 import { fmtJerarquia, jerarquiaOrden } from '../../../../lib/utils/jerarquia';
 import { useFaroStore, selectCuartelActivo } from '../../../../store/use-faro-store';
 
@@ -85,7 +86,7 @@ export default function PersonalMando() {
   }, [personas]);
 
   const computo = useMemo(
-    () => (cuartel ? calcularComputoMensual(allAsistencias, cuartel.id, '2026-05') : []),
+    () => (cuartel ? calcularComputoMensual(allAsistencias, cuartel.id, mesActual()) : []),
     [allAsistencias, cuartel],
   );
 
@@ -477,8 +478,8 @@ export default function PersonalMando() {
                         <Badge intent="ok">Listo</Badge>
                       </li>
                     ))}
-                  {personas.filter((p) => disponibleAhora(p) && !enGuardiaAhora.has(p.id))
-                    .length > 6 && (
+                  {personas.filter((p) => disponibleAhora(p) && !enGuardiaAhora.has(p.id)).length >
+                    6 && (
                     <li className="text-center text-xs text-slate-500">
                       +
                       {personas.filter((p) => disponibleAhora(p) && !enGuardiaAhora.has(p.id))

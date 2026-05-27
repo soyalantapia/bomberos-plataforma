@@ -432,6 +432,7 @@ export default function AprobacionesPage() {
                                 intent="ghost"
                                 size="sm"
                                 onClick={() => decidir(s.id, 'rechazar')}
+                                aria-label={`Rechazar solicitud de ${s.persona}`}
                               >
                                 <X size={14} />
                               </Button>
@@ -468,9 +469,7 @@ export default function AprobacionesPage() {
       <Dialog
         open={!!motivoDialog}
         onClose={cerrarMotivoDialog}
-        title={
-          motivoDialog?.accion === 'aprobar' ? 'Motivo de aprobación' : 'Motivo del rechazo'
-        }
+        title={motivoDialog?.accion === 'aprobar' ? 'Motivo de aprobación' : 'Motivo del rechazo'}
         description={
           motivoDialog?.accion === 'aprobar'
             ? 'Estás aprobando una sanción. Queda registrado con tu firma.'

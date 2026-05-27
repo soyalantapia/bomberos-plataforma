@@ -18,6 +18,8 @@ import { NuevoHidranteDialog } from '../../../../components/hidrantes/nuevo-hidr
 import { PageHero } from '../../../../components/shared/page-hero';
 import { MapView } from '../../../../components/shared/map-view';
 import { selectCuartelActivo, useFaroStore } from '../../../../store/use-faro-store';
+import { fmtFechaCorta } from '../../../../lib/utils/date';
+import { demoToday } from '../../../../lib/utils/demo-today';
 
 type EstadoHidrante = 'operativo' | 'mantenimiento' | 'fuera_servicio' | 'caudal_bajo';
 
@@ -184,13 +186,14 @@ const TIPO_DOT: Record<Hidrante['tipo'], { color: string; size: string }> = {
 export default function HidrantesPage() {
   const toast = useToast();
   const cuartel = useFaroStore(selectCuartelActivo);
+  const [hidrantes, setHidrantes] = useState<Hidrante[]>(HIDRANTES_MOCK);
   const [filtro, setFiltro] = useState<'todos' | EstadoHidrante>('todos');
   const [search, setSearch] = useState('');
   const [seleccionado, setSeleccionado] = useState<string | null>(null);
   const [nuevoOpen, setNuevoOpen] = useState(false);
 
   const filtrados = useMemo(() => {
-    return HIDRANTES_MOCK.filter((h) => {
+    return hidrantes.filter((h) => {
       if (filtro !== 'todos' && h.estado !== filtro) return false;
       if (search.trim().length > 0) {
         const q = search.toLowerCase();
@@ -198,13 +201,13 @@ export default function HidrantesPage() {
       }
       return true;
     });
-  }, [filtro, search]);
+  }, [filtro, search, hidrantes]);
 
   const conteo = {
-    operativo: HIDRANTES_MOCK.filter((h) => h.estado === 'operativo').length,
-    caudal_bajo: HIDRANTES_MOCK.filter((h) => h.estado === 'caudal_bajo').length,
-    mantenimiento: HIDRANTES_MOCK.filter((h) => h.estado === 'mantenimiento').length,
-    fuera_servicio: HIDRANTES_MOCK.filter((h) => h.estado === 'fuera_servicio').length,
+    operativo: hidrantes.filter((h) => h.estado === 'operativo').length,
+    caudal_bajo: hidrantes.filter((h) => h.estado === 'caudal_bajo').length,
+    mantenimiento: hidrantes.filter((h) => h.estado === 'mantenimiento').length,
+    fuera_servicio: hidrantes.filter((h) => h.estado === 'fuera_servicio').length,
   };
 
   function reportarMunicipio(h: Hidrante) {
@@ -219,7 +222,7 @@ export default function HidrantesPage() {
     <div className="mx-auto max-w-7xl space-y-5">
       <PageHero
         objetivo="Vista Mando · Hidrantes municipales"
-        titulo={`${HIDRANTES_MOCK.length} hidrantes en jurisdicción`}
+        titulo={`${hidrantes.length} hidrantes en jurisdicción`}
         descripcion="Mapeados con caudal, presión, mantenimiento. Cuando fallás un test, el reclamo se envía automáticamente a la prestadora."
         icono={<Droplets size={26} />}
         meta={
@@ -394,18 +397,14 @@ export default function HidrantesPage() {
                             <Calendar size={11} className="mr-1 inline" />
                             Último test
                           </span>
-                          <span className="font-medium">
-                            {new Date(h.ultimoTest).toLocaleDateString('es-AR')}
-                          </span>
+                          <span className="font-medium">{fmtFechaCorta(h.ultimoTest)}</span>
                         </div>
                         <div className="flex items-center justify-between">
                           <span className="text-slate-500">
                             <Calendar size={11} className="mr-1 inline" />
                             Próximo
                           </span>
-                          <span className="font-medium">
-                            {new Date(h.proximoTest).toLocaleDateString('es-AR')}
-                          </span>
+                          <span className="font-medium">{fmtFechaCorta(h.proximoTest)}</span>
                         </div>
                         <div className="flex items-center justify-between">
                           <span className="text-slate-500">Prestadora</span>
@@ -429,10 +428,14 @@ export default function HidrantesPage() {
                             size="sm"
                             onClick={(e) => {
                               e.stopPropagation();
+                              const hoy = demoToday().toISOString().slice(0, 10);
+                              setHidrantes((arr) =>
+                                arr.map((x) => (x.id === h.id ? { ...x, ultimoTest: hoy } : x)),
+                              );
                               toast.push({
                                 kind: 'success',
                                 title: `${h.codigo} probado`,
-                                description: `${h.caudal} L/m · ${h.presion} bar registrado`,
+                                description: `${h.caudal} L/m · ${h.presion} bar · ${hoy}`,
                               });
                             }}
                           >

@@ -38,6 +38,7 @@ import {
 } from '../../../store/use-faro-store';
 import { calcularComputoMensual } from '../../../lib/utils/computo';
 import { fmtFecha, fmtHora, fmtMesPeriodo, mesActual } from '../../../lib/utils/date';
+import { demoToday } from '../../../lib/utils/demo-today';
 import { tipoServicioLabel } from '../../../lib/utils/tipo-servicio';
 
 type Turno = 'manana' | 'tarde' | 'noche';
@@ -155,8 +156,13 @@ export default function MandoDashboard() {
     () => allServicios.filter((s) => s.cuartelId === cuartel?.id),
     [allServicios, cuartel?.id],
   );
+  const todayDayNum = useMemo(() => demoToday().getDate(), []);
+  const semanaConHoy = useMemo(
+    () => SEMANA_GUARDIAS.map((d) => ({ ...d, esHoy: d.diaNum === todayDayNum })),
+    [todayDayNum],
+  );
   const computo = useMemo(
-    () => (cuartel ? calcularComputoMensual(allAsistencias, cuartel.id, '2026-05') : []),
+    () => (cuartel ? calcularComputoMensual(allAsistencias, cuartel.id, mesActual()) : []),
     [allAsistencias, cuartel],
   );
 
@@ -174,8 +180,8 @@ export default function MandoDashboard() {
     sevFiltro === 'todas' ? alertas : alertas.filter((a) => a.severidad === sevFiltro);
 
   const turnos: Turno[] = ['manana', 'tarde', 'noche'];
-  const totalCeldas = SEMANA_GUARDIAS.length * 3;
-  const cubiertas = SEMANA_GUARDIAS.reduce(
+  const totalCeldas = semanaConHoy.length * 3;
+  const cubiertas = semanaConHoy.reduce(
     (acc, d) =>
       acc + (d.manana.cubierta ? 1 : 0) + (d.tarde.cubierta ? 1 : 0) + (d.noche.cubierta ? 1 : 0),
     0,
@@ -418,7 +424,7 @@ export default function MandoDashboard() {
                     </tr>
                   </thead>
                   <tbody>
-                    {SEMANA_GUARDIAS.map((dia) => (
+                    {semanaConHoy.map((dia) => (
                       <tr
                         key={dia.fecha}
                         className={cn(
