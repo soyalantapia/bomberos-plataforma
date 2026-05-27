@@ -18,6 +18,7 @@ import { useMemo, useState } from 'react';
 import { Avatar, Badge, Button, Card, CardContent, Kpi, cn, useToast } from '@faro/ui';
 
 import { PageHero } from '../../../../components/shared/page-hero';
+import { fmtFechaCorta } from '../../../../lib/utils/date';
 import { demoToday } from '../../../../lib/utils/demo-today';
 import { useFaroStore } from '../../../../store/use-faro-store';
 
@@ -288,7 +289,7 @@ export default function AptitudMedicaPage() {
                         <div className={cn('rounded-md p-2', cfg.bg)}>
                           <div className="text-slate-500">Último examen</div>
                           <div className="font-bold text-slate-900">
-                            {new Date(aptitud.ultimoExamen).toLocaleDateString('es-AR')}
+                            {fmtFechaCorta(aptitud.ultimoExamen)}
                           </div>
                         </div>
                         <div className={cn('rounded-md p-2', cfg.bg)}>

@@ -20,6 +20,7 @@ import { useState } from 'react';
 import { Badge, Button, Card, CardContent, Kpi, cn, useToast } from '@faro/ui';
 
 import { PageHero } from '../../../../components/shared/page-hero';
+import { demoToday } from '../../../../lib/utils/demo-today';
 
 type Estado = 'idle' | 'comparando' | 'preview' | 'aplicando' | 'exito';
 
@@ -222,7 +223,7 @@ export default function SyncRubaPage() {
                     {estado === 'preview' &&
                       'Revisá los cambios antes de aplicar. Los conflictos los resolvés a mano.'}
                     {estado === 'aplicando' && 'Aplicando cambios al padrón...'}
-                    {estado === 'exito' && 'Aplicado el ' + new Date().toLocaleString('es-AR')}
+                    {estado === 'exito' && 'Aplicado el ' + demoToday().toLocaleString('es-AR')}
                   </p>
                 </div>
                 {estado === 'preview' && (

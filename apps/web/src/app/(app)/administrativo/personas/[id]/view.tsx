@@ -46,7 +46,7 @@ import {
   cuerpoLabel,
   detectarAlertasPersona,
 } from '../../../../../lib/utils/cuerpo';
-import { fmtFechaCorta } from '../../../../../lib/utils/date';
+import { fmtFechaCorta, mesActual } from '../../../../../lib/utils/date';
 import { fmtJerarquia } from '../../../../../lib/utils/jerarquia';
 import { useFaroStore } from '../../../../../store/use-faro-store';
 
@@ -71,7 +71,7 @@ export default function FichaPersonaView() {
 
   const cuerpo = clasificarCuerpo(persona);
   const alertas = detectarAlertasPersona(persona);
-  const computo = calcularComputoMensual(asistencias, persona.cuartelId, '2026-05').find(
+  const computo = calcularComputoMensual(asistencias, persona.cuartelId, mesActual()).find(
     (c) => c.personaId === persona.id,
   );
   const anios = aniosEntre(persona.fechaIngreso);
