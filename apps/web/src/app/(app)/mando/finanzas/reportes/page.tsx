@@ -92,7 +92,7 @@ export default function ReportesPage() {
     toast.push({
       kind: 'success',
       title: `Reporte exportado · ${formato.toUpperCase()}`,
-      description: `${tipo}-${periodo}-2026-05.${formato}`,
+      description: `${tipo}-${periodo}-${demoToday().toISOString().slice(0, 7)}.${formato}`,
     });
   }
 
@@ -207,7 +207,7 @@ export default function ReportesPage() {
                     · Asoc. Civil Bomberos VBA
                   </p>
                 </div>
-                <Badge intent="neutral">2026</Badge>
+                <Badge intent="neutral">{demoToday().getFullYear()}</Badge>
               </div>
 
               {/* Ingresos */}
