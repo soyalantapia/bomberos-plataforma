@@ -108,8 +108,11 @@ export default function ReportesPage() {
   const servicios = useFaroStore((s) => s.servicios);
   const [generando, setGenerando] = useState<string | null>(null);
   const [seleccionada, setSeleccionada] = useState<string>('mensual-cd');
-  const [rangoDesde, setRangoDesde] = useState('2026-05-01');
-  const [rangoHasta, setRangoHasta] = useState('2026-05-24');
+  const [rangoDesde, setRangoDesde] = useState(() => {
+    const d = demoToday();
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-01`;
+  });
+  const [rangoHasta, setRangoHasta] = useState(() => demoToday().toISOString().slice(0, 10));
 
   const rangoInvalido = rangoHasta < rangoDesde;
 

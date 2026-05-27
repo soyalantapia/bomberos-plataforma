@@ -287,7 +287,7 @@ export default function ComputoPage() {
                 })}
               </div>
               <p className="mt-6 text-sm text-slate-600">
-                Mayo es el mes con más actividad (
+                {fmtMesPeriodo(MES_ACTUAL).split(' ')[0]} es el mes con más actividad (
                 <strong className="text-slate-900">{totales.total} hs</strong>) — refleja el aumento
                 estacional de incendios y rescates. Promedio anual:
                 <strong className="ml-1 text-slate-900">
