@@ -18,6 +18,8 @@ const personasDemoBase: Persona[] = [
     estado: 'activo',
     base: 'Cuartel Central',
     funcion: 'Comandante',
+    cargoInstitucional: 'jefe_cuerpo',
+    destacamentoId: 'dest-vb-central',
     perfiles: ['mando', 'bombero', 'gobierno'],
     salud: { grupoSanguineo: 'A+', aptitudVencimiento: '2026-12-15' },
     cursos: [
@@ -46,6 +48,8 @@ const personasDemoBase: Persona[] = [
     estado: 'activo',
     base: 'Cuartel Central',
     funcion: 'Sub-comandante · Operaciones',
+    cargoInstitucional: 'segundo_jefe',
+    destacamentoId: 'dest-vb-central',
     perfiles: ['mando', 'bombero'],
     salud: { grupoSanguineo: 'O+', aptitudVencimiento: '2026-08-01' },
     cursos: [

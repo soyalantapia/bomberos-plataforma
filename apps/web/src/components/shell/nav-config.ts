@@ -26,12 +26,21 @@ const AGENDA_PUBLICA: NavItem = {
   seccion: 'Red',
 };
 
+// Organigrama institucional — accesible por todos los perfiles.
+const ORGANIGRAMA_PUBLICO: NavItem = {
+  label: 'Organigrama',
+  href: '/organigrama',
+  icon: 'network',
+  seccion: 'Red',
+};
+
 export const navByPerfil: Record<Perfil, NavItem[]> = {
   bombero: [
     { label: 'Inicio', href: '/bombero', icon: 'home', bottomNav: true },
     { label: 'Registrar', href: '/bombero/registrar-servicio', icon: 'flame', bottomNav: true },
     DIRECTORIO_PUBLICO,
     AGENDA_PUBLICA,
+    ORGANIGRAMA_PUBLICO,
     { label: 'Asistencia', href: '/bombero/asistencia', icon: 'check-circle-2', bottomNav: true },
     { label: 'Mi legajo', href: '/bombero/legajo', icon: 'user', bottomNav: true },
     { label: 'Capacitación', href: '/bombero/capacitacion', icon: 'graduation-cap' },
@@ -56,6 +65,7 @@ export const navByPerfil: Record<Perfil, NavItem[]> = {
     { label: 'Servicios', href: '/mando/operaciones', icon: 'siren', bottomNav: true },
     DIRECTORIO_PUBLICO,
     AGENDA_PUBLICA,
+    ORGANIGRAMA_PUBLICO,
     {
       label: 'Móviles en vivo',
       href: '/mando/avl',
@@ -196,6 +206,7 @@ export const navByPerfil: Record<Perfil, NavItem[]> = {
     },
     DIRECTORIO_PUBLICO,
     AGENDA_PUBLICA,
+    ORGANIGRAMA_PUBLICO,
     {
       label: 'Licencias',
       href: '/administrativo/licencias',
@@ -243,6 +254,7 @@ export const navByPerfil: Record<Perfil, NavItem[]> = {
     { label: 'Ética', href: '/gobierno/etica', icon: 'scale', bottomNav: true },
     DIRECTORIO_PUBLICO,
     AGENDA_PUBLICA,
+    ORGANIGRAMA_PUBLICO,
     { label: 'Género', href: '/gobierno/genero', icon: 'shield-alert', bottomNav: true },
     { label: 'Registro permanente', href: '/gobierno/audit', icon: 'file-search' },
     {
@@ -263,6 +275,7 @@ export const navByPerfil: Record<Perfil, NavItem[]> = {
     },
     DIRECTORIO_PUBLICO,
     AGENDA_PUBLICA,
+    ORGANIGRAMA_PUBLICO,
     {
       label: 'Consolidados',
       href: '/federacion/consolidados',

@@ -21,6 +21,72 @@ export interface Cuartel {
   logoUrl?: string;
 }
 
+// ============================================================
+// ESTRUCTURA ORGANIZACIONAL — pirámide institucional.
+// Un cuartel se divide en dos órganos: el Consejo Directivo
+// (administrativo, autoridad máxima = Presidente) y el Cuerpo
+// Activo (operativo, conducción = Jefe de Cuerpo). El cuartel
+// central puede tener destacamentos dependientes.
+// ============================================================
+
+/** A qué órgano de la pirámide pertenece un cargo. */
+export type AmbitoInstitucional = 'consejo_directivo' | 'cuerpo_activo';
+
+/** Cargo institucional. Consejo Directivo + conducción del Cuerpo Activo. */
+export type CargoInstitucional =
+  // Consejo Directivo (administrativo)
+  | 'presidente'
+  | 'vicepresidente'
+  | 'secretario'
+  | 'tesorero'
+  | 'protesorero'
+  | 'vocal'
+  | 'revisor_cuentas'
+  // Cuerpo Activo (operativo)
+  | 'jefe_cuerpo'
+  | 'segundo_jefe'
+  | 'jefe_area'
+  // Resto del cuerpo activo, sin cargo de conducción
+  | 'ninguno';
+
+/** Miembro del Consejo Directivo. Puede o no ser bombero activo (personaId). */
+export interface MiembroConsejo {
+  id: string;
+  cuartelId: string;
+  nombre: string;
+  cargo: CargoInstitucional;
+  /** Inicio del mandato (ISO date). */
+  desde?: string;
+  telefono?: string;
+  email?: string;
+  /** Si además integra el cuerpo activo, referencia a Persona. */
+  personaId?: string;
+}
+
+/** Sector funcional del cuartel (automotores, materiales, intendencia…). */
+export interface Sector {
+  id: string;
+  cuartelId: string;
+  nombre: string;
+  /** Nombre de ícono lucide para la UI. */
+  icono?: string;
+  /** Persona responsable del sector (jefe de área). */
+  responsableId?: string;
+  descripcion?: string;
+}
+
+/** Destacamento dependiente de un cuartel central. */
+export interface Destacamento {
+  id: string;
+  /** Cuartel central del que depende. */
+  cuartelId: string;
+  nombre: string;
+  esCentral: boolean;
+  direccion?: string;
+  /** Jefe de destacamento. */
+  jefeId?: string;
+}
+
 export type EspecialidadBombero =
   | 'hazmat'
   | 'rescate_acuatico'
@@ -117,6 +183,12 @@ export interface Persona {
   perfiles: Perfil[];
   especialidades?: EspecialidadBombero[];
   cuerpo?: 'activo' | 'administrativo';
+  /** Cargo de conducción (si lo tiene). Default 'ninguno'. */
+  cargoInstitucional?: CargoInstitucional;
+  /** Sector funcional donde cumple tareas. */
+  sectorId?: string;
+  /** Destacamento de base. */
+  destacamentoId?: string;
   salud: {
     grupoSanguineo?: string;
     aptitudVencimiento?: string;

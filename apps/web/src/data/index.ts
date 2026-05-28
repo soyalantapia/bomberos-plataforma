@@ -10,3 +10,4 @@ export * from './notificaciones';
 export * from './finanzas';
 export * from './regiones';
 export * from './contactos-red';
+export * from './organizacion';

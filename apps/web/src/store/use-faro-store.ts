@@ -13,6 +13,8 @@ import type {
   Cuartel,
   CuentaContable,
   CuotaSocial,
+  Destacamento,
+  MiembroConsejo,
   MovimientoFinanciero,
   Movil,
   Notificacion,
@@ -21,6 +23,7 @@ import type {
   PresupuestoAnual,
   RegionInfo,
   Rendicion,
+  Sector,
   Servicio,
   SesionUsuario,
 } from '@faro/types';
@@ -30,10 +33,12 @@ import {
   asistenciasMock,
   cajasMock,
   conciliacionesMock,
+  consejoMock,
   contactosRedMock,
   cuartelesMock,
   cuentasMock,
   cuotasMock,
+  destacamentosMock,
   movimientosMock,
   movilesMock,
   notificacionesMock,
@@ -42,6 +47,7 @@ import {
   presupuestoMock,
   regionesMock,
   rendicionMayoMock,
+  sectoresMock,
   serviciosMock,
 } from '../data';
 import { calcularComputoMensual } from '../lib/utils/computo';
@@ -69,6 +75,10 @@ interface State {
   personasFederacion: Persona[];
   regiones: RegionInfo[];
   contactosRed: ContactoRed[];
+  // ORGANIZACIÓN
+  consejo: MiembroConsejo[];
+  sectores: Sector[];
+  destacamentos: Destacamento[];
 }
 
 interface Actions {
@@ -142,6 +152,10 @@ const initialState: State = {
   personasFederacion: personasFederacionMock,
   regiones: regionesMock,
   contactosRed: contactosRedMock,
+  // ORGANIZACIÓN
+  consejo: consejoMock,
+  sectores: sectoresMock,
+  destacamentos: destacamentosMock,
 };
 
 function recalcularRendicion(state: State, cuartelId: string): State {

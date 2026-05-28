@@ -54,6 +54,8 @@ import {
   // Federación red
   BookMarked,
   UsersRound,
+  // Organización
+  Network,
   type LucideIcon,
 } from 'lucide-react';
 
@@ -110,6 +112,7 @@ const iconMap: Record<string, LucideIcon> = {
   'file-spreadsheet': FileSpreadsheet,
   'book-marked': BookMarked,
   'users-round': UsersRound,
+  network: Network,
 };
 
 export function Icon({
