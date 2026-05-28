@@ -21,6 +21,9 @@ const nextConfig: NextConfig = {
   typedRoutes: true,
   transpilePackages: ['@faro/ui', '@faro/types'],
   devIndicators: false,
+  // Expone basePath al cliente para que helpers como withBasePath() puedan
+  // anteponerlo a URLs de assets servidos desde /public.
+  env: { NEXT_PUBLIC_BASE_PATH: basePath },
   // En demo frontend: no bloquear build con warnings de lint preexistentes.
   // Typecheck (tsc --noEmit) sigue siendo el quality gate.
   eslint: { ignoreDuringBuilds: true },

@@ -2,14 +2,14 @@
 
 import { motion } from 'framer-motion';
 import { ChevronRight, Search, Shield, Users, X } from 'lucide-react';
+import Link from 'next/link';
 import { useMemo, useState } from 'react';
 
 import { Avatar, cn } from '@faro/ui';
 
 import type { Persona } from '@faro/types';
 
-import { CuartelDrawer } from '../../../components/federacion/cuartel-drawer';
-import { LegajoDrawer } from '../../../components/federacion/legajo-drawer';
+import { LegajoModal } from '../../../components/federacion/legajo-modal';
 import {
   ESPECIALIDAD_LABEL,
   JERARQUIA_LABEL,
@@ -21,6 +21,10 @@ const REGION_COLORS: Record<string, string> = {
   'Sur GBA': 'bg-amber-50 text-amber-700',
   'Oeste GBA': 'bg-green-50 text-green-700',
 };
+
+function cuartelSlug(id: string): string {
+  return id.replace(/^cuartel-/, '');
+}
 
 export default function DirectorioFederacionPage() {
   const cuarteles = useFaroStore((s) => s.cuarteles);
@@ -34,7 +38,6 @@ export default function DirectorioFederacionPage() {
   );
 
   const [busqueda, setBusqueda] = useState('');
-  const [cuartelSeleccionado, setCuartelSeleccionado] = useState<string | null>(null);
   const [personaSeleccionada, setPersonaSeleccionada] = useState<Persona | null>(null);
 
   const buscando = busqueda.trim().length > 0;
@@ -58,13 +61,6 @@ export default function DirectorioFederacionPage() {
       })
       .slice(0, 50);
   }, [buscando, busqueda, todasPersonas, cuarteles]);
-
-  const cuartelActivo = cuartelSeleccionado
-    ? (cuarteles.find((c) => c.id === cuartelSeleccionado) ?? null)
-    : null;
-  const personasCuartelActivo = cuartelActivo
-    ? todasPersonas.filter((p) => p.cuartelId === cuartelActivo.id)
-    : [];
 
   const totalActivos = todasPersonas.filter((p) => p.estado === 'activo').length;
 
@@ -178,10 +174,11 @@ export default function DirectorioFederacionPage() {
                     (p) => p.cuartelId === c.id && p.estado === 'activo',
                   );
                   return (
-                    <button
+                    <Link
                       key={c.id}
-                      type="button"
-                      onClick={() => setCuartelSeleccionado(c.id)}
+                      href={
+                        `/directorio/cuartel/${cuartelSlug(c.id)}` as `/directorio/cuartel/${string}`
+                      }
                       className="hover:border-brand-300 group flex items-center gap-3 rounded-xl border border-slate-200 bg-white p-3 text-left transition-all hover:shadow-md"
                     >
                       <div className="bg-fire-50 text-fire-700 grid h-10 w-10 shrink-0 place-items-center rounded-xl">
@@ -197,7 +194,7 @@ export default function DirectorioFederacionPage() {
                         size={16}
                         className="group-hover:text-brand-600 shrink-0 text-slate-300 transition-colors"
                       />
-                    </button>
+                    </Link>
                   );
                 })}
               </div>
@@ -205,14 +202,7 @@ export default function DirectorioFederacionPage() {
           );
         })}
 
-      <CuartelDrawer
-        cuartel={cuartelActivo}
-        personas={personasCuartelActivo}
-        onClose={() => setCuartelSeleccionado(null)}
-        onOpenLegajo={(p) => setPersonaSeleccionada(p)}
-      />
-
-      <LegajoDrawer
+      <LegajoModal
         persona={personaSeleccionada}
         cuartel={
           personaSeleccionada
