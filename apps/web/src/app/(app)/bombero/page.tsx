@@ -29,6 +29,7 @@ import {
   cn,
 } from '@faro/ui';
 
+import { InicioSimple } from '../../../components/bombero/inicio-simple';
 import { FeaturesGrid } from '../../../components/shared/features-grid';
 import { PageHero } from '../../../components/shared/page-hero';
 import { calcularComputoMensual } from '../../../lib/utils/computo';
@@ -96,6 +97,8 @@ export default function BomberoInicio() {
   const cuartel = useFaroStore(selectCuartelActivo);
   const asistencias = useFaroStore((s) => s.asistencias);
   const servicios = useFaroStore((s) => s.servicios);
+  const modoSimple = useFaroStore((s) => s.modoSimple);
+  const setModoSimple = useFaroStore((s) => s.setModoSimple);
   const [tab, setTab] = useState('hoy');
 
   const computo = useMemo(
@@ -103,6 +106,7 @@ export default function BomberoInicio() {
     [asistencias, cuartel],
   );
   if (!persona) return null;
+  if (modoSimple) return <InicioSimple persona={persona} />;
 
   const propio = computo.find((c) => c.personaId === persona.id);
   const alertas = detectarAlertasPersona(persona);
@@ -115,6 +119,16 @@ export default function BomberoInicio() {
 
   return (
     <div className="mx-auto max-w-4xl space-y-5">
+      <div className="flex justify-end">
+        <button
+          type="button"
+          onClick={() => setModoSimple(true)}
+          className="inline-flex items-center gap-2 rounded-full bg-white px-3 py-1.5 text-xs font-medium text-slate-600 ring-1 ring-slate-200 transition-colors hover:bg-slate-50"
+        >
+          <span className="bg-status-ok h-1.5 w-1.5 rounded-full" />
+          Cambiar a modo simple
+        </button>
+      </div>
       <PageHero
         objetivo="Tu día en el cuartel"
         titulo={`${saludo}, ${persona.nombre}`}

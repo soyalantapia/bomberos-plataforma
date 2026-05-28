@@ -66,6 +66,8 @@ import { calcularComputoMensual } from '../lib/utils/computo';
 
 interface State {
   hidratado: boolean;
+  /** Preferencia de UX: inicio simplificado para el usuario menos técnico. */
+  modoSimple: boolean;
   sesion: SesionUsuario | null;
   cuarteles: Cuartel[];
   personas: Persona[];
@@ -165,12 +167,15 @@ interface Actions {
   actualizarLesion: (id: string, cambios: Partial<Lesion>) => void;
   // GOBERNANZA FEDERATIVA
   solicitarInformeGobernanza: (cuartelId: string, nombre: string) => void;
+  // PREFERENCIAS UX
+  setModoSimple: (v: boolean) => void;
 }
 
 type FaroStore = State & Actions;
 
 const initialState: State = {
   hidratado: false,
+  modoSimple: false,
   sesion: null,
   cuarteles: cuartelesMock,
   personas: personasMock,
@@ -850,6 +855,9 @@ export const useFaroStore = create<FaroStore>()(
         };
         set({ notificaciones: [notif, ...get().notificaciones] });
       },
+      setModoSimple(v) {
+        set({ modoSimple: v });
+      },
     }),
     {
       name: 'faro-store',
@@ -860,6 +868,7 @@ export const useFaroStore = create<FaroStore>()(
       // (cuarteles, personas, regiones, contactosRed) — siempre vienen frescas
       // del initialState para que cambios en mocks se reflejen al recargar.
       partialize: (s) => ({
+        modoSimple: s.modoSimple,
         sesion: s.sesion,
         servicios: s.servicios,
         asistencias: s.asistencias,
