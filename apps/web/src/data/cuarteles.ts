@@ -45,6 +45,11 @@ const LOGO_BY_SLUG: Record<string, string> = {
   tigre: '/cuarteles/tigre.png',
   'vicente-lopez': '/cuarteles/vicente-lopez.png',
   benavidez: '/cuarteles/benavidez.png',
+  // Norte GBA — desde perfil público de Instagram (og:image)
+  'san-fernando': '/cuarteles/san-fernando.png',
+  'general-pacheco': '/cuarteles/general-pacheco.png',
+  'don-torcuato': '/cuarteles/don-torcuato.png',
+  garin: '/cuarteles/garin.png',
   // Norte GBA — destacamentos comparten escudo con su cuartel central:
   //   Boulogne, Villa Adelina → BV San Isidro
   //   Florida (HQ), Munro, Carapachay → BV Vicente López
