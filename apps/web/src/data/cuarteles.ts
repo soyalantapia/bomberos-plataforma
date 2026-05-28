@@ -62,7 +62,6 @@ const LOGO_BY_SLUG: Record<string, string> = {
   'tres-de-febrero': '/cuarteles/tres-de-febrero.png',
   ituzaingo: '/cuarteles/ituzaingo.png',
   hurlingham: '/cuarteles/hurlingham.png',
-  'marcos-paz': '/cuarteles/marcos-paz.png',
   merlo: '/cuarteles/merlo.png',
   'ramos-mejia': '/cuarteles/ramos-mejia.png',
   // Destacamentos de La Matanza comparten su escudo institucional:
@@ -105,12 +104,7 @@ const LOGO_BY_SLUG: Record<string, string> = {
   'general-belgrano': '/cuarteles/general-belgrano.png',
   // ── Costa Atlántica ──────────────────────────────────────
   'santa-teresita': '/cuarteles/santa-teresita.png',
-  'mar-del-plata': '/cuarteles/mar-del-plata.png',
-  necochea: '/cuarteles/necochea.png',
-  tandil: '/cuarteles/tandil.png',
   pinamar: '/cuarteles/pinamar.png',
-  'villa-gesell': '/cuarteles/villa-gesell.png',
-  'san-bernardo': '/cuarteles/san-bernardo.png',
   'san-clemente': '/cuarteles/san-clemente.png',
   'general-madariaga': '/cuarteles/general-madariaga.png',
   balcarce: '/cuarteles/balcarce.png',
@@ -129,17 +123,15 @@ const LOGO_BY_SLUG: Record<string, string> = {
   lujan: '/cuarteles/lujan.png',
   campana: '/cuarteles/campana.png',
   // ── Interior PBA Sur ─────────────────────────────────────
+  'bahia-blanca': '/cuarteles/bahia-blanca.png',
   olavarria: '/cuarteles/olavarria.png',
   'tres-arroyos': '/cuarteles/tres-arroyos.png',
   // ── Córdoba ──────────────────────────────────────────────
-  'cordoba-capital': '/cuarteles/cordoba-capital.png',
   'villa-carlos-paz': '/cuarteles/villa-carlos-paz.png',
-  'alta-gracia': '/cuarteles/alta-gracia.png',
   'san-francisco': '/cuarteles/san-francisco.png',
   // ── Santa Fe ─────────────────────────────────────────────
   'santa-fe-capital': '/cuarteles/santa-fe-capital.png',
   rosario: '/cuarteles/rosario.png',
-  rafaela: '/cuarteles/rafaela.png',
   // ── Litoral ──────────────────────────────────────────────
   posadas: '/cuarteles/posadas.png',
   // ── Patagonia ────────────────────────────────────────────
