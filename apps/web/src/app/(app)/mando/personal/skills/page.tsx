@@ -254,7 +254,53 @@ export default function SkillsMatrixPage() {
       {/* Matriz */}
       <Card className="overflow-hidden">
         <CardContent className="p-0">
-          <div className="overflow-x-auto">
+          {/* Mobile: card por persona con chips de especialidades cursadas */}
+          <ul className="divide-y divide-slate-100 md:hidden">
+            {matrix.map((row) => {
+              const cursadas = ESPECIALIDADES.filter((esp) => row.estados[esp.id] !== 'sin_cursar');
+              return (
+                <li key={row.persona.id} className="p-3.5">
+                  <Link
+                    href={`/administrativo/personas/${row.persona.id}` as never}
+                    className="block"
+                  >
+                    <div className="text-sm font-medium text-slate-900">
+                      {row.persona.apellido}, {row.persona.nombre}
+                    </div>
+                    <div className="font-mono text-[10px] text-slate-500">
+                      legajo {row.persona.legajo}
+                    </div>
+                  </Link>
+                  {cursadas.length === 0 ? (
+                    <div className="mt-2 text-xs italic text-slate-400">
+                      Sin especialidades cursadas
+                    </div>
+                  ) : (
+                    <div className="mt-2 flex flex-wrap gap-1.5">
+                      {cursadas.map((esp) => {
+                        const cfg = ESTADO_CONFIG[row.estados[esp.id]!];
+                        return (
+                          <span
+                            key={esp.id}
+                            className={cn(
+                              'inline-flex items-center gap-1 rounded-md px-1.5 py-1 text-[11px] font-medium',
+                              cfg.color,
+                            )}
+                          >
+                            {esp.icon}
+                            <span className="leading-none">{esp.label}</span>
+                          </span>
+                        );
+                      })}
+                    </div>
+                  )}
+                </li>
+              );
+            })}
+          </ul>
+
+          {/* Desktop/tablet: matriz completa con scroll horizontal */}
+          <div className="hidden overflow-x-auto md:block">
             <table className="w-full min-w-[800px] text-sm">
               <thead>
                 <tr className="border-b border-slate-200 bg-slate-50">
@@ -333,7 +379,9 @@ export default function SkillsMatrixPage() {
                   inscribir 6 voluntarios al próximo curso (18/06).
                 </li>
                 <li>
-                  <strong>3 personas tienen Rescate vehicular por vencer en menos de 60 días.</strong>{' '}
+                  <strong>
+                    3 personas tienen Rescate vehicular por vencer en menos de 60 días.
+                  </strong>{' '}
                   Conviene cursar el reciclaje en grupo.
                 </li>
                 <li>
