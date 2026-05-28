@@ -31,11 +31,20 @@ function cumpFor(idx: number): { c: Cuartel['cumplimiento']; p: number } {
 }
 
 /**
- * Mapa de slug → logoUrl con escudos reales descargados desde la Federación
- * Bonaerense (fedbonaerense.org.ar). Si el slug no aparece acá, el componente
- * `<CuartelLogo>` cae al fallback de iniciales coloreadas por región.
+ * Mapa de slug → logoUrl con escudos reales. Si el slug no aparece acá,
+ * el componente `<CuartelLogo>` cae al fallback de iniciales coloreadas
+ * por región. Fuentes:
+ *   - Norte GBA: sitios institucionales de cada cuartel
+ *   - Resto: Federación Bonaerense (fedbonaerense.org.ar)
  */
 const LOGO_BY_SLUG: Record<string, string> = {
+  // Norte GBA
+  'villa-ballester': '/cuarteles/villa-ballester.png',
+  'san-martin': '/cuarteles/san-martin.png',
+  'san-isidro': '/cuarteles/san-isidro.png',
+  tigre: '/cuarteles/tigre.png',
+  'vicente-lopez': '/cuarteles/vicente-lopez.png',
+  // Sur GBA + La Plata y Sudeste + Interior PBA Norte (Federación Bonaerense)
   'almirante-brown': '/cuarteles/almirante-brown.png',
   avellaneda: '/cuarteles/avellaneda.png',
   berisso: '/cuarteles/berisso.png',
