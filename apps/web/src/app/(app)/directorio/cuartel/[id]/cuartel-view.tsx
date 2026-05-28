@@ -1,7 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { ArrowLeft, MapPin, Search, Shield, X } from 'lucide-react';
+import { ArrowLeft, BookPlus, MapPin, Search, Shield, X } from 'lucide-react';
 import Link from 'next/link';
 import { useMemo, useState } from 'react';
 
@@ -9,11 +9,26 @@ import { Badge, StatusPill, cn } from '@faro/ui';
 
 import type { Persona } from '@faro/types';
 
+import { AgregarContactoDialog } from '../../../../../components/federacion/agregar-contacto-dialog';
 import { LegajoModal } from '../../../../../components/federacion/legajo-modal';
 import { PersonaCardVertical } from '../../../../../components/federacion/persona-card-vertical';
 import { useFaroStore } from '../../../../../store/use-faro-store';
 
 type Filtro = 'todos' | 'activo' | 'administrativo';
+
+/** Orden jerárquico de mayor a menor rango. */
+const JERARQUIA_ORDEN: Record<Persona['jerarquia'], number> = {
+  jefe: 100,
+  comandante: 90,
+  sub_comandante: 80,
+  oficial: 70,
+  sargento_ayudante: 60,
+  sargento: 50,
+  cabo: 40,
+  bombero_1ra: 30,
+  bombero: 20,
+  cadete: 10,
+};
 
 export function CuartelDetalladoView({ slug }: { slug: string }) {
   const cuartelId = `cuartel-${slug}`;
@@ -32,6 +47,7 @@ export function CuartelDetalladoView({ slug }: { slug: string }) {
   const [busqueda, setBusqueda] = useState('');
   const [filtro, setFiltro] = useState<Filtro>('todos');
   const [personaSeleccionada, setPersonaSeleccionada] = useState<Persona | null>(null);
+  const [openAgregarContacto, setOpenAgregarContacto] = useState(false);
 
   const personasCuartel = useMemo(
     () => todasPersonas.filter((p) => p.cuartelId === cuartelId && p.estado === 'activo'),
@@ -54,6 +70,13 @@ export function CuartelDetalladoView({ slug }: { slug: string }) {
           p.legajo.includes(q) ||
           p.funcion.toLowerCase().includes(q)
         );
+      })
+      .sort((a, b) => {
+        // Orden: mayor jerarquía primero, después por apellido alfabético
+        const ja = JERARQUIA_ORDEN[a.jerarquia] ?? 0;
+        const jb = JERARQUIA_ORDEN[b.jerarquia] ?? 0;
+        if (jb !== ja) return jb - ja;
+        return a.apellido.localeCompare(b.apellido);
       });
   }, [personasCuartel, filtro, busqueda]);
 
@@ -118,7 +141,7 @@ export function CuartelDetalladoView({ slug }: { slug: string }) {
             </div>
           )}
         </div>
-        <div className="flex shrink-0 gap-2 text-center">
+        <div className="flex shrink-0 items-center gap-2 text-center">
           <div className="rounded-xl bg-slate-50 px-3 py-2">
             <div className="text-xs uppercase tracking-wide text-slate-500">Activos</div>
             <div className="text-xl font-bold text-slate-900">{cantActivos}</div>
@@ -127,6 +150,15 @@ export function CuartelDetalladoView({ slug }: { slug: string }) {
             <div className="text-xs uppercase tracking-wide text-slate-500">Comisión</div>
             <div className="text-xl font-bold text-slate-900">{cantAdmin}</div>
           </div>
+          <button
+            type="button"
+            onClick={() => setOpenAgregarContacto(true)}
+            className="hover:border-brand-300 hover:bg-brand-50 inline-flex items-center gap-1.5 self-stretch rounded-xl border border-slate-200 bg-white px-3 text-xs font-semibold text-slate-700 transition-colors"
+            title="Sumar un contacto externo al cuartel (periodista, intendente, comercio…)"
+          >
+            <BookPlus size={14} />
+            <span className="hidden sm:inline">Sumar contacto</span>
+          </button>
         </div>
       </header>
 
@@ -203,6 +235,11 @@ export function CuartelDetalladoView({ slug }: { slug: string }) {
           ))
         )}
       </div>
+
+      <AgregarContactoDialog
+        open={openAgregarContacto}
+        onClose={() => setOpenAgregarContacto(false)}
+      />
 
       <LegajoModal
         persona={personaSeleccionada}

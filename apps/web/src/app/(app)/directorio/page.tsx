@@ -1,7 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { ChevronRight, Search, Shield, Users, X } from 'lucide-react';
+import { BookPlus, ChevronRight, Search, Shield, Users, X } from 'lucide-react';
 import Link from 'next/link';
 import { useMemo, useState } from 'react';
 
@@ -9,6 +9,7 @@ import { Avatar, cn } from '@faro/ui';
 
 import type { Persona } from '@faro/types';
 
+import { AgregarContactoDialog } from '../../../components/federacion/agregar-contacto-dialog';
 import { LegajoModal } from '../../../components/federacion/legajo-modal';
 import {
   ESPECIALIDAD_LABEL,
@@ -40,6 +41,7 @@ export default function DirectorioFederacionPage() {
 
   const [busqueda, setBusqueda] = useState('');
   const [personaSeleccionada, setPersonaSeleccionada] = useState<Persona | null>(null);
+  const [openAgregarContacto, setOpenAgregarContacto] = useState(false);
 
   const buscando = busqueda.trim().length > 0;
 
@@ -68,16 +70,27 @@ export default function DirectorioFederacionPage() {
   return (
     <div className="mx-auto max-w-5xl space-y-4 pb-12">
       {/* Header chico horizontal */}
-      <header className="flex items-center gap-3">
-        <div className="bg-brand-50 text-brand-700 grid h-10 w-10 place-items-center rounded-xl">
-          <Users size={20} />
+      <header className="flex items-center justify-between gap-3">
+        <div className="flex items-center gap-3">
+          <div className="bg-brand-50 text-brand-700 grid h-10 w-10 place-items-center rounded-xl">
+            <Users size={20} />
+          </div>
+          <div>
+            <h1 className="text-xl font-bold text-slate-900">Directorio</h1>
+            <p className="text-xs text-slate-500">
+              {totalActivos} personas · {cuarteles.length} cuarteles
+            </p>
+          </div>
         </div>
-        <div>
-          <h1 className="text-xl font-bold text-slate-900">Directorio</h1>
-          <p className="text-xs text-slate-500">
-            {totalActivos} personas · {cuarteles.length} cuarteles
-          </p>
-        </div>
+        <button
+          type="button"
+          onClick={() => setOpenAgregarContacto(true)}
+          className="hover:border-brand-300 hover:bg-brand-50 inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700 transition-colors"
+        >
+          <BookPlus size={14} />
+          <span className="hidden sm:inline">Sumar contacto externo</span>
+          <span className="sm:hidden">Contacto</span>
+        </button>
       </header>
 
       {/* Búsqueda al frente */}
@@ -250,6 +263,11 @@ export default function DirectorioFederacionPage() {
             : null
         }
         onClose={() => setPersonaSeleccionada(null)}
+      />
+
+      <AgregarContactoDialog
+        open={openAgregarContacto}
+        onClose={() => setOpenAgregarContacto(false)}
       />
     </div>
   );

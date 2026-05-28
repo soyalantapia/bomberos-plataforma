@@ -96,7 +96,7 @@ export default function TableroFederacion() {
           </div>
         </Link>
         <Link
-          href="/federacion/agenda"
+          href="/agenda"
           className="hover:border-brand-300 group flex items-center gap-3 rounded-xl border border-slate-200 bg-white p-4 transition-all hover:shadow-md"
         >
           <div className="bg-fire-50 text-fire-700 grid h-12 w-12 shrink-0 place-items-center rounded-xl">

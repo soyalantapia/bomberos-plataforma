@@ -11,7 +11,7 @@ export interface NavItem {
   seccion?: string;
 }
 
-// Item común a todos los perfiles: Directorio público de la federación.
+// Items comunes a todos los perfiles: Directorio + Agenda.
 const DIRECTORIO_PUBLICO: NavItem = {
   label: 'Directorio',
   href: '/directorio',
@@ -19,11 +19,19 @@ const DIRECTORIO_PUBLICO: NavItem = {
   bottomNav: true,
 };
 
+const AGENDA_PUBLICA: NavItem = {
+  label: 'Agenda',
+  href: '/agenda',
+  icon: 'book-marked',
+  seccion: 'Red',
+};
+
 export const navByPerfil: Record<Perfil, NavItem[]> = {
   bombero: [
     { label: 'Inicio', href: '/bombero', icon: 'home', bottomNav: true },
     { label: 'Registrar', href: '/bombero/registrar-servicio', icon: 'flame', bottomNav: true },
     DIRECTORIO_PUBLICO,
+    AGENDA_PUBLICA,
     { label: 'Asistencia', href: '/bombero/asistencia', icon: 'check-circle-2', bottomNav: true },
     { label: 'Mi legajo', href: '/bombero/legajo', icon: 'user', bottomNav: true },
     { label: 'Capacitación', href: '/bombero/capacitacion', icon: 'graduation-cap' },
@@ -47,6 +55,7 @@ export const navByPerfil: Record<Perfil, NavItem[]> = {
     { label: 'Inicio', href: '/mando', icon: 'layout-dashboard', bottomNav: true },
     { label: 'Servicios', href: '/mando/operaciones', icon: 'siren', bottomNav: true },
     DIRECTORIO_PUBLICO,
+    AGENDA_PUBLICA,
     {
       label: 'Móviles en vivo',
       href: '/mando/avl',
@@ -186,6 +195,7 @@ export const navByPerfil: Record<Perfil, NavItem[]> = {
       bottomNav: true,
     },
     DIRECTORIO_PUBLICO,
+    AGENDA_PUBLICA,
     {
       label: 'Licencias',
       href: '/administrativo/licencias',
@@ -232,6 +242,7 @@ export const navByPerfil: Record<Perfil, NavItem[]> = {
     { label: 'Orden Interno', href: '/gobierno', icon: 'building-2', bottomNav: true },
     { label: 'Ética', href: '/gobierno/etica', icon: 'scale', bottomNav: true },
     DIRECTORIO_PUBLICO,
+    AGENDA_PUBLICA,
     { label: 'Género', href: '/gobierno/genero', icon: 'shield-alert', bottomNav: true },
     { label: 'Registro permanente', href: '/gobierno/audit', icon: 'file-search' },
     {
@@ -251,12 +262,7 @@ export const navByPerfil: Record<Perfil, NavItem[]> = {
       bottomNav: true,
     },
     DIRECTORIO_PUBLICO,
-    {
-      label: 'Agenda',
-      href: '/federacion/agenda',
-      icon: 'book-marked',
-      seccion: 'Red',
-    },
+    AGENDA_PUBLICA,
     {
       label: 'Consolidados',
       href: '/federacion/consolidados',

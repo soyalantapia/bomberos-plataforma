@@ -161,8 +161,8 @@ export function AgregarContactoDialog({ open, onClose }: Props) {
       open={open}
       onClose={close}
       size="lg"
-      title="Agregar contacto a la red"
-      description="Estos contactos quedan disponibles para todos los miembros del nivel seleccionado."
+      title="Sumar contacto externo"
+      description="Periodista, intendente, comercio, hospital… cualquier contacto útil que no sea un bombero. Queda visible para todos los miembros del nivel que elijas."
       footer={
         <div className="flex flex-wrap items-center gap-2">
           <span className="text-xs text-slate-500">

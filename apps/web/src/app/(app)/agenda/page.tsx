@@ -1,18 +1,17 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { ArrowLeft, BookMarked, Plus, Search, SlidersHorizontal, X } from 'lucide-react';
-import Link from 'next/link';
+import { BookMarked, Plus, Search, SlidersHorizontal, X } from 'lucide-react';
 import { useMemo, useState } from 'react';
 
 import { Button, cn } from '@faro/ui';
 
 import type { CategoriaContacto, ContactoRed } from '@faro/types';
 
-import { AgregarContactoDialog } from '../../../../components/federacion/agregar-contacto-dialog';
-import { CAT_INFO, ContactoCard } from '../../../../components/federacion/contacto-card';
-import { REGION_NOMBRE_A_ID } from '../../../../data/regiones';
-import { selectCuartelActivo, useFaroStore } from '../../../../store/use-faro-store';
+import { AgregarContactoDialog } from '../../../components/federacion/agregar-contacto-dialog';
+import { CAT_INFO, ContactoCard } from '../../../components/federacion/contacto-card';
+import { REGION_NOMBRE_A_ID } from '../../../data/regiones';
+import { selectCuartelActivo, useFaroStore } from '../../../store/use-faro-store';
 
 type Nivel = 'cuartel' | 'region' | 'federacion';
 
@@ -108,13 +107,6 @@ export default function AgendaFederalPage() {
 
   return (
     <div className="mx-auto max-w-5xl space-y-4 pb-12">
-      {/* Volver */}
-      <div className="flex items-center gap-2 text-sm text-slate-500">
-        <Link href="/federacion" className="hover:text-brand-700 inline-flex items-center gap-1">
-          <ArrowLeft size={14} /> Volver a federación
-        </Link>
-      </div>
-
       {/* Header chico horizontal */}
       <header className="flex items-center justify-between gap-3">
         <div className="flex items-center gap-3">
