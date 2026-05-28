@@ -84,7 +84,7 @@ export default function TableroFederacion() {
       {/* Atajos a Red de la Federación */}
       <div className="grid gap-3 sm:grid-cols-2">
         <Link
-          href="/federacion/directorio"
+          href="/directorio"
           className="hover:border-brand-300 group flex items-center gap-3 rounded-xl border border-slate-200 bg-white p-4 transition-all hover:shadow-md"
         >
           <div className="bg-brand-50 text-brand-700 grid h-12 w-12 shrink-0 place-items-center rounded-xl">

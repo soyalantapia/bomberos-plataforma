@@ -11,10 +11,19 @@ export interface NavItem {
   seccion?: string;
 }
 
+// Item común a todos los perfiles: Directorio público de la federación.
+const DIRECTORIO_PUBLICO: NavItem = {
+  label: 'Directorio',
+  href: '/directorio',
+  icon: 'users-round',
+  bottomNav: true,
+};
+
 export const navByPerfil: Record<Perfil, NavItem[]> = {
   bombero: [
     { label: 'Inicio', href: '/bombero', icon: 'home', bottomNav: true },
     { label: 'Registrar', href: '/bombero/registrar-servicio', icon: 'flame', bottomNav: true },
+    DIRECTORIO_PUBLICO,
     { label: 'Asistencia', href: '/bombero/asistencia', icon: 'check-circle-2', bottomNav: true },
     { label: 'Mi legajo', href: '/bombero/legajo', icon: 'user', bottomNav: true },
     { label: 'Capacitación', href: '/bombero/capacitacion', icon: 'graduation-cap' },
@@ -37,11 +46,11 @@ export const navByPerfil: Record<Perfil, NavItem[]> = {
   mando: [
     { label: 'Inicio', href: '/mando', icon: 'layout-dashboard', bottomNav: true },
     { label: 'Servicios', href: '/mando/operaciones', icon: 'siren', bottomNav: true },
+    DIRECTORIO_PUBLICO,
     {
       label: 'Móviles en vivo',
       href: '/mando/avl',
       icon: 'radio',
-      bottomNav: true,
       seccion: 'Operaciones',
     },
     {
@@ -176,6 +185,7 @@ export const navByPerfil: Record<Perfil, NavItem[]> = {
       icon: 'package',
       bottomNav: true,
     },
+    DIRECTORIO_PUBLICO,
     {
       label: 'Licencias',
       href: '/administrativo/licencias',
@@ -186,7 +196,6 @@ export const navByPerfil: Record<Perfil, NavItem[]> = {
       label: 'Documentos',
       href: '/administrativo/documentos',
       icon: 'folder-open',
-      bottomNav: true,
     },
     { label: 'Capacitación', href: '/administrativo/capacitacion', icon: 'graduation-cap' },
     { label: 'Agenda', href: '/administrativo/agenda', icon: 'calendar' },
@@ -222,8 +231,9 @@ export const navByPerfil: Record<Perfil, NavItem[]> = {
   gobierno: [
     { label: 'Orden Interno', href: '/gobierno', icon: 'building-2', bottomNav: true },
     { label: 'Ética', href: '/gobierno/etica', icon: 'scale', bottomNav: true },
+    DIRECTORIO_PUBLICO,
     { label: 'Género', href: '/gobierno/genero', icon: 'shield-alert', bottomNav: true },
-    { label: 'Registro permanente', href: '/gobierno/audit', icon: 'file-search', bottomNav: true },
+    { label: 'Registro permanente', href: '/gobierno/audit', icon: 'file-search' },
     {
       label: 'Verificador de integridad',
       href: '/gobierno/audit/verificador',
@@ -240,13 +250,7 @@ export const navByPerfil: Record<Perfil, NavItem[]> = {
       icon: 'flag-triangle-right',
       bottomNav: true,
     },
-    {
-      label: 'Directorio',
-      href: '/federacion/directorio',
-      icon: 'users-round',
-      bottomNav: true,
-      seccion: 'Red',
-    },
+    DIRECTORIO_PUBLICO,
     {
       label: 'Agenda',
       href: '/federacion/agenda',

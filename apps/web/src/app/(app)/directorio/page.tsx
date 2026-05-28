@@ -1,20 +1,19 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { ArrowLeft, ChevronRight, Search, Shield, Users, X } from 'lucide-react';
-import Link from 'next/link';
+import { ChevronRight, Search, Shield, Users, X } from 'lucide-react';
 import { useMemo, useState } from 'react';
 
 import { Avatar, cn } from '@faro/ui';
 
 import type { Persona } from '@faro/types';
 
-import { CuartelDrawer } from '../../../../components/federacion/cuartel-drawer';
+import { CuartelDrawer } from '../../../components/federacion/cuartel-drawer';
 import {
   ESPECIALIDAD_LABEL,
   JERARQUIA_LABEL,
-} from '../../../../components/federacion/persona-card-fed';
-import { useFaroStore } from '../../../../store/use-faro-store';
+} from '../../../components/federacion/persona-card-fed';
+import { useFaroStore } from '../../../store/use-faro-store';
 
 const REGION_COLORS: Record<string, string> = {
   'Norte GBA': 'bg-blue-50 text-blue-700',
@@ -69,13 +68,6 @@ export default function DirectorioFederacionPage() {
 
   return (
     <div className="mx-auto max-w-5xl space-y-4 pb-12">
-      {/* Volver */}
-      <div className="flex items-center gap-2 text-sm text-slate-500">
-        <Link href="/federacion" className="hover:text-brand-700 inline-flex items-center gap-1">
-          <ArrowLeft size={14} /> Volver a federación
-        </Link>
-      </div>
-
       {/* Header chico horizontal */}
       <header className="flex items-center gap-3">
         <div className="bg-brand-50 text-brand-700 grid h-10 w-10 place-items-center rounded-xl">
