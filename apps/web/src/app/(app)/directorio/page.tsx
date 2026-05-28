@@ -9,6 +9,7 @@ import { Avatar, cn } from '@faro/ui';
 import type { Persona } from '@faro/types';
 
 import { CuartelDrawer } from '../../../components/federacion/cuartel-drawer';
+import { LegajoDrawer } from '../../../components/federacion/legajo-drawer';
 import {
   ESPECIALIDAD_LABEL,
   JERARQUIA_LABEL,
@@ -34,6 +35,7 @@ export default function DirectorioFederacionPage() {
 
   const [busqueda, setBusqueda] = useState('');
   const [cuartelSeleccionado, setCuartelSeleccionado] = useState<string | null>(null);
+  const [personaSeleccionada, setPersonaSeleccionada] = useState<Persona | null>(null);
 
   const buscando = busqueda.trim().length > 0;
 
@@ -121,7 +123,7 @@ export default function DirectorioFederacionPage() {
                   <motion.button
                     key={p.id}
                     type="button"
-                    onClick={() => setCuartelSeleccionado(p.cuartelId)}
+                    onClick={() => setPersonaSeleccionada(p)}
                     initial={{ opacity: 0, y: 4 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: idx * 0.015 }}
@@ -207,6 +209,17 @@ export default function DirectorioFederacionPage() {
         cuartel={cuartelActivo}
         personas={personasCuartelActivo}
         onClose={() => setCuartelSeleccionado(null)}
+        onOpenLegajo={(p) => setPersonaSeleccionada(p)}
+      />
+
+      <LegajoDrawer
+        persona={personaSeleccionada}
+        cuartel={
+          personaSeleccionada
+            ? (cuarteles.find((c) => c.id === personaSeleccionada.cuartelId) ?? null)
+            : null
+        }
+        onClose={() => setPersonaSeleccionada(null)}
       />
     </div>
   );

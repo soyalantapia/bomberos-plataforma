@@ -123,6 +123,55 @@ export interface Persona {
   cursos: Curso[];
   licenciaConducirVencimiento?: string;
   licenciaConducirCategorias?: string[];
+  /** Datos extendidos del legajo (compatibles con el formato GIB/FAVBPBA). */
+  legajoExtra?: LegajoExtra;
+}
+
+export interface LegajoExtra {
+  // Identificación
+  dni?: string;
+  sexo?: 'Masculino' | 'Femenino' | 'X';
+  jerarquiaReal?: string; // texto crudo: "Comandante Mayor", "Oficial Aux. de Dotación"
+  cargoInstitucion?: string; // "Numerario", "Miembro C.D.", etc.
+  cargoFederativo?: string;
+  escalafon?: string; // "Cuerpo Activo", "C.Directiva", etc.
+  fechaJerarquia?: string;
+  fechaAlta?: string; // alta institucional (puede diferir de fechaIngreso)
+  // Domicilio
+  domicilio?: string;
+  entreCalle?: string;
+  yCalle?: string;
+  localidad?: string;
+  codigoPostal?: string;
+  partido?: string;
+  barrio?: string;
+  provincia?: string;
+  pais?: string;
+  // Datos personales
+  lugarNacimiento?: string;
+  provinciaNacimiento?: string;
+  estadoCivil?: string;
+  altura?: string; // metros: "1.75"
+  peso?: string; // kg
+  donante?: 'SI' | 'NO' | '';
+  // Contacto extra
+  celular?: string;
+  ciaCelular?: string; // "Personal", "Claro", "Movistar"
+  emailFederativo?: string;
+  // Cobertura / administrativo
+  ioma?: string;
+  observaciones?: string;
+  // Registros institucionales
+  acta?: string;
+  folio?: string;
+  libro?: string;
+  ordenInterno?: string;
+  // Computos
+  calificaComputos?: 'SI' | 'NO' | '';
+  informaComputos?: 'SI' | 'NO' | '';
+  // Sistema
+  region?: string;
+  escuela?: string;
 }
 
 export interface Movil {

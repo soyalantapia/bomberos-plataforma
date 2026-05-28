@@ -1,6 +1,7 @@
-import type { EspecialidadBombero, Persona } from '@faro/types';
+import type { EspecialidadBombero, LegajoExtra, Persona } from '@faro/types';
 
 import { cuartelesMock } from './cuarteles';
+import { padronFuente } from './padron-fuente';
 
 // ─────────────────────────────────────────────────────────────────
 // FUENTE: 93 bomberos reales de Villa Ballester (Cuartel 107)
@@ -899,6 +900,8 @@ function generarPersonaParaCuartel(
   fuente: BomberoFuente,
   idxLocal: number,
   idxGlobal: number,
+  _cuartelNombre: string,
+  cuartelRegion: string,
 ): Persona {
   const prefijo = prefijoCuartel(cuartelId);
   const id = `${prefijo}-${(idxLocal + 1).toString().padStart(3, '0')}`;
@@ -922,6 +925,58 @@ function generarPersonaParaCuartel(
         ? ['administrativo']
         : ['bombero'];
 
+  // Enriquecemos con datos REALES del padrón rotando.
+  // Cada persona recibe los campos extendidos del legajo de un padronFuente
+  // diferente — el apellido/nombre/email/jerarquía vienen de FUENTE, pero el
+  // DNI/domicilio/altura/peso/etc del padrón.
+  const padron = padronFuente[idxGlobal % padronFuente.length]!;
+  const sexoLegajo: LegajoExtra['sexo'] = padron.sexo === 'Femenino' ? 'Femenino' : 'Masculino';
+
+  const fechaNacimiento =
+    padron.fechaNacimiento ||
+    `19${60 + (idxGlobal % 30)}-${String((idxGlobal % 12) + 1).padStart(2, '0')}-${String((idxGlobal % 28) + 1).padStart(2, '0')}`;
+  const fechaIngreso =
+    padron.fechaAlta ||
+    `20${10 + (idxGlobal % 15)}-${String((idxGlobal % 12) + 1).padStart(2, '0')}-${String((idxGlobal % 28) + 1).padStart(2, '0')}`;
+
+  const legajoExtra: LegajoExtra = {
+    dni: padron.dni,
+    sexo: sexoLegajo,
+    jerarquiaReal: fuente.jerarquiaReal,
+    cargoInstitucion: padron.cargoInstitucion || 'Numerario',
+    cargoFederativo: padron.cargoFederativo,
+    escalafon:
+      padron.escalafon || (fuente.cuerpo === 'administrativo' ? 'C.Directiva' : 'Cuerpo Activo'),
+    fechaJerarquia: padron.fechaJerarquia,
+    fechaAlta: padron.fechaAlta || fechaIngreso,
+    domicilio: padron.domicilio,
+    localidad: padron.localidad,
+    codigoPostal: padron.codigoPostal,
+    partido: padron.partido,
+    provincia: padron.provincia || 'Buenos Aires',
+    pais: padron.pais || 'Argentina',
+    lugarNacimiento: padron.lugarNacimiento,
+    provinciaNacimiento: padron.provinciaNacimiento || 'Buenos Aires',
+    estadoCivil: padron.estadoCivil || 'Soltero',
+    altura: padron.altura,
+    peso: padron.peso,
+    donante: (padron.donante as 'SI' | 'NO' | '') || 'NO',
+    celular: padron.celular || telPara(idxGlobal + 1000, prefijo).replace('+54 11 ', '11'),
+    ciaCelular: padron.ciaCelular || 'Personal',
+    emailFederativo: `${legajo.replace('/', '.')}@federacionbomberos.org.ar`,
+    ioma: padron.ioma,
+    observaciones: padron.observaciones,
+    acta: padron.acta,
+    libro: padron.libro,
+    calificaComputos: 'SI',
+    informaComputos: 'SI',
+    region: cuartelRegion,
+    escuela: padron.escuela,
+  };
+  // Damos consistencia: el nombre/apellido de la persona también pueden venir
+  // del padrón cuando NO se trate de un jefe — para mezclar con los nombres de FUENTE.
+  // (Mantenemos FUENTE como prioridad para preservar la coherencia de jefes/jerarquías).
+
   return {
     id,
     cuartelId,
@@ -930,17 +985,21 @@ function generarPersonaParaCuartel(
     apellido: fuente.apellido,
     email,
     telefono: telPara(idxGlobal, prefijo),
-    fechaNacimiento: `19${60 + (idxGlobal % 30)}-${String((idxGlobal % 12) + 1).padStart(2, '0')}-${String((idxGlobal % 28) + 1).padStart(2, '0')}`,
-    fechaIngreso: `20${10 + (idxGlobal % 15)}-${String((idxGlobal % 12) + 1).padStart(2, '0')}-${String((idxGlobal % 28) + 1).padStart(2, '0')}`,
+    fechaNacimiento,
+    fechaIngreso,
     jerarquia: fuente.jerarquia,
     estado: 'activo',
-    base,
+    base: padron.base || base,
     funcion: fuente.funcion,
     perfiles,
     cuerpo: fuente.cuerpo,
     especialidades: esp,
-    salud: { grupoSanguineo: 'O+', aptitudVencimiento: '2026-12-01' },
+    salud: {
+      grupoSanguineo: padron.grupoSangre || 'O+',
+      aptitudVencimiento: '2026-12-01',
+    },
     cursos: [],
+    legajoExtra,
   };
 }
 
@@ -962,7 +1021,15 @@ export const personasFederacionMock: Persona[] = cuartelesMock
     );
     const jefe = jefesPool[cuartelIdx % jefesPool.length]!;
     personas.push(
-      generarPersonaParaCuartel(cuartel.id, cuartel.matricula ?? 'BV-0000', jefe, 0, _globalIdx++),
+      generarPersonaParaCuartel(
+        cuartel.id,
+        cuartel.matricula ?? 'BV-0000',
+        jefe,
+        0,
+        _globalIdx++,
+        cuartel.nombre,
+        cuartel.region,
+      ),
     );
 
     // Resto de personas, rotando por jerarquía variada
@@ -970,7 +1037,15 @@ export const personasFederacionMock: Persona[] = cuartelesMock
       const fuenteIdx = (cuartelIdx * 7 + i * 3) % FUENTE.length;
       const f = FUENTE[fuenteIdx]!;
       personas.push(
-        generarPersonaParaCuartel(cuartel.id, cuartel.matricula ?? 'BV-0000', f, i, _globalIdx++),
+        generarPersonaParaCuartel(
+          cuartel.id,
+          cuartel.matricula ?? 'BV-0000',
+          f,
+          i,
+          _globalIdx++,
+          cuartel.nombre,
+          cuartel.region,
+        ),
       );
     }
 

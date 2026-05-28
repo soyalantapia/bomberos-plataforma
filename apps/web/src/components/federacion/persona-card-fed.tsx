@@ -40,6 +40,8 @@ function soloDigitos(s: string): string {
 interface Props {
   persona: Persona;
   cuartel?: Cuartel;
+  /** Si se pasa, el header (avatar+nombre) abre el legajo al hacer click. */
+  onOpenLegajo?: (persona: Persona) => void;
 }
 
 /**
@@ -47,30 +49,45 @@ interface Props {
  * que despliega las 3 opciones (llamar / WhatsApp / email).
  * Sin tags, sin chips, sin metadata visual de fondo.
  */
-export function PersonaCardFed({ persona, cuartel }: Props) {
+export function PersonaCardFed({ persona, cuartel, onOpenLegajo }: Props) {
   const [open, setOpen] = useState(false);
   const tel = soloDigitos(persona.telefono);
   const isMando = ['jefe', 'comandante', 'sub_comandante'].includes(persona.jerarquia);
 
-  return (
-    <div className="flex flex-col rounded-2xl border border-slate-200 bg-white p-4 transition-shadow hover:shadow-md">
-      <div className="flex items-center gap-3">
-        <Avatar name={`${persona.nombre} ${persona.apellido}`} src={persona.fotoUrl} size={48} />
-        <div className="min-w-0 flex-1">
-          <div className="truncate text-base font-bold text-slate-900">
-            {persona.apellido}, {persona.nombre}
-          </div>
-          <div
-            className={cn(
-              'mt-0.5 truncate text-xs font-medium',
-              isMando ? 'text-fire-700' : 'text-slate-500',
-            )}
-          >
-            {JERARQUIA_LABEL[persona.jerarquia]}
-            {cuartel && <span className="text-slate-400"> · BV {cuartel.nombre}</span>}
-          </div>
+  const HeaderContent = (
+    <div className="flex items-center gap-3">
+      <Avatar name={`${persona.nombre} ${persona.apellido}`} src={persona.fotoUrl} size={48} />
+      <div className="min-w-0 flex-1 text-left">
+        <div className="truncate text-base font-bold text-slate-900">
+          {persona.apellido}, {persona.nombre}
+        </div>
+        <div
+          className={cn(
+            'mt-0.5 truncate text-xs font-medium',
+            isMando ? 'text-fire-700' : 'text-slate-500',
+          )}
+        >
+          {JERARQUIA_LABEL[persona.jerarquia]}
+          {cuartel && <span className="text-slate-400"> · BV {cuartel.nombre}</span>}
         </div>
       </div>
+    </div>
+  );
+
+  return (
+    <div className="flex flex-col rounded-2xl border border-slate-200 bg-white p-4 transition-shadow hover:shadow-md">
+      {onOpenLegajo ? (
+        <button
+          type="button"
+          onClick={() => onOpenLegajo(persona)}
+          className="-m-1 rounded-xl p-1 text-left transition-colors hover:bg-slate-50/60"
+          aria-label={`Ver legajo de ${persona.nombre} ${persona.apellido}`}
+        >
+          {HeaderContent}
+        </button>
+      ) : (
+        HeaderContent
+      )}
 
       {!open && (
         <button

@@ -11,13 +11,14 @@ interface Props {
   cuartel: Cuartel | null;
   personas: Persona[];
   onClose: () => void;
+  onOpenLegajo?: (persona: Persona) => void;
 }
 
 /**
  * Drawer simplificado: sin sub-tabs, lista plana con separadores
  * por grupo. Toda la información visible de un golpe.
  */
-export function CuartelDrawer({ cuartel, personas, onClose }: Props) {
+export function CuartelDrawer({ cuartel, personas, onClose, onOpenLegajo }: Props) {
   const activos = personas.filter((p) => p.cuerpo === 'activo' && p.estado === 'activo');
   const admins = personas.filter((p) => p.cuerpo === 'administrativo' && p.estado === 'activo');
 
@@ -85,7 +86,12 @@ export function CuartelDrawer({ cuartel, personas, onClose }: Props) {
                   </div>
                   <div className="space-y-2">
                     {activos.map((p) => (
-                      <PersonaCardFed key={p.id} persona={p} cuartel={cuartel} />
+                      <PersonaCardFed
+                        key={p.id}
+                        persona={p}
+                        cuartel={cuartel}
+                        onOpenLegajo={onOpenLegajo}
+                      />
                     ))}
                   </div>
                 </section>
@@ -101,7 +107,12 @@ export function CuartelDrawer({ cuartel, personas, onClose }: Props) {
                   </div>
                   <div className="space-y-2">
                     {admins.map((p) => (
-                      <PersonaCardFed key={p.id} persona={p} cuartel={cuartel} />
+                      <PersonaCardFed
+                        key={p.id}
+                        persona={p}
+                        cuartel={cuartel}
+                        onOpenLegajo={onOpenLegajo}
+                      />
                     ))}
                   </div>
                 </section>
