@@ -10,6 +10,7 @@ import { Badge, StatusPill, cn } from '@faro/ui';
 import type { Persona } from '@faro/types';
 
 import { AgregarContactoDialog } from '../../../../../components/federacion/agregar-contacto-dialog';
+import { CuartelLogo } from '../../../../../components/federacion/cuartel-logo';
 import { LegajoModal } from '../../../../../components/federacion/legajo-modal';
 import { PersonaCardVertical } from '../../../../../components/federacion/persona-card-vertical';
 import { useFaroStore } from '../../../../../store/use-faro-store';
@@ -119,9 +120,7 @@ export function CuartelDetalladoView({ slug }: { slug: string }) {
 
       {/* Header del cuartel */}
       <header className="flex flex-col gap-4 rounded-2xl border border-slate-200 bg-white p-5 sm:flex-row sm:items-center">
-        <div className="bg-fire-50 text-fire-700 grid h-14 w-14 shrink-0 place-items-center rounded-2xl">
-          <Shield size={28} />
-        </div>
+        <CuartelLogo cuartel={cuartel} size={56} className="rounded-2xl" />
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-2">
             <h1 className="text-2xl font-bold text-slate-900">BV {cuartel.nombre}</h1>

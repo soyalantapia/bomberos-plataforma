@@ -17,6 +17,8 @@ export interface Cuartel {
   fundacion?: string;
   matricula?: string;
   jefe?: string;
+  /** Logo/escudo del cuartel. Relativo a /public (ej: "/cuarteles/villa-ballester.png"). */
+  logoUrl?: string;
 }
 
 export type EspecialidadBombero =

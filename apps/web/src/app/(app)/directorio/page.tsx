@@ -1,7 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { BookPlus, ChevronRight, Search, Shield, Users, X } from 'lucide-react';
+import { BookPlus, ChevronRight, Search, Users, X } from 'lucide-react';
 import Link from 'next/link';
 import { useMemo, useState } from 'react';
 
@@ -10,6 +10,7 @@ import { Avatar, cn } from '@faro/ui';
 import type { Persona } from '@faro/types';
 
 import { AgregarContactoDialog } from '../../../components/federacion/agregar-contacto-dialog';
+import { CuartelLogo } from '../../../components/federacion/cuartel-logo';
 import { LegajoModal } from '../../../components/federacion/legajo-modal';
 import {
   ESPECIALIDAD_LABEL,
@@ -170,9 +171,7 @@ export default function DirectorioFederacionPage() {
             }
             className="hover:border-brand-300 border-brand-200 bg-brand-50/40 group flex items-center gap-3 rounded-xl border-2 p-4 transition-all hover:shadow-md"
           >
-            <div className="bg-brand-600 grid h-12 w-12 shrink-0 place-items-center rounded-xl text-white">
-              <Shield size={22} />
-            </div>
+            <CuartelLogo cuartel={miCuartel} size={48} className="ring-brand-200 ring-2" />
             <div className="min-w-0 flex-1">
               <div className="truncate text-base font-bold text-slate-900">
                 BV {miCuartel.nombre}
@@ -234,9 +233,7 @@ export default function DirectorioFederacionPage() {
                       }
                       className="hover:border-brand-300 group flex items-center gap-3 rounded-xl border border-slate-200 bg-white p-3 text-left transition-all hover:shadow-md"
                     >
-                      <div className="bg-fire-50 text-fire-700 grid h-10 w-10 shrink-0 place-items-center rounded-xl">
-                        <Shield size={18} />
-                      </div>
+                      <CuartelLogo cuartel={c} size={40} />
                       <div className="min-w-0 flex-1">
                         <div className="truncate font-semibold text-slate-900">{c.nombre}</div>
                         <div className="mt-0.5 text-xs text-slate-500">
