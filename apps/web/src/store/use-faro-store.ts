@@ -495,24 +495,34 @@ export const useFaroStore = create<FaroStore>()(
     }),
     {
       name: 'faro-store',
-      version: 6,
+      version: 7,
       storage: createJSONStorage(() => localStorage),
-      // Solo persistimos lo esencial. Movimientos/cajas/cuotas son mocks
-      // que viven en memoria — persistirlos hace serializar/deserializar
-      // localStorage en cada nav, lo cual es lento.
+      // Persistimos lo transaccional (sesión, servicios creados, asistencias,
+      // rendiciones, notificaciones leídas). NO persistimos estructuras de mock
+      // (cuarteles, personas, regiones, contactosRed) — siempre vienen frescas
+      // del initialState para que cambios en mocks se reflejen al recargar.
       partialize: (s) => ({
         sesion: s.sesion,
         servicios: s.servicios,
         asistencias: s.asistencias,
         rendiciones: s.rendiciones,
-        cuarteles: s.cuarteles,
         notificaciones: s.notificaciones,
       }),
-      // Merge no destructivo: si subimos versión, mantenemos lo que el user persistió
-      // y completamos los campos nuevos desde initialState. NO borramos su progreso.
-      migrate: (persisted: unknown) => {
+      // Mantiene la sesión y el progreso transaccional, pero descarta cualquier
+      // estructura de mock que usuarios viejos (v ≤ 6) tengan persistida.
+      migrate: (persisted: unknown, fromVersion: number) => {
         if (!persisted || typeof persisted !== 'object') return initialState;
-        return { ...initialState, ...(persisted as Partial<State>) };
+        const p = persisted as Record<string, unknown>;
+        if (fromVersion < 7) {
+          // En v7 dejamos de persistir mocks estructurales. Para no inyectar
+          // los viejos al merge, los borramos antes.
+          delete p.cuarteles;
+          delete p.personas;
+          delete p.personasFederacion;
+          delete p.regiones;
+          delete p.contactosRed;
+        }
+        return { ...initialState, ...(p as Partial<State>) };
       },
       onRehydrateStorage: () => (state) => {
         if (state) state.hidratado = true;
