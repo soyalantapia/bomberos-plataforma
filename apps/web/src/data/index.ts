@@ -13,3 +13,4 @@ export * from './contactos-red';
 export * from './organizacion';
 export * from './tareas';
 export * from './cumplimiento';
+export * from './salud';

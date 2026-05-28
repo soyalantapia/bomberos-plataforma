@@ -1,13 +1,20 @@
 'use client';
 
-import { Award, Ban, Lock, Star, TrendingUp } from 'lucide-react';
+import { Award, Ban, Droplet, HeartPulse, Lock, Star, TrendingUp } from 'lucide-react';
 import { useMemo } from 'react';
 
 import { Badge, Card, CardContent, cn } from '@faro/ui';
 
 import { calcularCumplimiento, intentCumplimiento } from '../../../../lib/utils/cumplimiento';
-import { fmtMesPeriodo, mesActual } from '../../../../lib/utils/date';
+import { fmtFecha, fmtMesPeriodo, mesActual } from '../../../../lib/utils/date';
 import { selectPersonaActual, useFaroStore } from '../../../../store/use-faro-store';
+
+const APTO_LABEL: Record<string, string> = {
+  apto: 'Apto',
+  observaciones: 'Apto con observaciones',
+  no_apto: 'No apto',
+  pendiente: 'Pendiente / por renovar',
+};
 
 export default function MiDesempenoPage() {
   const yo = useFaroStore(selectPersonaActual);
@@ -124,6 +131,52 @@ export default function MiDesempenoPage() {
               Certificado médico:{' '}
               <strong>{cumpl.certificadoMedico ? 'vigente' : 'vencido / sin presentar'}</strong>
             </span>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Mi ficha médica (datos propios) */}
+      <Card>
+        <CardContent className="p-5">
+          <h2 className="mb-3 flex items-center gap-1.5 font-bold text-slate-900">
+            <HeartPulse size={18} className="text-fire-600" /> Mi ficha médica
+          </h2>
+          <div className="grid grid-cols-2 gap-3 text-sm">
+            <div>
+              <div className="text-xs text-slate-500">Grupo sanguíneo</div>
+              <div className="flex items-center gap-1 font-medium text-slate-900">
+                <Droplet size={13} className="text-fire-600" />
+                {yo.salud.grupoSanguineo ?? '—'}
+              </div>
+            </div>
+            <div>
+              <div className="text-xs text-slate-500">Obra social</div>
+              <div className="font-medium text-slate-900">{yo.salud.obraSocial ?? '—'}</div>
+            </div>
+            <div>
+              <div className="text-xs text-slate-500">Apto físico</div>
+              <div className="font-medium text-slate-900">
+                {yo.salud.aptoFisico ? APTO_LABEL[yo.salud.aptoFisico] : '—'}
+              </div>
+            </div>
+            <div>
+              <div className="text-xs text-slate-500">Apto vence</div>
+              <div className="font-medium text-slate-900">
+                {yo.salud.aptitudVencimiento ? fmtFecha(yo.salud.aptitudVencimiento) : '—'}
+              </div>
+            </div>
+            {yo.salud.medicacion && (
+              <div className="col-span-2">
+                <div className="text-xs text-slate-500">Medicación</div>
+                <div className="text-slate-900">{yo.salud.medicacion}</div>
+              </div>
+            )}
+            {yo.salud.antecedentes && (
+              <div className="col-span-2">
+                <div className="text-xs text-slate-500">Antecedentes</div>
+                <div className="text-slate-900">{yo.salud.antecedentes}</div>
+              </div>
+            )}
           </div>
         </CardContent>
       </Card>

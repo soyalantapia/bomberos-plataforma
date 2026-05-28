@@ -16,6 +16,7 @@ import type {
   CuotaSocial,
   Destacamento,
   Fichaje,
+  Lesion,
   MiembroConsejo,
   MovimientoFinanciero,
   Movil,
@@ -47,6 +48,7 @@ import {
   cuotasMock,
   destacamentosMock,
   fichajesMock,
+  lesionesMock,
   movimientosMock,
   movilesMock,
   notificacionesMock,
@@ -94,6 +96,8 @@ interface State {
   fichajes: Fichaje[];
   reconocimientos: Reconocimiento[];
   calificaciones: Calificacion[];
+  // SALUD Y SEGURIDAD
+  lesiones: Lesion[];
 }
 
 interface Actions {
@@ -156,6 +160,9 @@ interface Actions {
   ficharEgreso: (fichajeId: string) => void;
   registrarReconocimiento: (personaId: string, tipo: TipoReconocimiento, motivo: string) => void;
   calificar: (personaId: string, periodo: string, puntaje: number, nota?: string) => void;
+  // SALUD Y SEGURIDAD
+  reportarLesion: (input: Omit<Lesion, 'id' | 'estado' | 'reportadoPor' | 'fecha'>) => Lesion;
+  actualizarLesion: (id: string, cambios: Partial<Lesion>) => void;
 }
 
 type FaroStore = State & Actions;
@@ -192,6 +199,8 @@ const initialState: State = {
   fichajes: fichajesMock,
   reconocimientos: reconocimientosMock,
   calificaciones: calificacionesMock,
+  // SALUD Y SEGURIDAD
+  lesiones: lesionesMock,
 };
 
 function recalcularRendicion(state: State, cuartelId: string): State {
@@ -766,6 +775,44 @@ export const useFaroStore = create<FaroStore>()(
         };
         set({ calificaciones, notificaciones: [notif, ...get().notificaciones] });
       },
+      // ====== SALUD Y SEGURIDAD ======
+      reportarLesion(input) {
+        const actor = get().sesion?.personaId ?? input.personaId;
+        const now = new Date().toISOString();
+        const lesion: Lesion = {
+          ...input,
+          id: genId('les'),
+          fecha: now,
+          reportadoPor: actor,
+          estado: 'reportada',
+        };
+        const persona = get().personas.find((p) => p.id === input.personaId);
+        // Avisar a la jefatura del cuerpo (jefe_cuerpo) del cuartel.
+        const jefe = get().personas.find(
+          (p) => p.cuartelId === lesion.cuartelId && p.cargoInstitucional === 'jefe_cuerpo',
+        );
+        const notif: Notificacion = {
+          id: genId('notif'),
+          cuartelId: lesion.cuartelId,
+          destinatarioId: jefe?.id ?? actor,
+          tipo: 'lesion',
+          titulo: 'Lesión reportada',
+          descripcion: `${persona ? `${persona.nombre} ${persona.apellido}` : 'Un bombero'} · ${lesion.descripcion}`,
+          leida: false,
+          fecha: now,
+          linkPagina: '/mando/lesiones',
+        };
+        set({
+          lesiones: [lesion, ...get().lesiones],
+          notificaciones: [notif, ...get().notificaciones],
+        });
+        return lesion;
+      },
+      actualizarLesion(id, cambios) {
+        set({
+          lesiones: get().lesiones.map((l) => (l.id === id ? { ...l, ...cambios } : l)),
+        });
+      },
       presentarRendicion(rendicionId, mandoId) {
         const r = get().rendiciones[rendicionId];
         if (!r) return;
@@ -804,6 +851,7 @@ export const useFaroStore = create<FaroStore>()(
         fichajes: s.fichajes,
         reconocimientos: s.reconocimientos,
         calificaciones: s.calificaciones,
+        lesiones: s.lesiones,
       }),
       // Mantiene la sesión y el progreso transaccional, pero descarta cualquier
       // estructura de mock que usuarios viejos (v ≤ 6) tengan persistida.

@@ -51,7 +51,13 @@ const personasDemoBase: Persona[] = [
     cargoInstitucional: 'segundo_jefe',
     destacamentoId: 'dest-vb-central',
     perfiles: ['mando', 'bombero'],
-    salud: { grupoSanguineo: 'O+', aptitudVencimiento: '2026-08-01' },
+    salud: {
+      grupoSanguineo: 'O+',
+      aptitudVencimiento: '2026-08-01',
+      aptoFisico: 'apto',
+      medicacion: 'Ninguna',
+      obraSocial: 'OSDE',
+    },
     cursos: [
       {
         id: 'c-002',
@@ -151,7 +157,14 @@ const personasDemoBase: Persona[] = [
     base: 'Cuartel Central',
     funcion: 'Cabo',
     perfiles: ['bombero'],
-    salud: { grupoSanguineo: 'AB+', aptitudVencimiento: '2026-11-10' },
+    salud: {
+      grupoSanguineo: 'AB+',
+      aptitudVencimiento: '2026-11-10',
+      aptoFisico: 'observaciones',
+      antecedentes: 'Asma leve, controlada.',
+      medicacion: 'Salbutamol (inhalador de rescate).',
+      obraSocial: 'IOMA',
+    },
     cursos: [
       { id: 'c-007', nombre: 'Primeros auxilios', vencimiento: '2026-05-22', vigente: true },
     ],
@@ -212,7 +225,12 @@ const personasDemoBase: Persona[] = [
     base: 'Cuartel Central',
     funcion: 'Bombero',
     perfiles: ['bombero'],
-    salud: { grupoSanguineo: 'A+', aptitudVencimiento: '2027-03-12' },
+    salud: {
+      grupoSanguineo: 'A+',
+      aptitudVencimiento: '2027-03-12',
+      aptoFisico: 'pendiente',
+      obraSocial: 'IOMA',
+    },
     cursos: [{ id: 'c-011', nombre: 'Introducción al servicio', vigente: true }],
     licenciaConducirCategorias: ['B1'],
   },

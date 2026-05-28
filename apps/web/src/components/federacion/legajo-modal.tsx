@@ -26,9 +26,19 @@ import { Avatar, Badge, cn } from '@faro/ui';
 
 import type { Cuartel, Persona } from '@faro/types';
 
+import { puede } from '../../lib/permisos';
+import { selectPersonaActual, useFaroStore } from '../../store/use-faro-store';
+
 import { JERARQUIA_LABEL } from './persona-card-fed';
 
 type Tab = 'generales' | 'personal' | 'medico' | 'institucional';
+
+const APTO_LABEL: Record<string, string> = {
+  apto: 'Apto',
+  observaciones: 'Apto con observaciones',
+  no_apto: 'No apto',
+  pendiente: 'Pendiente / por renovar',
+};
 
 interface Props {
   persona: Persona | null;
@@ -76,9 +86,14 @@ function Field({
  */
 export function LegajoModal({ persona, cuartel, onClose }: Props) {
   const [tab, setTab] = useState<Tab>('generales');
+  const sesion = useFaroStore((s) => s.sesion);
+  const yo = useFaroStore(selectPersonaActual);
 
   if (!persona) return null;
   const ex = persona.legajoExtra;
+  // Datos médicos sensibles: sólo jefatura/sanidad o la propia persona.
+  const verSensible =
+    puede(yo, sesion?.perfilActivo, 'personal.verSensible') || yo?.id === persona.id;
 
   return (
     <div
@@ -303,12 +318,38 @@ export function LegajoModal({ persona, cuartel, onClose }: Props) {
                   />
                   <Field label="Donante" value={ex?.donante} />
                   <Field
+                    label="Apto físico"
+                    value={persona.salud.aptoFisico ? APTO_LABEL[persona.salud.aptoFisico] : '—'}
+                  />
+                  <Field
                     label="Aptitud vence"
                     value={fmtFecha(persona.salud.aptitudVencimiento)}
                     icon={<CalendarDays size={11} />}
                   />
+                  <Field label="Obra social" value={persona.salud.obraSocial} />
                   <Field label="Alerta" value={persona.salud.alerta ?? '—'} />
                 </div>
+              </section>
+
+              {/* Datos sensibles — gateados por RBAC */}
+              <section>
+                <h3 className="mb-2 inline-flex items-center gap-1.5 text-sm font-bold text-slate-700">
+                  <Heart size={14} /> Datos médicos sensibles
+                </h3>
+                {verSensible ? (
+                  <div className="grid gap-x-6 sm:grid-cols-2">
+                    <Field label="Medicación habitual" value={persona.salud.medicacion ?? '—'} />
+                    <Field
+                      label="Antecedentes / dolencias"
+                      value={persona.salud.antecedentes ?? '—'}
+                    />
+                  </div>
+                ) : (
+                  <p className="rounded-lg bg-slate-50 p-3 text-sm text-slate-500">
+                    🔒 Medicación y antecedentes son visibles sólo para la jefatura del cuerpo, el
+                    área de Sanidad y la propia persona.
+                  </p>
+                )}
               </section>
               <section>
                 <h3 className="mb-2 inline-flex items-center gap-1.5 text-sm font-bold text-slate-700">

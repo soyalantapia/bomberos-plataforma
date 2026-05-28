@@ -182,6 +182,40 @@ export interface Calificacion {
   fecha: string;
 }
 
+// ============================================================
+// SALUD Y SEGURIDAD (F3)
+// Registro de lesiones en intervención (constancia + ART) y la
+// ficha médica/aptitud por persona (extiende Persona.salud).
+// ============================================================
+
+export type GravedadLesion = 'leve' | 'moderada' | 'grave';
+export type EstadoLesion = 'reportada' | 'en_tratamiento' | 'cerrada';
+
+/** Lesión/accidente sufrido por un bombero, normalmente en intervención. */
+export interface Lesion {
+  id: string;
+  cuartelId: string;
+  /** Bombero lesionado. */
+  personaId: string;
+  /** Intervención asociada (si la hubo). */
+  servicioId?: string;
+  fecha: string;
+  descripcion: string;
+  parteCuerpo?: string;
+  gravedad: GravedadLesion;
+  /** ¿Requirió atención médica? */
+  requiereAtencion: boolean;
+  /** Centro/hospital de derivación. */
+  derivadoA?: string;
+  /** ¿Se reportó a la ART? */
+  art: boolean;
+  reportadoPor: string;
+  estado: EstadoLesion;
+}
+
+/** Aptitud física para el servicio. */
+export type AptoFisico = 'apto' | 'observaciones' | 'no_apto' | 'pendiente';
+
 export type EspecialidadBombero =
   | 'hazmat'
   | 'rescate_acuatico'
@@ -288,6 +322,13 @@ export interface Persona {
     grupoSanguineo?: string;
     aptitudVencimiento?: string;
     alerta?: string;
+    /** Aptitud física para el servicio. */
+    aptoFisico?: AptoFisico;
+    /** Medicación habitual (dato sensible). */
+    medicacion?: string;
+    /** Antecedentes/dolencias relevantes (dato sensible). */
+    antecedentes?: string;
+    obraSocial?: string;
   };
   cursos: Curso[];
   licenciaConducirVencimiento?: string;

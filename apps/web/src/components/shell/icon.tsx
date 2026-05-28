@@ -60,6 +60,8 @@ import {
   // Personal y cumplimiento
   UserCheck,
   Star,
+  // Salud y seguridad
+  HeartPulse,
   type LucideIcon,
 } from 'lucide-react';
 
@@ -120,6 +122,7 @@ const iconMap: Record<string, LucideIcon> = {
   'clipboard-list': ClipboardList,
   'user-check': UserCheck,
   star: Star,
+  'heart-pulse': HeartPulse,
 };
 
 export function Icon({

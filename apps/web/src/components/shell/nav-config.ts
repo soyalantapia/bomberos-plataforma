@@ -98,6 +98,12 @@ export const navByPerfil: Record<Perfil, NavItem[]> = {
       icon: 'antenna',
       seccion: 'Operaciones',
     },
+    {
+      label: 'Lesiones',
+      href: '/mando/lesiones',
+      icon: 'heart-pulse',
+      seccion: 'Operaciones',
+    },
     { label: 'Personal', href: '/mando/personal', icon: 'users', seccion: 'RR.HH.' },
     {
       label: 'Cumplimiento',
