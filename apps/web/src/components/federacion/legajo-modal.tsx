@@ -93,15 +93,20 @@ export function LegajoModal({ persona, cuartel, onClose }: Props) {
         aria-hidden="true"
       />
 
-      {/* Modal */}
+      {/* Modal — bottom-sheet en mobile, modal centrado en desktop */}
       <motion.div
-        initial={{ opacity: 0, scale: 0.96 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.18, ease: 'easeOut' }}
-        className="relative flex max-h-[95vh] w-full flex-col overflow-hidden rounded-t-3xl bg-slate-50 shadow-2xl sm:max-h-[90vh] sm:max-w-4xl sm:rounded-3xl"
+        initial={{ opacity: 0, y: 48, scale: 0.98 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        transition={{ type: 'spring', stiffness: 380, damping: 34 }}
+        className="relative flex max-h-[92vh] w-full flex-col overflow-hidden rounded-t-3xl bg-slate-50 shadow-2xl sm:max-h-[90vh] sm:max-w-4xl sm:rounded-3xl"
       >
         {/* Header rojo */}
-        <header className="bg-fire-700 shrink-0 px-5 py-4 text-white sm:px-6">
+        <header className="bg-fire-700 shrink-0 px-5 pb-4 pt-3 text-white sm:px-6 sm:pt-4">
+          {/* Grab handle (solo mobile) */}
+          <div
+            className="mx-auto mb-3 h-1 w-10 rounded-full bg-white/35 sm:hidden"
+            aria-hidden="true"
+          />
           <div className="flex items-start justify-between gap-3">
             <div className="flex min-w-0 flex-1 items-start gap-3">
               <Avatar
@@ -204,7 +209,7 @@ export function LegajoModal({ persona, cuartel, onClose }: Props) {
         </div>
 
         {/* Content */}
-        <div className="flex-1 overflow-y-auto p-5">
+        <div className="flex-1 overflow-y-auto p-5 pb-[calc(1.25rem+env(safe-area-inset-bottom))]">
           {tab === 'generales' && (
             <div className="grid gap-x-6 sm:grid-cols-2">
               <Field label="N° Legajo" value={persona.legajo} icon={<IdCard size={11} />} mono />
