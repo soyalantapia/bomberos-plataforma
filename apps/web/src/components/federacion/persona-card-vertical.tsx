@@ -1,7 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { FileText, Mail, MessageCircle, Phone, X } from 'lucide-react';
+import { FileText, Mail, MessageCircle, Phone } from 'lucide-react';
 import { useState } from 'react';
 
 import { Avatar, cn } from '@faro/ui';
@@ -71,9 +71,10 @@ export function PersonaCardVertical({ persona, cuartel, onOpenFicha }: Props) {
             animate={{ opacity: 1, height: 'auto' }}
             className="overflow-hidden"
           >
-            <div className="grid grid-cols-4 gap-1">
+            <div className="grid grid-cols-3 gap-1">
               <a
                 href={`tel:${tel}`}
+                onClick={() => setContactarOpen(false)}
                 className="bg-status-ok hover:bg-status-ok-fg grid place-items-center rounded-lg py-2 text-white transition-colors"
                 title="Llamar"
               >
@@ -83,6 +84,7 @@ export function PersonaCardVertical({ persona, cuartel, onOpenFicha }: Props) {
                 href={`https://wa.me/${tel}`}
                 target="_blank"
                 rel="noopener noreferrer"
+                onClick={() => setContactarOpen(false)}
                 className="grid place-items-center rounded-lg bg-green-600 py-2 text-white transition-colors hover:bg-green-700"
                 title="WhatsApp"
               >
@@ -90,20 +92,20 @@ export function PersonaCardVertical({ persona, cuartel, onOpenFicha }: Props) {
               </a>
               <a
                 href={`mailto:${persona.email}`}
+                onClick={() => setContactarOpen(false)}
                 className="bg-brand-600 hover:bg-brand-700 grid place-items-center rounded-lg py-2 text-white transition-colors"
                 title="Email"
               >
                 <Mail size={14} />
               </a>
-              <button
-                type="button"
-                onClick={() => setContactarOpen(false)}
-                className="grid place-items-center rounded-lg bg-slate-200 py-2 text-slate-700 transition-colors hover:bg-slate-300"
-                title="Cerrar"
-              >
-                <X size={14} />
-              </button>
             </div>
+            <button
+              type="button"
+              onClick={() => setContactarOpen(false)}
+              className="mt-1 w-full text-center text-[11px] text-slate-500 hover:text-slate-700"
+            >
+              cancelar
+            </button>
           </motion.div>
         )}
         <button

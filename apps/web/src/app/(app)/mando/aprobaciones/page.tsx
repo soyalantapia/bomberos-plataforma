@@ -429,12 +429,12 @@ export default function AprobacionesPage() {
                                 <Check size={14} /> Aprobar
                               </Button>
                               <Button
-                                intent="ghost"
+                                intent="secondary"
                                 size="sm"
                                 onClick={() => decidir(s.id, 'rechazar')}
                                 aria-label={`Rechazar solicitud de ${s.persona}`}
                               >
-                                <X size={14} />
+                                <X size={14} /> Rechazar
                               </Button>
                             </div>
                           )}

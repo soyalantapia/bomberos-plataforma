@@ -14,7 +14,7 @@ import {
   ESPECIALIDAD_LABEL,
   JERARQUIA_LABEL,
 } from '../../../components/federacion/persona-card-fed';
-import { useFaroStore } from '../../../store/use-faro-store';
+import { selectCuartelActivo, useFaroStore } from '../../../store/use-faro-store';
 
 const REGION_COLORS: Record<string, string> = {
   'Norte GBA': 'bg-blue-50 text-blue-700',
@@ -31,6 +31,7 @@ export default function DirectorioFederacionPage() {
   const personas = useFaroStore((s) => s.personas);
   const personasFederacion = useFaroStore((s) => s.personasFederacion);
   const regiones = useFaroStore((s) => s.regiones);
+  const miCuartel = useFaroStore(selectCuartelActivo);
 
   const todasPersonas = useMemo<Persona[]>(
     () => [...personas, ...personasFederacion],
@@ -144,10 +145,49 @@ export default function DirectorioFederacionPage() {
         </section>
       )}
 
+      {/* ─── PIN: Mi cuartel arriba ─── */}
+      {!buscando && miCuartel && (
+        <section>
+          <div className="mb-2 px-1 text-xs font-semibold uppercase tracking-wide text-slate-500">
+            Mi cuartel
+          </div>
+          <Link
+            href={
+              `/directorio/cuartel/${cuartelSlug(miCuartel.id)}` as `/directorio/cuartel/${string}`
+            }
+            className="hover:border-brand-300 border-brand-200 bg-brand-50/40 group flex items-center gap-3 rounded-xl border-2 p-4 transition-all hover:shadow-md"
+          >
+            <div className="bg-brand-600 grid h-12 w-12 shrink-0 place-items-center rounded-xl text-white">
+              <Shield size={22} />
+            </div>
+            <div className="min-w-0 flex-1">
+              <div className="truncate text-base font-bold text-slate-900">
+                BV {miCuartel.nombre}
+              </div>
+              <div className="mt-0.5 text-xs text-slate-600">
+                {miCuartel.region} ·{' '}
+                {
+                  todasPersonas.filter((p) => p.cuartelId === miCuartel.id && p.estado === 'activo')
+                    .length
+                }{' '}
+                personas activas
+              </div>
+            </div>
+            <ChevronRight
+              size={18}
+              className="group-hover:text-brand-700 text-brand-400 shrink-0"
+            />
+          </Link>
+        </section>
+      )}
+
       {/* ─── MODO NAVEGACIÓN: lista simple por región ─── */}
       {!buscando &&
         regiones.map((r) => {
-          const cuartelesRegion = cuarteles.filter((c) => c.region === r.nombre);
+          const cuartelesRegion = cuarteles.filter(
+            (c) => c.region === r.nombre && c.id !== miCuartel?.id,
+          );
+          if (cuartelesRegion.length === 0) return null;
           const personasRegion = todasPersonas.filter(
             (p) => p.estado === 'activo' && cuartelesRegion.some((c) => c.id === p.cuartelId),
           ).length;

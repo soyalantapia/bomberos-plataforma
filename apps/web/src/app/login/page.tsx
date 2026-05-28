@@ -132,7 +132,7 @@ export default function LoginPage() {
                 <div>
                   <h2 className="text-xl font-bold text-slate-900">Ingresar</h2>
                   <p className="mt-1 text-sm text-slate-600">
-                    Te enviamos un código de un solo uso al canal configurado.
+                    Te enviamos un código por WhatsApp o email al canal que tengas registrado.
                   </p>
                 </div>
                 <div>
@@ -186,14 +186,13 @@ export default function LoginPage() {
                 <div>
                   <h2 className="text-xl font-bold text-slate-900">Tu código</h2>
                   <p className="mt-1 text-sm text-slate-600">
-                    Ingresá los 6 dígitos enviados a tu legajo {legajo}
+                    Ingresá los 6 dígitos que te enviamos. Demoramos hasta 1 minuto.
                   </p>
                 </div>
 
                 {/* OTP visualizado en 6 cajas */}
                 <div>
-                  <Label htmlFor="codigo">Código de un solo uso</Label>
-                  <div className="relative mt-1">
+                  <div className="relative">
                     <input
                       id="codigo"
                       ref={codigoInputRef}

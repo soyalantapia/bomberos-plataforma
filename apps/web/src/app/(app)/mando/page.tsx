@@ -194,7 +194,7 @@ export default function MandoDashboard() {
   if (pendientes > 0)
     cosasUrgentes.push({
       texto: `${pendientes} servicio${pendientes === 1 ? '' : 's'} sin tu firma`,
-      href: '/mando/operaciones',
+      href: '/mando/aprobaciones',
     });
   if (alertasRisk > 0)
     cosasUrgentes.push({
@@ -239,7 +239,15 @@ export default function MandoDashboard() {
                 {hayProblemas ? (
                   <ul className="mt-2 space-y-0.5 text-sm text-slate-700">
                     {cosasUrgentes.map((c, i) => (
-                      <li key={i}>· {c.texto}</li>
+                      <li key={i}>
+                        ·{' '}
+                        <Link
+                          href={c.href as Parameters<typeof Link>[0]['href']}
+                          className="hover:text-brand-700 underline-offset-2 hover:underline"
+                        >
+                          {c.texto}
+                        </Link>
+                      </li>
                     ))}
                   </ul>
                 ) : (
@@ -252,9 +260,9 @@ export default function MandoDashboard() {
             </div>
             <div className="flex flex-wrap gap-2 sm:flex-col sm:items-end">
               {pendientes > 0 && (
-                <Link href="/mando/operaciones">
+                <Link href="/mando/aprobaciones">
                   <Button intent="primary" size="sm">
-                    Firmar servicios <ArrowRight size={14} />
+                    Firmas pendientes <ArrowRight size={14} />
                   </Button>
                 </Link>
               )}

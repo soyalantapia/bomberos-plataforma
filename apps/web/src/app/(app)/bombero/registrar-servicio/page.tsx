@@ -328,7 +328,9 @@ export default function RegistrarServicio() {
             <div className="text-sm text-slate-600">
               Paso {currentIdx + 1} de {stepOrder.length}
             </div>
-            <div className="text-brand-700 text-sm font-semibold">{progress}%</div>
+            {progress > 0 && (
+              <div className="text-brand-700 text-sm font-semibold">{progress}%</div>
+            )}
           </div>
           <div className="h-2 overflow-hidden rounded-full bg-slate-100">
             <div

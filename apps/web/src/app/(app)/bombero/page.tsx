@@ -118,7 +118,7 @@ export default function BomberoInicio() {
       <PageHero
         objetivo="Tu día en el cuartel"
         titulo={`${saludo}, ${persona.nombre}`}
-        descripcion={`${cuartel?.nombre} · ${persona.funcion}. ${alertas.length > 0 ? `Tenés ${alertas.length} aviso${alertas.length === 1 ? '' : 's'} para revisar.` : 'Todo en orden.'}`}
+        descripcion={`${cuartel?.nombre} · ${persona.funcion}. ${alertas.length > 0 ? `Tenés ${alertas.length} aviso${alertas.length === 1 ? '' : 's'} para revisar` : `${horasEsteMes}hs trabajadas este mes · ${serviciosMios} servicios atendidos`}.`}
         icono={
           <Avatar
             name={`${persona.nombre} ${persona.apellido}`}

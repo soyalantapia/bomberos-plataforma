@@ -85,7 +85,7 @@ export const navByPerfil: Record<Perfil, NavItem[]> = {
       seccion: 'RR.HH.',
     },
     {
-      label: 'Pedidos a firmar',
+      label: 'Firmas pendientes',
       href: '/mando/aprobaciones',
       icon: 'clipboard-check',
       seccion: 'RR.HH.',

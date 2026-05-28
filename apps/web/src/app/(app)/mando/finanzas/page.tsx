@@ -331,32 +331,49 @@ export default function FinanzasDashboardPage() {
               </div>
             </div>
             <div className="grid grid-cols-6 gap-2 sm:gap-4">
-              {series.map((s, i) => (
-                <div key={i} className="flex flex-col items-center">
-                  <div className="flex h-32 w-full items-end justify-center gap-1">
-                    <div
-                      className="bg-status-ok w-2 rounded-t transition-[height] duration-300 sm:w-3"
-                      style={{ height: `${(s.ingresos / maxBar) * 100}%` }}
-                      title={`Ingresos: ${ars.format(s.ingresos)}`}
-                    />
-                    <div
-                      className="bg-status-risk w-2 rounded-t transition-[height] duration-300 sm:w-3"
-                      style={{ height: `${(s.egresos / maxBar) * 100}%` }}
-                      title={`Egresos: ${ars.format(s.egresos)}`}
-                    />
-                  </div>
-                  <div className="mt-1 text-xs font-medium uppercase text-slate-500">{s.mes}</div>
+              {series.map((s, i) => {
+                const sinDatos = s.ingresos === 0 && s.egresos === 0;
+                return (
                   <div
-                    className={cn(
-                      'text-xs font-bold',
-                      s.saldo >= 0 ? 'text-status-ok-fg' : 'text-status-risk-fg',
-                    )}
+                    key={i}
+                    className={cn('flex flex-col items-center', sinDatos && 'opacity-40')}
+                    title={sinDatos ? 'Sin movimientos cargados en este mes' : undefined}
                   >
-                    {s.saldo >= 0 ? '+' : ''}
-                    {arsCompact(s.saldo)}
+                    <div className="flex h-32 w-full items-end justify-center gap-1">
+                      {sinDatos ? (
+                        <div className="w-full self-center text-center text-[10px] text-slate-400">
+                          sin datos
+                        </div>
+                      ) : (
+                        <>
+                          <div
+                            className="bg-status-ok w-2 rounded-t transition-[height] duration-300 sm:w-3"
+                            style={{ height: `${(s.ingresos / maxBar) * 100}%` }}
+                            title={`Ingresos: ${ars.format(s.ingresos)}`}
+                          />
+                          <div
+                            className="bg-status-risk w-2 rounded-t transition-[height] duration-300 sm:w-3"
+                            style={{ height: `${(s.egresos / maxBar) * 100}%` }}
+                            title={`Egresos: ${ars.format(s.egresos)}`}
+                          />
+                        </>
+                      )}
+                    </div>
+                    <div className="mt-1 text-xs font-medium uppercase text-slate-500">{s.mes}</div>
+                    {!sinDatos && (
+                      <div
+                        className={cn(
+                          'text-xs font-bold',
+                          s.saldo >= 0 ? 'text-status-ok-fg' : 'text-status-risk-fg',
+                        )}
+                      >
+                        {s.saldo >= 0 ? '+' : ''}
+                        {arsCompact(s.saldo)}
+                      </div>
+                    )}
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </CardContent>
         </Card>

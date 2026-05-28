@@ -151,7 +151,7 @@ export default function PersonalMando() {
       <PageHero
         objetivo="Vista Mando · Personal"
         titulo="Quién está y quién está disponible"
-        descripcion={`${personas.length} personas en ${cuartel?.nombre ?? '—'}. Filtrá por cuerpo, rango o estado para encontrar a quien necesitás.`}
+        descripcion={`${activos} activos en ${cuartel?.nombre ?? '—'}${personas.length > activos ? ` (+${personas.length - activos} en otro estado)` : ''}. Filtrá por cuerpo, rango o estado para encontrar a quien necesitás.`}
         icono={<Users size={26} />}
         meta={
           <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
@@ -204,7 +204,7 @@ export default function PersonalMando() {
               </div>
               <div>
                 <div className="text-sm font-semibold text-slate-900">Alta nueva persona</div>
-                <div className="mt-0.5 text-xs text-slate-500">Paso a paso · 3 pantallas</div>
+                <div className="mt-0.5 text-xs text-slate-500">3 pantallas · ~3 minutos</div>
               </div>
             </button>
 
@@ -218,7 +218,7 @@ export default function PersonalMando() {
               </div>
               <div>
                 <div className="text-sm font-semibold text-slate-900">Mapa de habilidades</div>
-                <div className="mt-0.5 text-xs text-slate-500">Quién tiene qué curso vigente</div>
+                <div className="mt-0.5 text-xs text-slate-500">{activos} personas activas</div>
               </div>
             </button>
 
@@ -245,8 +245,8 @@ export default function PersonalMando() {
                 <Medal size={16} />
               </div>
               <div>
-                <div className="text-sm font-semibold text-slate-900">Aprobaciones</div>
-                <div className="mt-0.5 text-xs text-slate-500">Licencias, ascensos, sanciones</div>
+                <div className="text-sm font-semibold text-slate-900">Firmas pendientes</div>
+                <div className="mt-0.5 text-xs text-slate-500">Licencias, ascensos y sanciones</div>
               </div>
             </button>
           </div>
