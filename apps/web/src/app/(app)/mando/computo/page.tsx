@@ -160,7 +160,63 @@ export default function ComputoPage() {
               </CardTitle>
             </CardHeader>
             <CardContent className="p-0">
-              <div className="overflow-x-auto">
+              {/* Mobile: card por persona con total destacado + desglose */}
+              <ul className="divide-y divide-slate-100 md:hidden">
+                {filas.map(({ c, persona }) => {
+                  const desglose = [
+                    ['Accidental', c.accidental],
+                    ['Obligatorio', c.obligatorio],
+                    ['Guardia', c.guardia],
+                    ['Jefatura', c.jefatura],
+                    ['Orden Int.', c.ordenInterno],
+                  ].filter(([, v]) => (v as number) > 0) as [string, number][];
+                  return (
+                    <li key={c.personaId} className="p-3.5">
+                      <div className="flex items-center gap-2.5">
+                        <Avatar name={`${persona!.nombre} ${persona!.apellido}`} size={36} />
+                        <div className="min-w-0 flex-1">
+                          <div className="truncate font-medium text-slate-900">
+                            {persona!.nombre} {persona!.apellido}
+                          </div>
+                          <div className="text-xs text-slate-500">
+                            {fmtJerarquia(persona!.jerarquia)}
+                          </div>
+                        </div>
+                        <div className="shrink-0 text-right">
+                          <div className="text-lg font-bold tabular-nums text-slate-900">
+                            {c.total}
+                          </div>
+                          <div className="text-[10px] uppercase text-slate-400">hs total</div>
+                        </div>
+                      </div>
+                      {desglose.length > 0 && (
+                        <div className="mt-2 flex flex-wrap gap-1.5">
+                          {desglose.map(([label, v]) => (
+                            <span
+                              key={label}
+                              className="inline-flex items-center gap-1 rounded-md bg-slate-100 px-1.5 py-0.5 text-[11px] text-slate-600"
+                            >
+                              {label}
+                              <span className="font-semibold tabular-nums text-slate-900">{v}</span>
+                            </span>
+                          ))}
+                        </div>
+                      )}
+                    </li>
+                  );
+                })}
+                <li className="bg-slate-100 p-3.5">
+                  <div className="flex items-center justify-between">
+                    <span className="font-bold text-slate-900">Totales</span>
+                    <span className="text-lg font-bold tabular-nums text-slate-900">
+                      {totales.total} hs
+                    </span>
+                  </div>
+                </li>
+              </ul>
+
+              {/* Desktop/tablet: tabla completa */}
+              <div className="hidden overflow-x-auto md:block">
                 <table className="w-full text-sm">
                   <thead>
                     <tr className="bg-slate-50 text-slate-600">
