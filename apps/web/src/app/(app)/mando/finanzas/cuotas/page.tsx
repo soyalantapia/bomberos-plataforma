@@ -241,7 +241,86 @@ export default function CuotasPage() {
         ) : (
           <Card>
             <CardContent className="p-0">
-              <div className="overflow-x-auto">
+              {/* Mobile: lista de cards */}
+              <ul className="divide-y divide-slate-100 md:hidden">
+                {cuotasFiltradas.map((c) => {
+                  const accionable = c.estado !== 'pagada' && c.estado !== 'condonada';
+                  return (
+                    <li key={c.id} className="p-3.5">
+                      <div className="flex items-start gap-2.5">
+                        <Avatar name={c.socioNombre} size={36} />
+                        <div className="min-w-0 flex-1">
+                          <div className="flex items-start justify-between gap-2">
+                            <div className="min-w-0">
+                              <div className="truncate font-medium text-slate-900">
+                                {c.socioNombre}
+                              </div>
+                              <div className="font-mono text-xs text-slate-500">{c.periodo}</div>
+                            </div>
+                            <div className="shrink-0 text-right">
+                              <div className="font-mono font-bold text-slate-900">
+                                {ars.format(c.monto)}
+                              </div>
+                              {c.cargoRecargo && (
+                                <div className="text-status-risk-fg text-[11px]">
+                                  + {ars.format(c.cargoRecargo)}
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                          <div className="mt-1.5 flex flex-wrap items-center gap-2">
+                            <Badge
+                              intent={
+                                c.estado === 'pagada'
+                                  ? 'ok'
+                                  : c.estado === 'vencida'
+                                    ? 'risk'
+                                    : c.estado === 'pendiente'
+                                      ? 'warn'
+                                      : 'neutral'
+                              }
+                            >
+                              {c.estado === 'pagada' && <CheckCircle2 size={11} />}
+                              {c.estado === 'vencida' && <AlertTriangle size={11} />}
+                              {c.estado === 'pendiente' && <Calendar size={11} />}
+                              {c.estado}
+                            </Badge>
+                            <span className="text-xs text-slate-500">
+                              {c.pagadoEn
+                                ? `Pagó ${fechaCorta(c.pagadoEn)}${c.medio ? ` · ${MEDIO_LABEL[c.medio]}` : ''}`
+                                : `Vence ${c.vencimiento}`}
+                            </span>
+                          </div>
+                          {accionable && (
+                            <div className="mt-2.5 flex gap-2">
+                              <Button
+                                intent="ghost"
+                                size="sm"
+                                aria-label="Recordatorio WhatsApp"
+                                onClick={() =>
+                                  toast.push({
+                                    kind: 'success',
+                                    title: `Recordatorio enviado a ${c.socioNombre}`,
+                                    description: 'Vía WhatsApp con link de pago MP',
+                                  })
+                                }
+                              >
+                                <MessageSquare size={14} /> Recordar
+                              </Button>
+                              <Button intent="primary" size="sm" onClick={() => setCobrando(c)}>
+                                <CreditCard size={12} /> Cobrar
+                              </Button>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </li>
+                  );
+                })}
+              </ul>
+
+              {/* Desktop/tablet: tabla completa */}
+              <div className="hidden overflow-x-auto md:block">
                 <table className="min-w-full text-sm">
                   <thead className="bg-slate-50 text-xs uppercase text-slate-500">
                     <tr>
