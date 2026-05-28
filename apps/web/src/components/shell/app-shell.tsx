@@ -36,7 +36,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   if (!hidratado || !sesion || !persona) {
     return (
       <div className="min-h-dvh bg-slate-50">
-        <div className="sticky top-0 z-30 flex items-center gap-2 border-b border-slate-200 bg-white px-4 py-2.5 sm:px-6">
+        <div className="sticky top-0 z-30 flex items-center gap-2 border-b border-slate-200 bg-white px-4 pb-2.5 pt-[calc(0.625rem+env(safe-area-inset-top))] sm:px-6">
           <div className="flex items-center gap-2">
             <div className="bg-fire-600 grid h-7 w-7 place-items-center rounded-md">
               <Flame size={14} className="text-white" />
@@ -140,7 +140,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       </aside>
 
       <div className="flex min-w-0 flex-1 flex-col">
-        <header className="sticky top-0 z-30 flex items-center gap-2 border-b border-slate-200 bg-white px-4 py-2.5 sm:px-6">
+        <header className="sticky top-0 z-30 flex items-center gap-2 border-b border-slate-200 bg-white/90 px-4 pb-2.5 pt-[calc(0.625rem+env(safe-area-inset-top))] backdrop-blur-md sm:px-6">
           <button
             onClick={() => setMobileMenu(true)}
             className="-ml-2 rounded-lg p-2 text-slate-700 hover:bg-slate-100 md:hidden"
@@ -214,7 +214,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       </div>
 
       {/* Bottom nav mobile */}
-      <nav className="fixed inset-x-0 bottom-0 z-30 border-t border-slate-200 bg-white pb-[env(safe-area-inset-bottom)] md:hidden">
+      <nav className="fixed inset-x-0 bottom-0 z-30 border-t border-slate-200 bg-white/85 pb-[env(safe-area-inset-bottom)] backdrop-blur-lg md:hidden">
         <div className="grid" style={{ gridTemplateColumns: `repeat(${bottomItems.length}, 1fr)` }}>
           {bottomItems.map((item) => {
             const active = activeCheck(item.href);
@@ -222,12 +222,26 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               <Link
                 key={item.href}
                 href={item.href}
+                aria-current={active ? 'page' : undefined}
                 className={cn(
-                  'flex flex-col items-center justify-center gap-0.5 py-2 text-[11px]',
+                  'relative flex min-h-[3.25rem] flex-col items-center justify-center gap-1 py-1.5 text-[11px] font-medium transition-colors active:scale-95',
                   active ? 'text-brand-700' : 'text-slate-500',
                 )}
               >
-                <Icon name={item.icon} size={22} className={active ? 'text-brand-700' : ''} />
+                <span className="relative grid h-8 w-14 place-items-center">
+                  {active && (
+                    <motion.span
+                      layoutId="bottomNavPill"
+                      transition={{ type: 'spring', stiffness: 500, damping: 32 }}
+                      className="bg-brand-100 absolute inset-0 rounded-full"
+                    />
+                  )}
+                  <Icon
+                    name={item.icon}
+                    size={22}
+                    className={cn('relative z-10', active ? 'text-brand-700' : '')}
+                  />
+                </span>
                 <span className="leading-none">{item.label}</span>
               </Link>
             );
@@ -242,7 +256,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           onClick={() => setMobileMenu(false)}
         >
           <aside
-            className="bg-brand-900 absolute inset-y-0 left-0 flex w-72 flex-col p-4 text-white"
+            className="bg-brand-900 absolute inset-y-0 left-0 flex w-72 flex-col p-4 pt-[calc(1rem+env(safe-area-inset-top))] text-white"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="mb-4 flex items-center justify-between">
