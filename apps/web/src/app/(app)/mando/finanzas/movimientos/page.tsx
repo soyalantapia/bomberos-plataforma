@@ -376,7 +376,120 @@ export default function MovimientosPage() {
         ) : (
           <Card>
             <CardContent className="p-0">
-              <div className="overflow-x-auto">
+              {/* Mobile: lista de cards (la tabla de 9 columnas no entra en celular) */}
+              <ul className="divide-y divide-slate-100 md:hidden">
+                {filtrados.map((m) => {
+                  const cuenta = cuentaMap.get(m.cuentaId);
+                  const caja = cajaMap.get(m.cajaOrigenId ?? '');
+                  const TipoIcon =
+                    m.tipo === 'ingreso'
+                      ? ArrowUpRight
+                      : m.tipo === 'egreso'
+                        ? ArrowDownRight
+                        : ArrowLeftRight;
+                  return (
+                    <li key={m.id} className={cn('p-3.5', m.estado === 'anulado' && 'opacity-50')}>
+                      <div className="flex items-start gap-2.5">
+                        <div
+                          className={cn(
+                            'mt-0.5 grid h-8 w-8 shrink-0 place-items-center rounded-lg',
+                            m.tipo === 'ingreso'
+                              ? 'bg-status-ok-bg text-status-ok-fg'
+                              : m.tipo === 'egreso'
+                                ? 'bg-status-risk-bg text-status-risk-fg'
+                                : 'bg-brand-50 text-brand-600',
+                          )}
+                        >
+                          <TipoIcon size={16} />
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <div className="flex items-start justify-between gap-2">
+                            <div
+                              className={cn(
+                                'font-medium text-slate-900',
+                                m.estado === 'anulado' && 'line-through',
+                              )}
+                            >
+                              {m.descripcion}
+                            </div>
+                            <span
+                              className={cn(
+                                'shrink-0 font-mono text-sm font-bold',
+                                m.tipo === 'ingreso'
+                                  ? 'text-status-ok-fg'
+                                  : m.tipo === 'egreso'
+                                    ? 'text-status-risk-fg'
+                                    : 'text-slate-700',
+                              )}
+                            >
+                              {m.tipo === 'ingreso' ? '+' : m.tipo === 'egreso' ? '−' : ''}
+                              {ars.format(m.monto)}
+                            </span>
+                          </div>
+                          {m.contraparte && (
+                            <div className="truncate text-xs text-slate-500">{m.contraparte}</div>
+                          )}
+                          <div className="mt-1.5 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-slate-500">
+                            <span>{fechaCorta(m.fecha)}</span>
+                            {caja && (
+                              <>
+                                <span className="text-slate-300">·</span>
+                                <span>{caja.nombre}</span>
+                              </>
+                            )}
+                            {cuenta && (
+                              <>
+                                <span className="text-slate-300">·</span>
+                                <span className="font-mono text-[10px]">{cuenta.codigo}</span>
+                              </>
+                            )}
+                          </div>
+                          <div className="mt-2 flex items-center justify-between gap-2">
+                            <Badge
+                              intent={
+                                m.estado === 'conciliado'
+                                  ? 'ok'
+                                  : m.estado === 'borrador'
+                                    ? 'warn'
+                                    : m.estado === 'anulado'
+                                      ? 'risk'
+                                      : 'neutral'
+                              }
+                            >
+                              {estadoLabel[m.estado] ?? m.estado}
+                            </Badge>
+                            <div className="flex gap-1">
+                              {m.estado === 'borrador' && (
+                                <Button
+                                  intent="ghost"
+                                  size="sm"
+                                  onClick={() => handleConciliar(m.id)}
+                                  aria-label="Conciliar"
+                                >
+                                  <CheckCircle2 size={16} /> Conciliar
+                                </Button>
+                              )}
+                              {m.estado !== 'anulado' && (
+                                <Button
+                                  intent="ghost"
+                                  size="sm"
+                                  onClick={() => setConfirmAnular(m)}
+                                  aria-label="Anular"
+                                >
+                                  <Ban size={16} />
+                                </Button>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </li>
+                  );
+                })}
+              </ul>
+
+              {/* Desktop/tablet: tabla completa */}
+              <div className="hidden overflow-x-auto md:block">
                 <table className="min-w-full text-sm">
                   <thead className="bg-slate-50 text-xs uppercase text-slate-500">
                     <tr>
