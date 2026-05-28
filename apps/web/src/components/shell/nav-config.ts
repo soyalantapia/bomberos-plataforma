@@ -241,16 +241,28 @@ export const navByPerfil: Record<Perfil, NavItem[]> = {
       bottomNav: true,
     },
     {
+      label: 'Directorio',
+      href: '/federacion/directorio',
+      icon: 'users-round',
+      bottomNav: true,
+      seccion: 'Red',
+    },
+    {
+      label: 'Agenda',
+      href: '/federacion/agenda',
+      icon: 'book-marked',
+      seccion: 'Red',
+    },
+    {
       label: 'Consolidados',
       href: '/federacion/consolidados',
       icon: 'bar-chart-3',
-      bottomNav: true,
+      seccion: 'Análisis',
     },
     {
       label: 'Mapa provincial',
       href: '/federacion/mapa',
       icon: 'map',
-
       seccion: 'Análisis',
     },
     { label: 'Comunicados', href: '/federacion/comunicados', icon: 'megaphone' },

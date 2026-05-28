@@ -9,6 +9,7 @@ import type {
   AuditEvent,
   Caja,
   ConciliacionBancaria,
+  ContactoRed,
   Cuartel,
   CuentaContable,
   CuotaSocial,
@@ -18,6 +19,7 @@ import type {
   Perfil,
   Persona,
   PresupuestoAnual,
+  RegionInfo,
   Rendicion,
   Servicio,
   SesionUsuario,
@@ -28,14 +30,17 @@ import {
   asistenciasMock,
   cajasMock,
   conciliacionesMock,
+  contactosRedMock,
   cuartelesMock,
   cuentasMock,
   cuotasMock,
   movimientosMock,
   movilesMock,
   notificacionesMock,
+  personasFederacionMock,
   personasMock,
   presupuestoMock,
+  regionesMock,
   rendicionMayoMock,
   serviciosMock,
 } from '../data';
@@ -60,6 +65,10 @@ interface State {
   cuotas: CuotaSocial[];
   presupuestos: PresupuestoAnual[];
   conciliaciones: ConciliacionBancaria[];
+  // FEDERACIÓN
+  personasFederacion: Persona[];
+  regiones: RegionInfo[];
+  contactosRed: ContactoRed[];
 }
 
 interface Actions {
@@ -99,6 +108,13 @@ interface Actions {
     descripcion: string,
   ) => void;
   cobrarCuota: (id: string, medio: MovimientoFinanciero['medio'], cajaId: string) => void;
+  // FEDERACIÓN — ContactoRed
+  agregarContactoRed: (
+    input: Omit<ContactoRed, 'id' | 'agregadoPor' | 'agregadoEn' | 'usosTotal' | 'activo'>,
+  ) => ContactoRed;
+  actualizarContactoRed: (id: string, cambios: Partial<ContactoRed>) => void;
+  archivarContactoRed: (id: string) => void;
+  registrarUsoContactoRed: (id: string, tipo: 'llamada' | 'whatsapp' | 'email') => void;
 }
 
 type FaroStore = State & Actions;
@@ -122,6 +138,10 @@ const initialState: State = {
   cuotas: cuotasMock,
   presupuestos: [presupuestoMock],
   conciliaciones: conciliacionesMock,
+  // FEDERACIÓN
+  personasFederacion: personasFederacionMock,
+  regiones: regionesMock,
+  contactosRed: contactosRedMock,
 };
 
 function recalcularRendicion(state: State, cuartelId: string): State {
@@ -415,6 +435,44 @@ export const useFaroStore = create<FaroStore>()(
           cajas,
         });
       },
+      // ====== FEDERACIÓN — ContactoRed ======
+      agregarContactoRed(input) {
+        const personaId = get().sesion?.personaId ?? 'sistema';
+        const contacto: ContactoRed = {
+          ...input,
+          id: genId('cr'),
+          agregadoPor: personaId,
+          agregadoEn: new Date().toISOString(),
+          usosTotal: 0,
+          activo: true,
+        };
+        set({ contactosRed: [contacto, ...get().contactosRed] });
+        return contacto;
+      },
+      actualizarContactoRed(id, cambios) {
+        set({
+          contactosRed: get().contactosRed.map((c) => (c.id === id ? { ...c, ...cambios } : c)),
+        });
+      },
+      archivarContactoRed(id) {
+        set({
+          contactosRed: get().contactosRed.map((c) => (c.id === id ? { ...c, activo: false } : c)),
+        });
+      },
+      registrarUsoContactoRed(id, tipo) {
+        const personaId = get().sesion?.personaId ?? 'sistema';
+        set({
+          contactosRed: get().contactosRed.map((c) =>
+            c.id === id
+              ? {
+                  ...c,
+                  usosTotal: c.usosTotal + 1,
+                  ultimoUso: { personaId, fecha: new Date().toISOString(), tipo },
+                }
+              : c,
+          ),
+        });
+      },
       presentarRendicion(rendicionId, mandoId) {
         const r = get().rendiciones[rendicionId];
         if (!r) return;
@@ -437,7 +495,7 @@ export const useFaroStore = create<FaroStore>()(
     }),
     {
       name: 'faro-store',
-      version: 5,
+      version: 6,
       storage: createJSONStorage(() => localStorage),
       // Solo persistimos lo esencial. Movimientos/cajas/cuotas son mocks
       // que viven en memoria — persistirlos hace serializar/deserializar

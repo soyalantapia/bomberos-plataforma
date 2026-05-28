@@ -1,5 +1,6 @@
 export * from './cuarteles';
 export * from './personas';
+export * from './personas-federacion';
 export * from './moviles';
 export * from './servicios';
 export * from './asistencias';
@@ -7,3 +8,5 @@ export * from './rendicion';
 export * from './alertas';
 export * from './notificaciones';
 export * from './finanzas';
+export * from './regiones';
+export * from './contactos-red';

@@ -1,6 +1,7 @@
 import type { Cuartel } from '@faro/types';
 
 export const cuartelesMock: Cuartel[] = [
+  // ── REGIÓN NORTE GBA ──────────────────────────────────────────
   {
     id: 'cuartel-villa-ballester',
     nombre: 'Villa Ballester',
@@ -12,6 +13,8 @@ export const cuartelesMock: Cuartel[] = [
     cumplimiento: 'warn',
     porcentajeRendicion: 78,
     fundacion: '1923-04-15',
+    matricula: 'BV-0081',
+    jefe: 'Roberto González',
   },
   {
     id: 'cuartel-san-martin',
@@ -24,6 +27,8 @@ export const cuartelesMock: Cuartel[] = [
     cumplimiento: 'ok',
     porcentajeRendicion: 96,
     fundacion: '1908-09-21',
+    matricula: 'BV-0012',
+    jefe: 'Héctor Mansilla',
   },
   {
     id: 'cuartel-san-isidro',
@@ -36,6 +41,8 @@ export const cuartelesMock: Cuartel[] = [
     cumplimiento: 'risk',
     porcentajeRendicion: 42,
     fundacion: '1932-11-04',
+    matricula: 'BV-0055',
+    jefe: 'Luis Aramburu',
   },
   {
     id: 'cuartel-tigre',
@@ -48,7 +55,101 @@ export const cuartelesMock: Cuartel[] = [
     cumplimiento: 'ok',
     porcentajeRendicion: 88,
     fundacion: '1915-03-10',
+    matricula: 'BV-0034',
+    jefe: 'Patricia Vidal',
+  },
+
+  // ── REGIÓN SUR GBA ────────────────────────────────────────────
+  {
+    id: 'cuartel-quilmes',
+    nombre: 'Quilmes',
+    ciudad: 'Quilmes',
+    provincia: 'Buenos Aires',
+    region: 'Sur GBA',
+    lat: -34.7257,
+    lng: -58.2595,
+    cumplimiento: 'ok',
+    porcentajeRendicion: 89,
+    fundacion: '1910-07-28',
+    matricula: 'BV-0007',
+    jefe: 'Eduardo Ramos',
+  },
+  {
+    id: 'cuartel-lomas-zamora',
+    nombre: 'Lomas de Zamora',
+    ciudad: 'Lomas de Zamora',
+    provincia: 'Buenos Aires',
+    region: 'Sur GBA',
+    lat: -34.7605,
+    lng: -58.4005,
+    cumplimiento: 'warn',
+    porcentajeRendicion: 74,
+    fundacion: '1928-11-10',
+    matricula: 'BV-0041',
+    jefe: 'Graciela Fontana',
+  },
+  {
+    id: 'cuartel-lanus',
+    nombre: 'Lanús',
+    ciudad: 'Lanús',
+    provincia: 'Buenos Aires',
+    region: 'Sur GBA',
+    lat: -34.7082,
+    lng: -58.3872,
+    cumplimiento: 'ok',
+    porcentajeRendicion: 91,
+    fundacion: '1919-03-05',
+    matricula: 'BV-0028',
+    jefe: 'Claudio Herrera',
+  },
+
+  // ── REGIÓN OESTE GBA ──────────────────────────────────────────
+  {
+    id: 'cuartel-moron',
+    nombre: 'Morón',
+    ciudad: 'Morón',
+    provincia: 'Buenos Aires',
+    region: 'Oeste GBA',
+    lat: -34.6534,
+    lng: -58.6197,
+    cumplimiento: 'ok',
+    porcentajeRendicion: 93,
+    fundacion: '1906-02-18',
+    matricula: 'BV-0003',
+    jefe: 'Silvia Cano',
+  },
+  {
+    id: 'cuartel-tres-de-febrero',
+    nombre: 'Tres de Febrero',
+    ciudad: 'Caseros',
+    provincia: 'Buenos Aires',
+    region: 'Oeste GBA',
+    lat: -34.6078,
+    lng: -58.5617,
+    cumplimiento: 'risk',
+    porcentajeRendicion: 55,
+    fundacion: '1938-08-20',
+    matricula: 'BV-0114',
+    jefe: 'Jorge Palacios',
+  },
+  {
+    id: 'cuartel-ituzaingo',
+    nombre: 'Ituzaingó',
+    ciudad: 'Ituzaingó',
+    provincia: 'Buenos Aires',
+    region: 'Oeste GBA',
+    lat: -34.6571,
+    lng: -58.6721,
+    cumplimiento: 'warn',
+    porcentajeRendicion: 71,
+    fundacion: '1944-05-12',
+    matricula: 'BV-0093',
+    jefe: 'Norberto Acosta',
   },
 ];
 
 export const CUARTEL_PRINCIPAL_ID = 'cuartel-villa-ballester';
+
+export const REGIONES_FEDERACION = ['Norte GBA', 'Sur GBA', 'Oeste GBA'] as const;
+
+export type RegionFederacion = (typeof REGIONES_FEDERACION)[number];

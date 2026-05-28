@@ -51,6 +51,9 @@ import {
   Target,
   Receipt,
   FileSpreadsheet,
+  // Federación red
+  BookMarked,
+  UsersRound,
   type LucideIcon,
 } from 'lucide-react';
 
@@ -105,6 +108,8 @@ const iconMap: Record<string, LucideIcon> = {
   target: Target,
   receipt: Receipt,
   'file-spreadsheet': FileSpreadsheet,
+  'book-marked': BookMarked,
+  'users-round': UsersRound,
 };
 
 export function Icon({

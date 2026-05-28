@@ -1,6 +1,15 @@
 'use client';
 
-import { AlertTriangle, Flag, Map, MapPin, TrendingUp, Users } from 'lucide-react';
+import {
+  AlertTriangle,
+  BookMarked,
+  Flag,
+  Map,
+  MapPin,
+  TrendingUp,
+  Users,
+  UsersRound,
+} from 'lucide-react';
 import Link from 'next/link';
 import { useState } from 'react';
 
@@ -71,6 +80,45 @@ export default function TableroFederacion() {
           </div>
         }
       />
+
+      {/* Atajos a Red de la Federación */}
+      <div className="grid gap-3 sm:grid-cols-2">
+        <Link
+          href="/federacion/directorio"
+          className="hover:border-brand-300 group flex items-center gap-3 rounded-xl border border-slate-200 bg-white p-4 transition-all hover:shadow-md"
+        >
+          <div className="bg-brand-50 text-brand-700 grid h-12 w-12 shrink-0 place-items-center rounded-xl">
+            <UsersRound size={22} />
+          </div>
+          <div className="min-w-0 flex-1">
+            <div className="flex items-center gap-1.5">
+              <h3 className="font-bold text-slate-900">Directorio de personal</h3>
+              <Badge intent="brand">Nuevo</Badge>
+            </div>
+            <p className="mt-0.5 text-xs text-slate-600">
+              Buscá a cualquier integrante: región → cuartel → especialidad. Llamalo desde acá.
+            </p>
+          </div>
+        </Link>
+        <Link
+          href="/federacion/agenda"
+          className="hover:border-brand-300 group flex items-center gap-3 rounded-xl border border-slate-200 bg-white p-4 transition-all hover:shadow-md"
+        >
+          <div className="bg-fire-50 text-fire-700 grid h-12 w-12 shrink-0 place-items-center rounded-xl">
+            <BookMarked size={22} />
+          </div>
+          <div className="min-w-0 flex-1">
+            <div className="flex items-center gap-1.5">
+              <h3 className="font-bold text-slate-900">Agenda federal</h3>
+              <Badge intent="brand">Nuevo</Badge>
+            </div>
+            <p className="mt-0.5 text-xs text-slate-600">
+              Intendentes, comisarios, hospitales, medios, proveedores. Por cuartel, región y
+              federación.
+            </p>
+          </div>
+        </Link>
+      </div>
 
       <div className="flex gap-2">
         <button
@@ -147,7 +195,7 @@ export default function TableroFederacion() {
                   <Link
                     key={c.id}
                     href="/federacion/cumplimiento"
-                    className="flex flex-col items-center rounded-xl border border-slate-200 p-4 text-center transition-all hover:-translate-y-0.5 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-brand-400"
+                    className="focus:ring-brand-400 flex flex-col items-center rounded-xl border border-slate-200 p-4 text-center transition-all hover:-translate-y-0.5 hover:shadow-md focus:outline-none focus:ring-2"
                   >
                     <div
                       className={cn(

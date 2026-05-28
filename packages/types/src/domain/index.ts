@@ -15,6 +15,64 @@ export interface Cuartel {
   cumplimiento: EstadoSemaforo;
   porcentajeRendicion: number;
   fundacion?: string;
+  matricula?: string;
+  jefe?: string;
+}
+
+export type EspecialidadBombero =
+  | 'hazmat'
+  | 'rescate_acuatico'
+  | 'rescate_altura'
+  | 'rescate_vehicular'
+  | 'primeros_auxilios'
+  | 'conductor_maquinista'
+  | 'desfibrilador'
+  | 'comunicaciones'
+  | 'forestal'
+  | 'busqueda_rescate';
+
+export type NivelContactoRed = 'federacion' | 'region' | 'cuartel';
+
+export type CategoriaContacto =
+  | 'gobierno'
+  | 'salud'
+  | 'seguridad'
+  | 'servicios'
+  | 'logistica'
+  | 'medios'
+  | 'otro';
+
+export interface ContactoRed {
+  id: string;
+  nombre: string;
+  cargo: string;
+  organismo?: string;
+  telefonos: string[];
+  email?: string;
+  whatsapp?: string;
+  direccion?: string;
+  nivel: NivelContactoRed;
+  regionId?: string;
+  cuartelId?: string;
+  categoria: CategoriaContacto;
+  tags?: string[];
+  notas?: string;
+  agregadoPor: string;
+  agregadoEn: string;
+  ultimoUso?: {
+    personaId: string;
+    fecha: string;
+    tipo: 'llamada' | 'whatsapp' | 'email';
+  };
+  usosTotal: number;
+  activo: boolean;
+}
+
+export interface RegionInfo {
+  id: string;
+  nombre: string;
+  responsableId?: string;
+  descripcion?: string;
 }
 
 export type Jerarquia =
@@ -55,6 +113,8 @@ export interface Persona {
   funcion: string;
   fotoUrl?: string;
   perfiles: Perfil[];
+  especialidades?: EspecialidadBombero[];
+  cuerpo?: 'activo' | 'administrativo';
   salud: {
     grupoSanguineo?: string;
     aptitudVencimiento?: string;
