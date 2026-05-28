@@ -12,3 +12,4 @@ export * from './regiones';
 export * from './contactos-red';
 export * from './organizacion';
 export * from './tareas';
+export * from './cumplimiento';

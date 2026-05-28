@@ -133,6 +133,55 @@ export interface Tarea {
   validadaEn?: string;
 }
 
+// ============================================================
+// PERSONAL Y CUMPLIMIENTO (F2)
+// Fichaje de presencia (ingreso/egreso + permanencia, simula el
+// lector de huella), reconocimientos (premio/sanción) y la
+// calificación mensual privada.
+// ============================================================
+
+/** Registro de presencia física en la institución. */
+export interface Fichaje {
+  id: string;
+  cuartelId: string;
+  destacamentoId?: string;
+  personaId: string;
+  /** ISO datetime de ingreso. */
+  ingreso: string;
+  /** ISO datetime de egreso (si está abierto, undefined). */
+  egreso?: string;
+  fuente: 'huella' | 'app' | 'manual';
+  /** Qué vino a hacer (opcional). */
+  actividad?: string;
+}
+
+export type TipoReconocimiento = 'premio' | 'sancion';
+
+/** Premio o sanción registrado a una persona; queda en su legajo. */
+export interface Reconocimiento {
+  id: string;
+  cuartelId: string;
+  personaId: string;
+  tipo: TipoReconocimiento;
+  motivo: string;
+  fecha: string;
+  otorgadoPor: string;
+}
+
+/** Calificación mensual. Privada: cada bombero ve sólo la suya. */
+export interface Calificacion {
+  id: string;
+  cuartelId: string;
+  personaId: string;
+  /** Período YYYY-MM. */
+  periodo: string;
+  /** Puntaje 0–100. */
+  puntaje: number;
+  nota?: string;
+  calificadoPor: string;
+  fecha: string;
+}
+
 export type EspecialidadBombero =
   | 'hazmat'
   | 'rescate_acuatico'

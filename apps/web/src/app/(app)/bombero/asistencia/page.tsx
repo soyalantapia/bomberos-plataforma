@@ -51,7 +51,9 @@ export default function AsistenciaBombero() {
   );
   const toast = useToast();
 
-  const [marcado, setMarcado] = useState<{ in?: string; out?: string }>(() => {
+  const ficharIngreso = useFaroStore((s) => s.ficharIngreso);
+  const ficharEgreso = useFaroStore((s) => s.ficharEgreso);
+  const [marcado, setMarcado] = useState<{ in?: string; out?: string; fichajeId?: string }>(() => {
     if (typeof window === 'undefined') return {};
     try {
       return JSON.parse(localStorage.getItem('asistencia-bombero') ?? '{}');
@@ -123,7 +125,9 @@ export default function AsistenciaBombero() {
     }
     const now = demoToday();
     const hora = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
-    setMarcado({ in: hora });
+    // Registra el fichaje en el store para que la jefatura vea la presencia.
+    const f = ficharIngreso(persona!.id, persona!.destacamentoId, 'Guardia');
+    setMarcado({ in: hora, fichajeId: f.id });
     toast.push({
       kind: 'success',
       title: '¡Presente!',
@@ -134,6 +138,7 @@ export default function AsistenciaBombero() {
   function marcarSalida() {
     const now = demoToday();
     const hora = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+    if (marcado.fichajeId) ficharEgreso(marcado.fichajeId);
     setMarcado((m) => ({ ...m, out: hora }));
     toast.push({ kind: 'success', title: 'Salida registrada', description: `Salida ${hora}.` });
   }

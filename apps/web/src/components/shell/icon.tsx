@@ -57,6 +57,9 @@ import {
   // Organización
   Network,
   ClipboardList,
+  // Personal y cumplimiento
+  UserCheck,
+  Star,
   type LucideIcon,
 } from 'lucide-react';
 
@@ -115,6 +118,8 @@ const iconMap: Record<string, LucideIcon> = {
   'users-round': UsersRound,
   network: Network,
   'clipboard-list': ClipboardList,
+  'user-check': UserCheck,
+  star: Star,
 };
 
 export function Icon({

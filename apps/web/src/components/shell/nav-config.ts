@@ -39,6 +39,7 @@ export const navByPerfil: Record<Perfil, NavItem[]> = {
     { label: 'Inicio', href: '/bombero', icon: 'home', bottomNav: true },
     { label: 'Registrar', href: '/bombero/registrar-servicio', icon: 'flame', bottomNav: true },
     { label: 'Mis tareas', href: '/bombero/tareas', icon: 'clipboard-list' },
+    { label: 'Mi desempeño', href: '/bombero/mi-desempeno', icon: 'star' },
     DIRECTORIO_PUBLICO,
     AGENDA_PUBLICA,
     ORGANIGRAMA_PUBLICO,
@@ -98,6 +99,12 @@ export const navByPerfil: Record<Perfil, NavItem[]> = {
       seccion: 'Operaciones',
     },
     { label: 'Personal', href: '/mando/personal', icon: 'users', seccion: 'RR.HH.' },
+    {
+      label: 'Cumplimiento',
+      href: '/mando/personal/cumplimiento',
+      icon: 'user-check',
+      seccion: 'RR.HH.',
+    },
     {
       label: 'Cursos y especialidades',
       href: '/mando/personal/skills',

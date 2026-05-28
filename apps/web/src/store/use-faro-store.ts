@@ -8,12 +8,14 @@ import type {
   Asistencia,
   AuditEvent,
   Caja,
+  Calificacion,
   ConciliacionBancaria,
   ContactoRed,
   Cuartel,
   CuentaContable,
   CuotaSocial,
   Destacamento,
+  Fichaje,
   MiembroConsejo,
   MovimientoFinanciero,
   Movil,
@@ -21,6 +23,7 @@ import type {
   Perfil,
   Persona,
   PresupuestoAnual,
+  Reconocimiento,
   RegionInfo,
   Rendicion,
   Sector,
@@ -28,12 +31,14 @@ import type {
   SesionUsuario,
   Tarea,
   TareaEvento,
+  TipoReconocimiento,
 } from '@faro/types';
 
 import {
   alertasMock,
   asistenciasMock,
   cajasMock,
+  calificacionesMock,
   conciliacionesMock,
   consejoMock,
   contactosRedMock,
@@ -41,12 +46,14 @@ import {
   cuentasMock,
   cuotasMock,
   destacamentosMock,
+  fichajesMock,
   movimientosMock,
   movilesMock,
   notificacionesMock,
   personasFederacionMock,
   personasMock,
   presupuestoMock,
+  reconocimientosMock,
   regionesMock,
   rendicionMayoMock,
   sectoresMock,
@@ -83,6 +90,10 @@ interface State {
   sectores: Sector[];
   destacamentos: Destacamento[];
   tareas: Tarea[];
+  // PERSONAL Y CUMPLIMIENTO
+  fichajes: Fichaje[];
+  reconocimientos: Reconocimiento[];
+  calificaciones: Calificacion[];
 }
 
 interface Actions {
@@ -140,6 +151,11 @@ interface Actions {
   bloquearTarea: (id: string, motivo: string) => void;
   validarTarea: (id: string) => void;
   reabrirTarea: (id: string, nota?: string) => void;
+  // PERSONAL Y CUMPLIMIENTO
+  ficharIngreso: (personaId: string, destacamentoId?: string, actividad?: string) => Fichaje;
+  ficharEgreso: (fichajeId: string) => void;
+  registrarReconocimiento: (personaId: string, tipo: TipoReconocimiento, motivo: string) => void;
+  calificar: (personaId: string, periodo: string, puntaje: number, nota?: string) => void;
 }
 
 type FaroStore = State & Actions;
@@ -172,6 +188,10 @@ const initialState: State = {
   sectores: sectoresMock,
   destacamentos: destacamentosMock,
   tareas: tareasMock,
+  // PERSONAL Y CUMPLIMIENTO
+  fichajes: fichajesMock,
+  reconocimientos: reconocimientosMock,
+  calificaciones: calificacionesMock,
 };
 
 function recalcularRendicion(state: State, cuartelId: string): State {
@@ -657,6 +677,95 @@ export const useFaroStore = create<FaroStore>()(
           notificaciones: [notif, ...get().notificaciones],
         });
       },
+      // ====== PERSONAL Y CUMPLIMIENTO ======
+      ficharIngreso(personaId, destacamentoId, actividad) {
+        const cuartelId = get().sesion?.cuartelId ?? cuartelesMock[0]!.id;
+        const fichaje: Fichaje = {
+          id: genId('fich'),
+          cuartelId,
+          destacamentoId,
+          personaId,
+          ingreso: new Date().toISOString(),
+          fuente: 'app',
+          actividad,
+        };
+        set({ fichajes: [fichaje, ...get().fichajes] });
+        return fichaje;
+      },
+      ficharEgreso(fichajeId) {
+        set({
+          fichajes: get().fichajes.map((f) =>
+            f.id === fichajeId && !f.egreso ? { ...f, egreso: new Date().toISOString() } : f,
+          ),
+        });
+      },
+      registrarReconocimiento(personaId, tipo, motivo) {
+        const actor = get().sesion?.personaId ?? 'sistema';
+        const cuartelId = get().sesion?.cuartelId ?? cuartelesMock[0]!.id;
+        const now = new Date().toISOString();
+        const rec: Reconocimiento = {
+          id: genId('rec'),
+          cuartelId,
+          personaId,
+          tipo,
+          motivo,
+          fecha: now.slice(0, 10),
+          otorgadoPor: actor,
+        };
+        const notif: Notificacion = {
+          id: genId('notif'),
+          cuartelId,
+          destinatarioId: personaId,
+          tipo: 'reconocimiento',
+          titulo: tipo === 'premio' ? 'Recibiste un reconocimiento' : 'Se registró una sanción',
+          descripcion: motivo,
+          leida: false,
+          fecha: now,
+          linkPagina: '/bombero/legajo',
+        };
+        set({
+          reconocimientos: [rec, ...get().reconocimientos],
+          notificaciones: [notif, ...get().notificaciones],
+        });
+      },
+      calificar(personaId, periodo, puntaje, nota) {
+        const actor = get().sesion?.personaId ?? 'sistema';
+        const cuartelId = get().sesion?.cuartelId ?? cuartelesMock[0]!.id;
+        const now = new Date().toISOString();
+        const existente = get().calificaciones.find(
+          (c) => c.personaId === personaId && c.periodo === periodo,
+        );
+        let calificaciones: Calificacion[];
+        if (existente) {
+          calificaciones = get().calificaciones.map((c) =>
+            c.id === existente.id ? { ...c, puntaje, nota, calificadoPor: actor, fecha: now } : c,
+          );
+        } else {
+          const cal: Calificacion = {
+            id: genId('cal'),
+            cuartelId,
+            personaId,
+            periodo,
+            puntaje,
+            nota,
+            calificadoPor: actor,
+            fecha: now,
+          };
+          calificaciones = [cal, ...get().calificaciones];
+        }
+        const notif: Notificacion = {
+          id: genId('notif'),
+          cuartelId,
+          destinatarioId: personaId,
+          tipo: 'calificacion',
+          titulo: 'Tu calificación mensual está disponible',
+          descripcion: `Período ${periodo}`,
+          leida: false,
+          fecha: now,
+          linkPagina: '/bombero/legajo',
+        };
+        set({ calificaciones, notificaciones: [notif, ...get().notificaciones] });
+      },
       presentarRendicion(rendicionId, mandoId) {
         const r = get().rendiciones[rendicionId];
         if (!r) return;
@@ -692,6 +801,9 @@ export const useFaroStore = create<FaroStore>()(
         rendiciones: s.rendiciones,
         notificaciones: s.notificaciones,
         tareas: s.tareas,
+        fichajes: s.fichajes,
+        reconocimientos: s.reconocimientos,
+        calificaciones: s.calificaciones,
       }),
       // Mantiene la sesión y el progreso transaccional, pero descarta cualquier
       // estructura de mock que usuarios viejos (v ≤ 6) tengan persistida.
