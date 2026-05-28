@@ -1,18 +1,19 @@
 'use client';
 
-import { ArrowUpRight, PieChart, TrendingUp, Triangle, Users } from 'lucide-react';
+import { ArrowUpRight, Gauge, PieChart, TrendingUp, Triangle, Users } from 'lucide-react';
 import { useMemo } from 'react';
 
 import { Badge, Card, CardContent, Kpi, cn, useToast } from '@faro/ui';
 
 import { PageHero } from '../../../../components/shared/page-hero';
-import { calcularEquidadGenero } from '../../../../lib/utils/genero';
+import { calcularEfectividadPorGenero, calcularEquidadGenero } from '../../../../lib/utils/genero';
 import { useFaroStore } from '../../../../store/use-faro-store';
 
 export default function EquidadGeneroPage() {
   const toast = useToast();
   const personas = useFaroStore((s) => s.personas);
   const eq = useMemo(() => calcularEquidadGenero(personas), [personas]);
+  const ef = useMemo(() => calcularEfectividadPorGenero(personas), [personas]);
 
   const brechaAlta = eq.brechaConduccion >= 5;
   const maxFila = Math.max(...eq.porJerarquia.map((f) => f.total), 1);
@@ -208,6 +209,85 @@ export default function EquidadGeneroPage() {
                 {eq.pctMujeresConduccion}%).
               </span>
             </div>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* Cumplimiento / efectividad por género */}
+      <Card>
+        <CardContent className="p-4">
+          <div className="mb-1 flex items-center gap-2">
+            <Gauge size={18} className="text-slate-700" />
+            <h3 className="font-bold text-slate-900">Cumplimiento por género</h3>
+          </div>
+          <p className="mb-3 text-xs text-slate-500">
+            Asistencia promedio a las convocatorias obligatorias. No para comparar quién "es mejor",
+            sino para ver dónde rinde más cada grupo y dar contexto.
+          </p>
+
+          {/* Global */}
+          <div className="mb-4 grid grid-cols-2 gap-2">
+            <div className="bg-brand-50 rounded-xl p-3">
+              <div className="text-brand-700 inline-flex items-center gap-1.5 text-xs font-medium">
+                <span className="bg-brand-500 h-2.5 w-2.5 rounded-full" /> Mujeres
+              </div>
+              <div className="mt-1 text-2xl font-bold text-slate-900">{ef.globalMujeres}%</div>
+              <div className="text-[11px] text-slate-500">promedio · {ef.nMujeres} activas</div>
+            </div>
+            <div className="rounded-xl bg-slate-50 p-3">
+              <div className="inline-flex items-center gap-1.5 text-xs font-medium text-slate-600">
+                <span className="h-2.5 w-2.5 rounded-full bg-slate-400" /> Varones
+              </div>
+              <div className="mt-1 text-2xl font-bold text-slate-900">{ef.globalVarones}%</div>
+              <div className="text-[11px] text-slate-500">promedio · {ef.nVarones} activos</div>
+            </div>
+          </div>
+
+          {/* Por categoría: barras comparadas */}
+          <div className="space-y-3">
+            {ef.categorias.map((c) => (
+              <div key={c.id}>
+                <div className="mb-1 flex items-center justify-between text-xs">
+                  <span className="font-medium text-slate-700">{c.label}</span>
+                  <span className="tabular-nums text-slate-500">
+                    <span className="text-brand-700 font-semibold">{c.mujeres}%</span> ·{' '}
+                    <span className="font-semibold text-slate-600">{c.varones}%</span>
+                  </span>
+                </div>
+                <div className="space-y-1">
+                  <div className="h-2 overflow-hidden rounded-full bg-slate-100">
+                    <div
+                      className="bg-brand-500 h-full rounded-full"
+                      style={{ width: `${c.mujeres}%` }}
+                    />
+                  </div>
+                  <div className="h-2 overflow-hidden rounded-full bg-slate-100">
+                    <div
+                      className="h-full rounded-full bg-slate-400"
+                      style={{ width: `${c.varones}%` }}
+                    />
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {(ef.mejorMujeres || ef.mejorVarones) && (
+            <p className="mt-4 border-t border-slate-100 pt-3 text-sm text-slate-600">
+              {ef.mejorMujeres && (
+                <>
+                  Las mujeres rinden mejor en <strong>{ef.mejorMujeres.label}</strong> (+
+                  {ef.mejorMujeres.dif} pts).
+                </>
+              )}{' '}
+              {ef.mejorVarones && (
+                <>
+                  Los varones, en <strong>{ef.mejorVarones.label}</strong> (+
+                  {Math.abs(ef.mejorVarones.dif)} pts).
+                </>
+              )}{' '}
+              Cada grupo aporta distinto: el dato sirve para planificar, no para rankear personas.
+            </p>
           )}
         </CardContent>
       </Card>

@@ -1,5 +1,6 @@
 import type { Jerarquia, Persona } from '@faro/types';
 
+import { calcularCumplimiento } from './cumplimiento';
 import { fmtJerarquia, jerarquiaOrden } from './jerarquia';
 
 /**
@@ -145,5 +146,96 @@ export function calcularEquidadGenero(personas: Persona[], opts?: { hoy?: Date }
     mujeresIngresosRecientes,
     pctMujeresIngresosRecientes: pct(mujeresIngresosRecientes, ingresosRecientes),
     porJerarquia,
+  };
+}
+
+/**
+ * Efectividad (cumplimiento) cruzada por género. Responde el punto del
+ * feedback: "sacar la estadística del cumplimiento por varones y mujeres
+ * para entender que el hombre es más efectivo en algunas cuestiones y la
+ * mujer en otras". Promedia la asistencia a las convocatorias obligatorias
+ * por sexo, global y por categoría.
+ */
+export interface EfectividadCategoria {
+  id: string;
+  label: string;
+  mujeres: number;
+  varones: number;
+  /** Diferencia mujeres − varones (positiva: lideran mujeres). */
+  dif: number;
+}
+
+export interface EfectividadPorGenero {
+  globalMujeres: number;
+  globalVarones: number;
+  nMujeres: number;
+  nVarones: number;
+  categorias: EfectividadCategoria[];
+  /** Categoría donde las mujeres más superan a los varones (si existe). */
+  mejorMujeres: EfectividadCategoria | null;
+  /** Categoría donde los varones más superan a las mujeres (si existe). */
+  mejorVarones: EfectividadCategoria | null;
+}
+
+export function calcularEfectividadPorGenero(personas: Persona[]): EfectividadPorGenero {
+  const activos = personas.filter((p) => p.estado === 'activo');
+
+  const catM = new Map<string, { sum: number; n: number; label: string }>();
+  const catV = new Map<string, { sum: number; n: number; label: string }>();
+  let gM = 0;
+  let nM = 0;
+  let gV = 0;
+  let nV = 0;
+
+  for (const p of activos) {
+    const sx = sexoDe(p);
+    if (sx !== 'Femenino' && sx !== 'Masculino') continue;
+    const c = calcularCumplimiento(p.id);
+    const acc = sx === 'Femenino' ? catM : catV;
+    if (sx === 'Femenino') {
+      gM += c.global;
+      nM++;
+    } else {
+      gV += c.global;
+      nV++;
+    }
+    for (const cat of c.categorias) {
+      const e = acc.get(cat.id) ?? { sum: 0, n: 0, label: cat.label };
+      e.sum += cat.pct;
+      e.n++;
+      acc.set(cat.id, e);
+    }
+  }
+
+  const round = (n: number) => Math.round(n);
+  const avg = (e?: { sum: number; n: number }) => (e && e.n ? e.sum / e.n : 0);
+
+  const ids = [...new Set([...catM.keys(), ...catV.keys()])];
+  const categorias: EfectividadCategoria[] = ids.map((id) => {
+    const m = round(avg(catM.get(id)));
+    const v = round(avg(catV.get(id)));
+    return {
+      id,
+      label: catM.get(id)?.label ?? catV.get(id)?.label ?? id,
+      mujeres: m,
+      varones: v,
+      dif: m - v,
+    };
+  });
+
+  const conDato = nM > 0 && nV > 0 ? categorias : [];
+  const mejorMujeres =
+    conDato.length > 0 ? conDato.reduce((best, c) => (c.dif > best.dif ? c : best)) : null;
+  const mejorVarones =
+    conDato.length > 0 ? conDato.reduce((best, c) => (c.dif < best.dif ? c : best)) : null;
+
+  return {
+    globalMujeres: round(nM ? gM / nM : 0),
+    globalVarones: round(nV ? gV / nV : 0),
+    nMujeres: nM,
+    nVarones: nV,
+    categorias,
+    mejorMujeres: mejorMujeres && mejorMujeres.dif > 0 ? mejorMujeres : null,
+    mejorVarones: mejorVarones && mejorVarones.dif < 0 ? mejorVarones : null,
   };
 }
