@@ -178,6 +178,12 @@ export const navByPerfil: Record<Perfil, NavItem[]> = {
       seccion: 'Finanzas',
     },
     {
+      label: 'Flujo de fondos',
+      href: '/mando/finanzas/cashflow',
+      icon: 'trending-up',
+      seccion: 'Finanzas',
+    },
+    {
       label: 'Facturas',
       href: '/mando/finanzas/comprobantes',
       icon: 'receipt',

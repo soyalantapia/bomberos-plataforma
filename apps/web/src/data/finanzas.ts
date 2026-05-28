@@ -360,6 +360,18 @@ export const cuentasMock: CuentaContable[] = [
     presupuestoMensual: 85000,
     presupuestoAnual: 1020000,
   },
+  {
+    id: 'c-5-4-01',
+    codigo: '5.4.01',
+    nombre: 'Inversión en bienes de uso',
+    tipo: 'egreso',
+    categoria: 'inversion_bienes_uso',
+    parentId: 'c-5-4',
+    operable: true,
+    cuartelId: C,
+    presupuestoMensual: 600000,
+    presupuestoAnual: 7200000,
+  },
 ];
 
 // ============================================================
