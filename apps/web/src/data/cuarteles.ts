@@ -38,49 +38,112 @@ function cumpFor(idx: number): { c: Cuartel['cumplimiento']; p: number } {
  *   - Resto: Federación Bonaerense (fedbonaerense.org.ar)
  */
 const LOGO_BY_SLUG: Record<string, string> = {
-  // Norte GBA — cuarteles con logo propio
+  // ── Norte GBA ─────────────────────────────────────────────
+  // Logo propio (sitio institucional o YouTube channel art)
   'villa-ballester': '/cuarteles/villa-ballester.png',
   'san-martin': '/cuarteles/san-martin.png',
   'san-isidro': '/cuarteles/san-isidro.png',
   tigre: '/cuarteles/tigre.png',
   'vicente-lopez': '/cuarteles/vicente-lopez.png',
   benavidez: '/cuarteles/benavidez.png',
-  // Norte GBA — desde perfil público de Instagram (og:image)
+  // Logo desde Instagram (og:image del perfil público)
   'san-fernando': '/cuarteles/san-fernando.png',
   'general-pacheco': '/cuarteles/general-pacheco.png',
   'don-torcuato': '/cuarteles/don-torcuato.png',
   garin: '/cuarteles/garin.png',
-  // Norte GBA — destacamentos comparten escudo con su cuartel central:
-  //   Boulogne, Villa Adelina → BV San Isidro
-  //   Florida (HQ), Munro, Carapachay → BV Vicente López
-  //   José León Suárez → BV Villa Ballester
-  //   El Talar (Troncos del Talar) → BV Tigre
+  // Destacamentos heredan del cuartel central
   boulogne: '/cuarteles/san-isidro.png',
   florida: '/cuarteles/vicente-lopez.png',
   munro: '/cuarteles/vicente-lopez.png',
   'jose-leon-suarez': '/cuarteles/villa-ballester.png',
   'el-talar': '/cuarteles/tigre.png',
-  // Sur GBA + La Plata y Sudeste + Interior PBA Norte (Federación Bonaerense)
+  // ── Oeste GBA ─────────────────────────────────────────────
+  moron: '/cuarteles/moron.png',
+  'tres-de-febrero': '/cuarteles/tres-de-febrero.png',
+  ituzaingo: '/cuarteles/ituzaingo.png',
+  hurlingham: '/cuarteles/hurlingham.png',
+  'marcos-paz': '/cuarteles/marcos-paz.png',
+  merlo: '/cuarteles/merlo.png',
+  'ramos-mejia': '/cuarteles/ramos-mejia.png',
+  // Destacamentos de La Matanza comparten su escudo institucional:
+  //   La Tablada → @bomberos.mejia (=ramos-mejia.png)
+  //   González Catán + Laferrere → @bomberosdematanza (=gonzalez-catan.png)
+  //   Castelar + Haedo → @bomberosmoron (=moron.png)
+  'la-tablada': '/cuarteles/ramos-mejia.png',
+  'gonzalez-catan': '/cuarteles/gonzalez-catan.png',
+  laferrere: '/cuarteles/gonzalez-catan.png',
+  castelar: '/cuarteles/moron.png',
+  haedo: '/cuarteles/moron.png',
+  // Destacamentos comparten con el cuartel central:
+  //   Padua (HQ), Libertad → BV Merlo
+  padua: '/cuarteles/merlo.png',
+  libertad: '/cuarteles/merlo.png',
+  // ── Sur GBA (Federación Bonaerense + Instagram) ──────────
   'almirante-brown': '/cuarteles/almirante-brown.png',
   avellaneda: '/cuarteles/avellaneda.png',
-  berisso: '/cuarteles/berisso.png',
   bernal: '/cuarteles/bernal.png',
-  brandsen: '/cuarteles/brandsen.png',
-  chascomus: '/cuarteles/chascomus.png',
-  ensenada: '/cuarteles/ensenada.png',
   'esteban-echeverria': '/cuarteles/esteban-echeverria.png',
   ezeiza: '/cuarteles/ezeiza.png',
   'florencio-varela': '/cuarteles/florencio-varela.png',
-  'general-las-heras': '/cuarteles/general-las-heras.png',
   glew: '/cuarteles/glew.png',
   lanus: '/cuarteles/lanus.png',
   'lomas-de-zamora': '/cuarteles/lomas-de-zamora.png',
-  magdalena: '/cuarteles/magdalena.png',
-  pergamino: '/cuarteles/pergamino.png',
   quilmes: '/cuarteles/quilmes.png',
-  'san-vicente': '/cuarteles/san-vicente.png',
   sarandi: '/cuarteles/sarandi.png',
+  berazategui: '/cuarteles/berazategui.png',
+  wilde: '/cuarteles/wilde.png',
+  // ── La Plata y Sudeste ───────────────────────────────────
+  berisso: '/cuarteles/berisso.png',
+  brandsen: '/cuarteles/brandsen.png',
+  chascomus: '/cuarteles/chascomus.png',
+  ensenada: '/cuarteles/ensenada.png',
+  magdalena: '/cuarteles/magdalena.png',
+  'san-vicente': '/cuarteles/san-vicente.png',
+  'la-plata': '/cuarteles/la-plata.png',
+  'punta-indio': '/cuarteles/punta-indio.png',
+  canuelas: '/cuarteles/canuelas.png',
+  'general-belgrano': '/cuarteles/general-belgrano.png',
+  // ── Costa Atlántica ──────────────────────────────────────
   'santa-teresita': '/cuarteles/santa-teresita.png',
+  'mar-del-plata': '/cuarteles/mar-del-plata.png',
+  necochea: '/cuarteles/necochea.png',
+  tandil: '/cuarteles/tandil.png',
+  pinamar: '/cuarteles/pinamar.png',
+  'villa-gesell': '/cuarteles/villa-gesell.png',
+  'san-bernardo': '/cuarteles/san-bernardo.png',
+  'san-clemente': '/cuarteles/san-clemente.png',
+  'general-madariaga': '/cuarteles/general-madariaga.png',
+  balcarce: '/cuarteles/balcarce.png',
+  loberia: '/cuarteles/loberia.png',
+  miramar: '/cuarteles/miramar.png',
+  maipu: '/cuarteles/maipu.png',
+  'mar-de-ajo': '/cuarteles/mar-de-ajo.png',
+  // ── Interior PBA Norte ───────────────────────────────────
+  pergamino: '/cuarteles/pergamino.png',
+  'general-las-heras': '/cuarteles/general-las-heras.png',
+  pilar: '/cuarteles/pilar.png',
+  zarate: '/cuarteles/zarate.png',
+  'san-pedro': '/cuarteles/san-pedro.png',
+  junin: '/cuarteles/junin.png',
+  mercedes: '/cuarteles/mercedes.png',
+  lujan: '/cuarteles/lujan.png',
+  campana: '/cuarteles/campana.png',
+  // ── Interior PBA Sur ─────────────────────────────────────
+  olavarria: '/cuarteles/olavarria.png',
+  'tres-arroyos': '/cuarteles/tres-arroyos.png',
+  // ── Córdoba ──────────────────────────────────────────────
+  'cordoba-capital': '/cuarteles/cordoba-capital.png',
+  'villa-carlos-paz': '/cuarteles/villa-carlos-paz.png',
+  'alta-gracia': '/cuarteles/alta-gracia.png',
+  'san-francisco': '/cuarteles/san-francisco.png',
+  // ── Santa Fe ─────────────────────────────────────────────
+  'santa-fe-capital': '/cuarteles/santa-fe-capital.png',
+  rosario: '/cuarteles/rosario.png',
+  rafaela: '/cuarteles/rafaela.png',
+  // ── Litoral ──────────────────────────────────────────────
+  posadas: '/cuarteles/posadas.png',
+  // ── Patagonia ────────────────────────────────────────────
+  ushuaia: '/cuarteles/ushuaia.png',
 };
 
 function mk(min: CuartelMin, idx: number, matriculaNum: number): Cuartel {
