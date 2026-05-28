@@ -30,8 +30,37 @@ function cumpFor(idx: number): { c: Cuartel['cumplimiento']; p: number } {
   return { c: 'ok', p: 80 + (r % 20) };
 }
 
+/**
+ * Mapa de slug → logoUrl con escudos reales descargados desde la Federación
+ * Bonaerense (fedbonaerense.org.ar). Si el slug no aparece acá, el componente
+ * `<CuartelLogo>` cae al fallback de iniciales coloreadas por región.
+ */
+const LOGO_BY_SLUG: Record<string, string> = {
+  'almirante-brown': '/cuarteles/almirante-brown.png',
+  avellaneda: '/cuarteles/avellaneda.png',
+  berisso: '/cuarteles/berisso.png',
+  bernal: '/cuarteles/bernal.png',
+  brandsen: '/cuarteles/brandsen.png',
+  chascomus: '/cuarteles/chascomus.png',
+  ensenada: '/cuarteles/ensenada.png',
+  'esteban-echeverria': '/cuarteles/esteban-echeverria.png',
+  ezeiza: '/cuarteles/ezeiza.png',
+  'florencio-varela': '/cuarteles/florencio-varela.png',
+  'general-las-heras': '/cuarteles/general-las-heras.png',
+  glew: '/cuarteles/glew.png',
+  lanus: '/cuarteles/lanus.png',
+  'lomas-de-zamora': '/cuarteles/lomas-de-zamora.png',
+  magdalena: '/cuarteles/magdalena.png',
+  pergamino: '/cuarteles/pergamino.png',
+  quilmes: '/cuarteles/quilmes.png',
+  'san-vicente': '/cuarteles/san-vicente.png',
+  sarandi: '/cuarteles/sarandi.png',
+  'santa-teresita': '/cuarteles/santa-teresita.png',
+};
+
 function mk(min: CuartelMin, idx: number, matriculaNum: number): Cuartel {
-  const id = `cuartel-${slugify(min.nombre)}`;
+  const slug = slugify(min.nombre);
+  const id = `cuartel-${slug}`;
   const cump = cumpFor(idx);
   return {
     id,
@@ -48,6 +77,7 @@ function mk(min: CuartelMin, idx: number, matriculaNum: number): Cuartel {
       `19${20 + (idx % 70)}-${String((idx % 12) + 1).padStart(2, '0')}-${String((idx % 28) + 1).padStart(2, '0')}`,
     matricula: min.matricula ?? `BV-${matriculaNum.toString().padStart(4, '0')}`,
     jefe: min.jefe,
+    logoUrl: LOGO_BY_SLUG[slug],
   };
 }
 
