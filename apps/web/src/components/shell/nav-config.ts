@@ -283,6 +283,7 @@ export const navByPerfil: Record<Perfil, NavItem[]> = {
     AGENDA_PUBLICA,
     ORGANIGRAMA_PUBLICO,
     { label: 'Género', href: '/gobierno/genero', icon: 'shield-alert', bottomNav: true },
+    { label: 'Equidad de género', href: '/gobierno/equidad', icon: 'pie-chart' },
     { label: 'Registro permanente', href: '/gobierno/audit', icon: 'file-search' },
     {
       label: 'Verificador de integridad',
@@ -313,6 +314,12 @@ export const navByPerfil: Record<Perfil, NavItem[]> = {
       label: 'Mapa provincial',
       href: '/federacion/mapa',
       icon: 'map',
+      seccion: 'Análisis',
+    },
+    {
+      label: 'Gobernanza',
+      href: '/federacion/governance',
+      icon: 'gavel',
       seccion: 'Análisis',
     },
     { label: 'Comunicados', href: '/federacion/comunicados', icon: 'megaphone' },

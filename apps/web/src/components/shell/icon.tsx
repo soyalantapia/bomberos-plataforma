@@ -62,6 +62,9 @@ import {
   Star,
   // Salud y seguridad
   HeartPulse,
+  // Equidad y gobernanza
+  PieChart,
+  Gavel,
   type LucideIcon,
 } from 'lucide-react';
 
@@ -123,6 +126,8 @@ const iconMap: Record<string, LucideIcon> = {
   'user-check': UserCheck,
   star: Star,
   'heart-pulse': HeartPulse,
+  'pie-chart': PieChart,
+  gavel: Gavel,
 };
 
 export function Icon({

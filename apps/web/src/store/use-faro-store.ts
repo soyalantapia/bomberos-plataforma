@@ -163,6 +163,8 @@ interface Actions {
   // SALUD Y SEGURIDAD
   reportarLesion: (input: Omit<Lesion, 'id' | 'estado' | 'reportadoPor' | 'fecha'>) => Lesion;
   actualizarLesion: (id: string, cambios: Partial<Lesion>) => void;
+  // GOBERNANZA FEDERATIVA
+  solicitarInformeGobernanza: (cuartelId: string, nombre: string) => void;
 }
 
 type FaroStore = State & Actions;
@@ -831,6 +833,22 @@ export const useFaroStore = create<FaroStore>()(
             c.id === r.cuartelId ? { ...c, porcentajeRendicion: 100, cumplimiento: 'ok' } : c,
           ),
         });
+      },
+      solicitarInformeGobernanza(cuartelId, nombre) {
+        const now = new Date().toISOString();
+        const solicitante = get().sesion?.personaId ?? 'persona-fed';
+        const notif: Notificacion = {
+          id: genId('notif'),
+          cuartelId,
+          destinatarioId: solicitante,
+          tipo: 'gobernanza',
+          titulo: 'Informe de gobernanza solicitado',
+          descripcion: `Se pidió a ${nombre} el informe de gobernanza institucional (actas, balance y acta de elecciones).`,
+          leida: false,
+          fecha: now,
+          linkPagina: '/federacion/governance',
+        };
+        set({ notificaciones: [notif, ...get().notificaciones] });
       },
     }),
     {

@@ -333,6 +333,8 @@ export interface Persona {
   cursos: Curso[];
   licenciaConducirVencimiento?: string;
   licenciaConducirCategorias?: string[];
+  /** Sexo registrado en el alta. En el padrón importado vive en `legajoExtra.sexo`. */
+  sexo?: 'Masculino' | 'Femenino' | 'X';
   /** Datos extendidos del legajo (compatibles con el formato GIB/FAVBPBA). */
   legajoExtra?: LegajoExtra;
 }
