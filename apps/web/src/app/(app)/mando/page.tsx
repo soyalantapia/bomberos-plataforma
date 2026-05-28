@@ -412,8 +412,71 @@ export default function MandoDashboard() {
             </CardContent>
           </Card>
 
-          {/* Tabla semana × turnos */}
-          <Card>
+          {/* Mobile: card por día con los 3 turnos apilados */}
+          <div className="space-y-3 md:hidden">
+            {semanaConHoy.map((dia) => (
+              <Card key={dia.fecha} className={cn(dia.esHoy && 'border-brand-200 bg-brand-50/30')}>
+                <CardContent className="p-3">
+                  <div className="mb-2 flex items-center gap-2">
+                    <span className="text-xs uppercase text-slate-500">{dia.diaSemana}</span>
+                    <span className="text-base font-bold text-slate-900">{dia.diaNum}</span>
+                    {dia.esHoy && (
+                      <span className="bg-brand-600 rounded px-1.5 py-0.5 text-[10px] font-semibold uppercase text-white">
+                        Hoy
+                      </span>
+                    )}
+                  </div>
+                  <div className="space-y-1.5">
+                    {turnos.map((t) => {
+                      const celda = dia[t];
+                      return (
+                        <div
+                          key={t}
+                          className={cn(
+                            'flex items-center gap-2 rounded-lg border p-2',
+                            celda.cubierta
+                              ? 'bg-status-ok-bg/40 border-status-ok/20'
+                              : 'bg-status-warn-bg/40 border-status-warn/30',
+                          )}
+                        >
+                          <span className="flex w-[4.5rem] shrink-0 items-center gap-1 text-xs font-medium text-slate-600">
+                            {turnoLabel[t].icon}
+                            {turnoLabel[t].label}
+                          </span>
+                          <div className="min-w-0 flex-1">
+                            <div
+                              className={cn(
+                                'truncate text-xs',
+                                celda.cubierta ? 'text-slate-700' : 'text-status-warn-fg italic',
+                              )}
+                            >
+                              {celda.jefe}
+                            </div>
+                            {celda.notas && (
+                              <div className="text-brand-700 truncate text-[11px] font-medium">
+                                {celda.notas}
+                              </div>
+                            )}
+                          </div>
+                          <span className="shrink-0 text-xs font-semibold text-slate-700">
+                            {celda.movil}
+                          </span>
+                          {celda.cubierta ? (
+                            <Badge intent="ok">{celda.dotacion}</Badge>
+                          ) : (
+                            <Badge intent="warn">Falta</Badge>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+
+          {/* Tabla semana × turnos (tablet/desktop) */}
+          <Card className="hidden md:block">
             <CardContent className="p-0">
               <div className="overflow-x-auto">
                 <table className="w-full min-w-[700px] text-sm">
