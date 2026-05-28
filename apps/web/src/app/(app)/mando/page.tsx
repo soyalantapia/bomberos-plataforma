@@ -274,23 +274,25 @@ export default function MandoDashboard() {
             </div>
           </div>
 
-          {/* Mini KPIs como tira inferior, no como featured */}
-          <div className="mt-5 grid grid-cols-2 gap-3 border-t border-slate-200/50 pt-4 sm:grid-cols-4">
-            <div>
-              <div className="text-xs text-slate-500">Avance rendición</div>
-              <div className="font-bold text-slate-900">{cuartel?.porcentajeRendicion ?? 0}%</div>
+          {/* Mini KPIs como tiles — legibles y táctiles en mobile */}
+          <div className="mt-5 grid grid-cols-2 gap-2.5 border-t border-slate-200/50 pt-4 sm:grid-cols-4">
+            <div className="rounded-xl bg-white/70 px-3 py-2.5 ring-1 ring-slate-200/70">
+              <div className="text-[11px] font-medium text-slate-500">Avance rendición</div>
+              <div className="text-lg font-bold text-slate-900">
+                {cuartel?.porcentajeRendicion ?? 0}%
+              </div>
             </div>
-            <div>
-              <div className="text-xs text-slate-500">Servicios del mes</div>
-              <div className="font-bold text-slate-900">{serviciosMes}</div>
+            <div className="rounded-xl bg-white/70 px-3 py-2.5 ring-1 ring-slate-200/70">
+              <div className="text-[11px] font-medium text-slate-500">Servicios del mes</div>
+              <div className="text-lg font-bold text-slate-900">{serviciosMes}</div>
             </div>
-            <div>
-              <div className="text-xs text-slate-500">Horas trabajadas</div>
-              <div className="font-bold text-slate-900">{horasMes} hs</div>
+            <div className="rounded-xl bg-white/70 px-3 py-2.5 ring-1 ring-slate-200/70">
+              <div className="text-[11px] font-medium text-slate-500">Horas trabajadas</div>
+              <div className="text-lg font-bold text-slate-900">{horasMes} hs</div>
             </div>
-            <div>
-              <div className="text-xs text-slate-500">Bomberos activos</div>
-              <div className="font-bold text-slate-900">{personasActivas}</div>
+            <div className="rounded-xl bg-white/70 px-3 py-2.5 ring-1 ring-slate-200/70">
+              <div className="text-[11px] font-medium text-slate-500">Bomberos activos</div>
+              <div className="text-lg font-bold text-slate-900">{personasActivas}</div>
             </div>
           </div>
         </CardContent>

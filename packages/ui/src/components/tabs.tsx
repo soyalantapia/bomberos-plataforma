@@ -30,12 +30,20 @@ export function Tabs({
   );
 }
 
-export function TabsList({ children, className }: { children: React.ReactNode; className?: string }) {
+export function TabsList({
+  children,
+  className,
+}: {
+  children: React.ReactNode;
+  className?: string;
+}) {
   return (
     <div
       role="tablist"
       className={cn(
-        'inline-flex items-center gap-1 rounded-lg bg-slate-100 p-1 overflow-x-auto max-w-full',
+        'flex w-full items-center gap-1 overflow-x-auto rounded-lg bg-slate-100 p-1 sm:inline-flex sm:w-auto sm:max-w-full',
+        // Scroll horizontal sin barra visible (sensación nativa en mobile)
+        '[scrollbar-width:none] [&::-webkit-scrollbar]:hidden',
         className,
       )}
     >
@@ -63,7 +71,7 @@ export function TabsTrigger({
       aria-selected={active}
       onClick={() => ctx.onChange(triggerValue)}
       className={cn(
-        'px-3 py-1.5 text-sm font-medium rounded-md transition-colors whitespace-nowrap',
+        'shrink-0 whitespace-nowrap rounded-md px-3 py-1.5 text-sm font-medium transition-colors active:scale-95',
         active ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-600 hover:text-slate-900',
         className,
       )}
@@ -85,5 +93,9 @@ export function TabsContent({
   const ctx = useContext(Ctx);
   if (!ctx) throw new Error('TabsContent debe estar dentro de Tabs');
   if (ctx.value !== contentValue) return null;
-  return <div role="tabpanel" className={cn('mt-4', className)}>{children}</div>;
+  return (
+    <div role="tabpanel" className={cn('mt-4', className)}>
+      {children}
+    </div>
+  );
 }
