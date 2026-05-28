@@ -91,13 +91,8 @@ export default function TableroFederacion() {
             <UsersRound size={22} />
           </div>
           <div className="min-w-0 flex-1">
-            <div className="flex items-center gap-1.5">
-              <h3 className="font-bold text-slate-900">Directorio de personal</h3>
-              <Badge intent="brand">Nuevo</Badge>
-            </div>
-            <p className="mt-0.5 text-xs text-slate-600">
-              Buscá a cualquier integrante: región → cuartel → especialidad. Llamalo desde acá.
-            </p>
+            <h3 className="font-bold text-slate-900">Directorio</h3>
+            <p className="text-xs text-slate-500">Personal de toda la federación</p>
           </div>
         </Link>
         <Link
@@ -108,14 +103,8 @@ export default function TableroFederacion() {
             <BookMarked size={22} />
           </div>
           <div className="min-w-0 flex-1">
-            <div className="flex items-center gap-1.5">
-              <h3 className="font-bold text-slate-900">Agenda federal</h3>
-              <Badge intent="brand">Nuevo</Badge>
-            </div>
-            <p className="mt-0.5 text-xs text-slate-600">
-              Intendentes, comisarios, hospitales, medios, proveedores. Por cuartel, región y
-              federación.
-            </p>
+            <h3 className="font-bold text-slate-900">Agenda</h3>
+            <p className="text-xs text-slate-500">Contactos externos por nivel</p>
           </div>
         </Link>
       </div>

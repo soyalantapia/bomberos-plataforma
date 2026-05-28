@@ -1,21 +1,20 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { ArrowLeft, BookMarked, Flag, Globe2, Plus, Search, Shield } from 'lucide-react';
+import { ArrowLeft, BookMarked, Plus, Search, SlidersHorizontal, X } from 'lucide-react';
 import Link from 'next/link';
 import { useMemo, useState } from 'react';
 
-import { Badge, Button, Card, CardContent, Kpi, cn } from '@faro/ui';
+import { Button, cn } from '@faro/ui';
 
-import type { CategoriaContacto, ContactoRed, NivelContactoRed } from '@faro/types';
+import type { CategoriaContacto, ContactoRed } from '@faro/types';
 
 import { AgregarContactoDialog } from '../../../../components/federacion/agregar-contacto-dialog';
 import { CAT_INFO, ContactoCard } from '../../../../components/federacion/contacto-card';
-import { PageHero } from '../../../../components/shared/page-hero';
 import { REGION_NOMBRE_A_ID } from '../../../../data/regiones';
 import { selectCuartelActivo, useFaroStore } from '../../../../store/use-faro-store';
 
-type Tab = 'cuartel' | 'region' | 'federacion' | 'todos';
+type Nivel = 'cuartel' | 'region' | 'federacion';
 
 const CATEGORIAS_FILTRO: CategoriaContacto[] = [
   'gobierno',
@@ -35,12 +34,13 @@ export default function AgendaFederalPage() {
   const miRegionId = cuartel ? REGION_NOMBRE_A_ID[cuartel.region] : undefined;
   const miRegionNombre = cuartel?.region;
 
-  const [tab, setTab] = useState<Tab>('cuartel');
+  const [nivel, setNivel] = useState<Nivel>('cuartel');
   const [busqueda, setBusqueda] = useState('');
   const [categoriasActivas, setCategoriasActivas] = useState<Set<CategoriaContacto>>(
     () => new Set(),
   );
   const [openAgregar, setOpenAgregar] = useState(false);
+  const [openFiltros, setOpenFiltros] = useState(false);
 
   function toggleCat(c: CategoriaContacto) {
     setCategoriasActivas((prev) => {
@@ -55,16 +55,11 @@ export default function AgendaFederalPage() {
     return contactos
       .filter((c) => c.activo)
       .filter((c) => {
-        // Filtro por tab
-        if (tab === 'cuartel') return c.nivel === 'cuartel' && c.cuartelId === cuartel?.id;
-        if (tab === 'region') return c.nivel === 'region' && c.regionId === miRegionId;
-        if (tab === 'federacion') return c.nivel === 'federacion';
-        return true; // todos
+        if (nivel === 'cuartel') return c.nivel === 'cuartel' && c.cuartelId === cuartel?.id;
+        if (nivel === 'region') return c.nivel === 'region' && c.regionId === miRegionId;
+        return c.nivel === 'federacion';
       })
-      .filter((c) => {
-        if (categoriasActivas.size === 0) return true;
-        return categoriasActivas.has(c.categoria);
-      })
+      .filter((c) => (categoriasActivas.size === 0 ? true : categoriasActivas.has(c.categoria)))
       .filter((c) => {
         if (!busqueda.trim()) return true;
         const q = busqueda.toLowerCase();
@@ -73,192 +68,218 @@ export default function AgendaFederalPage() {
           c.cargo.toLowerCase().includes(q) ||
           (c.organismo && c.organismo.toLowerCase().includes(q)) ||
           c.telefonos.some((t) => t.includes(q)) ||
-          (c.tags && c.tags.some((t) => t.toLowerCase().includes(q))) ||
-          (c.notas && c.notas.toLowerCase().includes(q))
+          (c.tags && c.tags.some((t) => t.toLowerCase().includes(q)))
         );
       });
-  }, [contactos, tab, cuartel, miRegionId, categoriasActivas, busqueda]);
+  }, [contactos, nivel, cuartel, miRegionId, categoriasActivas, busqueda]);
 
-  // Conteos por tab
+  // Conteos por nivel
   const conteos = useMemo(() => {
-    const c = (n: NivelContactoRed, extra?: (x: ContactoRed) => boolean) =>
-      contactos.filter((x) => x.activo && x.nivel === n && (extra ? extra(x) : true)).length;
+    const all = contactos.filter((c) => c.activo);
     return {
-      cuartel: c('cuartel', (x) => x.cuartelId === cuartel?.id),
-      region: c('region', (x) => x.regionId === miRegionId),
-      federacion: c('federacion'),
-      todos: contactos.filter((x) => x.activo).length,
+      cuartel: all.filter((c) => c.nivel === 'cuartel' && c.cuartelId === cuartel?.id).length,
+      region: all.filter((c) => c.nivel === 'region' && c.regionId === miRegionId).length,
+      federacion: all.filter((c) => c.nivel === 'federacion').length,
     };
   }, [contactos, cuartel, miRegionId]);
 
-  const totalUsosMes = useMemo(() => {
-    const hace30dias = Date.now() - 30 * 86400000;
-    return contactos.filter(
-      (c) => c.ultimoUso && new Date(c.ultimoUso.fecha).getTime() > hace30dias,
-    ).length;
-  }, [contactos]);
+  const NIVELES: Array<{ id: Nivel; label: string; subtitulo: string; count: number }> = [
+    {
+      id: 'cuartel',
+      label: 'Mi cuartel',
+      subtitulo: cuartel?.nombre ? `BV ${cuartel.nombre}` : '—',
+      count: conteos.cuartel,
+    },
+    {
+      id: 'region',
+      label: 'Mi región',
+      subtitulo: miRegionNombre ?? '—',
+      count: conteos.region,
+    },
+    {
+      id: 'federacion',
+      label: 'Federación',
+      subtitulo: 'Toda la red',
+      count: conteos.federacion,
+    },
+  ];
+
+  const hayFiltros = categoriasActivas.size > 0;
 
   return (
-    <div className="mx-auto max-w-7xl space-y-5">
+    <div className="mx-auto max-w-5xl space-y-4 pb-12">
+      {/* Volver */}
       <div className="flex items-center gap-2 text-sm text-slate-500">
         <Link href="/federacion" className="hover:text-brand-700 inline-flex items-center gap-1">
           <ArrowLeft size={14} /> Volver a federación
         </Link>
       </div>
 
-      <PageHero
-        objetivo="Federación · Red de contactos"
-        titulo="Agenda federal"
-        descripcion="Contactos externos a la federación: autoridades, salud, seguridad, medios y proveedores. Cada cuartel sostiene su agenda; la federación cura los contactos compartidos."
-        icono={<BookMarked size={26} />}
-        meta={
-          <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
-            <Kpi label="Total contactos" value={conteos.todos} intent="brand" />
-            <Kpi label="De mi cuartel" value={conteos.cuartel} intent="ok" />
-            <Kpi label="De mi región" value={conteos.region} intent="brand" />
-            <Kpi
-              label="Activos último mes"
-              value={totalUsosMes}
-              hint="contactados"
-              intent={totalUsosMes > 0 ? 'ok' : 'neutral'}
-            />
+      {/* Header chico horizontal */}
+      <header className="flex items-center justify-between gap-3">
+        <div className="flex items-center gap-3">
+          <div className="bg-fire-50 text-fire-700 grid h-10 w-10 place-items-center rounded-xl">
+            <BookMarked size={20} />
           </div>
-        }
-        acciones={
-          <Button intent="primary" onClick={() => setOpenAgregar(true)}>
-            <Plus size={14} /> Agregar contacto
-          </Button>
-        }
-      />
+          <div>
+            <h1 className="text-xl font-bold text-slate-900">Agenda</h1>
+            <p className="text-xs text-slate-500">Contactos externos al cuartel</p>
+          </div>
+        </div>
+        <Button intent="primary" onClick={() => setOpenAgregar(true)}>
+          <Plus size={14} />
+          <span className="hidden sm:inline">Agregar</span>
+        </Button>
+      </header>
 
-      {/* Tabs de nivel */}
-      <Card>
-        <CardContent className="space-y-3 p-4">
-          <div className="flex flex-wrap gap-1 rounded-lg bg-slate-100 p-1">
-            {(
-              [
-                ['cuartel', 'Mi Cuartel', <Shield key="c" size={14} />, conteos.cuartel],
-                ['region', 'Mi Región', <Flag key="r" size={14} />, conteos.region],
-                ['federacion', 'Federación', <Globe2 key="f" size={14} />, conteos.federacion],
-                ['todos', 'Todos', null, conteos.todos],
-              ] as const
-            ).map(([t, label, icon, count]) => (
-              <button
-                key={t}
-                type="button"
-                onClick={() => setTab(t)}
+      {/* Tabs delgados (subrayado activo) */}
+      <div className="border-b border-slate-200">
+        <div className="flex gap-1 overflow-x-auto">
+          {NIVELES.map((n) => (
+            <button
+              key={n.id}
+              type="button"
+              onClick={() => setNivel(n.id)}
+              className={cn(
+                'relative whitespace-nowrap px-4 py-2.5 text-sm font-medium transition-colors',
+                nivel === n.id ? 'text-brand-700' : 'text-slate-500 hover:text-slate-800',
+              )}
+            >
+              <span>{n.label}</span>
+              <span
                 className={cn(
-                  'flex flex-1 items-center justify-center gap-1.5 rounded-md px-3 py-2 text-sm font-medium transition-colors',
-                  tab === t
-                    ? 'bg-white text-slate-900 shadow-sm'
-                    : 'text-slate-600 hover:text-slate-900',
+                  'ml-1.5 text-xs font-bold',
+                  nivel === n.id ? 'text-brand-700' : 'text-slate-400',
                 )}
               >
-                {icon}
-                <span>{label}</span>
-                <Badge intent={tab === t ? 'brand' : 'neutral'} className="px-1.5 text-[10px]">
-                  {count}
-                </Badge>
-              </button>
-            ))}
-          </div>
+                {n.count}
+              </span>
+              {nivel === n.id && (
+                <motion.span
+                  layoutId="agenda-tab-underline"
+                  className="bg-brand-600 absolute -bottom-px left-0 right-0 h-0.5 rounded-full"
+                />
+              )}
+            </button>
+          ))}
+        </div>
+      </div>
 
-          {/* Búsqueda y filtros */}
-          <div className="flex flex-wrap items-center gap-2">
-            <div className="relative min-w-0 flex-1">
-              <Search
-                size={14}
-                className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
-              />
-              <input
-                type="text"
-                value={busqueda}
-                onChange={(e) => setBusqueda(e.target.value)}
-                placeholder="Buscar por nombre, cargo, organismo, teléfono o tag..."
-                className="focus:border-brand-400 focus:ring-brand-100 w-full rounded-lg border border-slate-200 py-2 pl-9 pr-3 text-sm outline-none focus:ring-2"
-              />
-            </div>
-          </div>
-
-          {/* Categorías */}
-          <div className="flex flex-wrap items-center gap-1.5">
-            <span className="mr-1 text-xs font-semibold uppercase tracking-wide text-slate-500">
-              Categorías
+      {/* Búsqueda + filtros en una línea */}
+      <div className="flex items-center gap-2">
+        <div className="relative flex-1">
+          <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
+          <input
+            type="text"
+            value={busqueda}
+            onChange={(e) => setBusqueda(e.target.value)}
+            placeholder="Buscar nombre, cargo, teléfono..."
+            className="focus:border-brand-400 focus:ring-brand-100 w-full rounded-xl border border-slate-200 bg-white py-2.5 pl-10 pr-3 text-sm outline-none focus:ring-2"
+          />
+          {busqueda && (
+            <button
+              type="button"
+              onClick={() => setBusqueda('')}
+              className="absolute right-2 top-1/2 grid h-6 w-6 -translate-y-1/2 place-items-center rounded-full text-slate-400 hover:bg-slate-100 hover:text-slate-700"
+            >
+              <X size={13} />
+            </button>
+          )}
+        </div>
+        <button
+          type="button"
+          onClick={() => setOpenFiltros((v) => !v)}
+          className={cn(
+            'relative flex shrink-0 items-center gap-1.5 rounded-xl border px-3 py-2.5 text-sm font-medium transition-colors',
+            hayFiltros || openFiltros
+              ? 'border-brand-300 bg-brand-50 text-brand-700'
+              : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-50',
+          )}
+        >
+          <SlidersHorizontal size={14} />
+          <span className="hidden sm:inline">Filtrar</span>
+          {hayFiltros && (
+            <span className="bg-brand-600 absolute -right-1 -top-1 grid h-4 min-w-[16px] place-items-center rounded-full px-1 text-[10px] font-bold text-white">
+              {categoriasActivas.size}
             </span>
-            {CATEGORIAS_FILTRO.map((c) => {
-              const info = CAT_INFO[c];
-              const activa = categoriasActivas.has(c);
-              return (
+          )}
+        </button>
+      </div>
+
+      {/* Panel de filtros colapsable */}
+      {openFiltros && (
+        <motion.div
+          initial={{ opacity: 0, height: 0 }}
+          animate={{ opacity: 1, height: 'auto' }}
+          exit={{ opacity: 0, height: 0 }}
+          className="overflow-hidden"
+        >
+          <div className="rounded-xl border border-slate-200 bg-white p-3">
+            <div className="mb-2 flex items-center justify-between">
+              <span className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+                Categoría
+              </span>
+              {hayFiltros && (
                 <button
-                  key={c}
                   type="button"
-                  onClick={() => toggleCat(c)}
-                  className={cn(
-                    'inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-medium transition-all',
-                    activa
-                      ? 'bg-brand-600 text-white shadow-sm'
-                      : 'bg-slate-100 text-slate-700 hover:bg-slate-200',
-                  )}
+                  onClick={() => setCategoriasActivas(new Set())}
+                  className="text-brand-600 text-xs font-medium hover:underline"
                 >
-                  <span>{info.icon}</span>
-                  {info.label}
+                  Limpiar
                 </button>
-              );
-            })}
-            {categoriasActivas.size > 0 && (
-              <button
-                type="button"
-                onClick={() => setCategoriasActivas(new Set())}
-                className="ml-1 text-xs text-slate-500 underline hover:text-slate-700"
-              >
-                Limpiar
-              </button>
-            )}
-            <span className="ml-auto text-xs text-slate-500">
-              {contactosFiltrados.length} resultados
-            </span>
+              )}
+            </div>
+            <div className="flex flex-wrap gap-1.5">
+              {CATEGORIAS_FILTRO.map((c) => {
+                const info = CAT_INFO[c];
+                const activa = categoriasActivas.has(c);
+                return (
+                  <button
+                    key={c}
+                    type="button"
+                    onClick={() => toggleCat(c)}
+                    className={cn(
+                      'inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-medium transition-all',
+                      activa
+                        ? 'bg-slate-900 text-white'
+                        : 'bg-slate-100 text-slate-700 hover:bg-slate-200',
+                    )}
+                  >
+                    <span>{info.icon}</span>
+                    {info.label}
+                  </button>
+                );
+              })}
+            </div>
           </div>
+        </motion.div>
+      )}
 
-          {/* Hint contextual */}
-          {tab === 'federacion' && sesion?.perfilActivo !== 'federacion' && (
-            <div className="bg-status-warn-bg/30 border-status-warn rounded-lg border px-3 py-2 text-xs text-slate-700">
-              Estos contactos están curados por el Consejo Directivo de la federación. Solo el
-              perfil <strong>Federación</strong> puede agregar a este nivel.
-            </div>
-          )}
-          {tab === 'region' && !miRegionId && (
-            <div className="bg-status-warn-bg/30 border-status-warn rounded-lg border px-3 py-2 text-xs text-slate-700">
-              Tu cuartel no tiene región asignada. Hablá con el Consejo Directivo.
-            </div>
-          )}
-        </CardContent>
-      </Card>
+      {/* Aviso de permisos solo cuando aplica */}
+      {nivel === 'federacion' && sesion?.perfilActivo !== 'federacion' && (
+        <div className="bg-status-warn-bg/30 rounded-lg px-3 py-2 text-xs text-slate-600">
+          Solo el perfil <strong>Federación</strong> puede agregar contactos a este nivel.
+        </div>
+      )}
 
       {/* Lista de contactos */}
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
         {contactosFiltrados.length === 0 ? (
           <div className="col-span-full">
-            <Card>
-              <CardContent className="grid place-items-center gap-3 py-12 text-center">
-                <BookMarked size={36} className="text-slate-300" />
-                <div>
-                  <div className="font-medium text-slate-700">
-                    No hay contactos {tab === 'cuartel' ? 'en tu cuartel' : 'en este nivel'}
-                  </div>
-                  <p className="mt-1 text-xs text-slate-500">
-                    {busqueda || categoriasActivas.size > 0
-                      ? 'Probá quitar los filtros o ampliar la búsqueda.'
-                      : 'Sumá el primero con el botón "Agregar contacto" arriba.'}
-                  </p>
-                </div>
+            <div className="grid place-items-center gap-3 rounded-xl bg-white py-12 text-center">
+              <BookMarked size={28} className="text-slate-300" />
+              <div className="text-sm text-slate-500">
+                {busqueda || hayFiltros ? 'Sin resultados' : 'Sin contactos en este nivel'}
+              </div>
+              {!busqueda && !hayFiltros && (
                 <Button intent="primary" size="sm" onClick={() => setOpenAgregar(true)}>
-                  <Plus size={14} /> Agregar contacto
+                  <Plus size={14} /> Agregar primero
                 </Button>
-              </CardContent>
-            </Card>
+              )}
+            </div>
           </div>
         ) : (
-          contactosFiltrados.map((c, idx) => (
+          contactosFiltrados.map((c: ContactoRed, idx) => (
             <motion.div
               key={c.id}
               initial={{ opacity: 0, y: 4 }}
@@ -270,19 +291,6 @@ export default function AgendaFederalPage() {
           ))
         )}
       </div>
-
-      {/* Footer info contextual */}
-      {tab === 'cuartel' && miRegionNombre && (
-        <Card className="bg-brand-50/30 border-brand-100">
-          <CardContent className="flex items-center gap-3 p-4">
-            <Flag size={20} className="text-brand-700" />
-            <div className="min-w-0 flex-1 text-sm text-slate-700">
-              <strong>Tip:</strong> Si un contacto es útil para todos los cuarteles de{' '}
-              <strong>{miRegionNombre}</strong>, pedile a un mando que lo promueva al nivel Región.
-            </div>
-          </CardContent>
-        </Card>
-      )}
 
       <AgregarContactoDialog open={openAgregar} onClose={() => setOpenAgregar(false)} />
     </div>
