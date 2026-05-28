@@ -87,6 +87,52 @@ export interface Destacamento {
   jefeId?: string;
 }
 
+// ============================================================
+// TAREAS POR SECTOR — circuito asignar → ejecutar → controlar
+// → cerrar. El jefe de área asigna, la persona ejecuta o reporta
+// bloqueo, el jefe valida o reabre. Todo queda registrado.
+// ============================================================
+
+export type EstadoTarea =
+  | 'asignada'
+  | 'en_progreso'
+  | 'hecha'
+  | 'bloqueada'
+  | 'validada'
+  | 'reabierta';
+
+export type PrioridadTarea = 'baja' | 'media' | 'alta';
+
+export interface TareaEvento {
+  fecha: string;
+  actorId: string;
+  /** asignada | tomada | hecha | bloqueada | validada | reabierta | comentario */
+  accion: string;
+  nota?: string;
+}
+
+export interface Tarea {
+  id: string;
+  cuartelId: string;
+  sectorId?: string;
+  titulo: string;
+  descripcion?: string;
+  /** Persona responsable de ejecutarla. */
+  asignadaA: string;
+  /** Jefe/responsable que la asignó. */
+  asignadaPor: string;
+  creadaEn: string;
+  vencimiento?: string;
+  estado: EstadoTarea;
+  prioridad: PrioridadTarea;
+  /** Bitácora del circuito (auditable). */
+  historial: TareaEvento[];
+  comentarioCierre?: string;
+  motivoBloqueo?: string;
+  validadaPor?: string;
+  validadaEn?: string;
+}
+
 export type EspecialidadBombero =
   | 'hazmat'
   | 'rescate_acuatico'

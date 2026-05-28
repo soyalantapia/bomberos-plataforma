@@ -26,6 +26,8 @@ import type {
   Sector,
   Servicio,
   SesionUsuario,
+  Tarea,
+  TareaEvento,
 } from '@faro/types';
 
 import {
@@ -49,6 +51,7 @@ import {
   rendicionMayoMock,
   sectoresMock,
   serviciosMock,
+  tareasMock,
 } from '../data';
 import { calcularComputoMensual } from '../lib/utils/computo';
 
@@ -79,6 +82,7 @@ interface State {
   consejo: MiembroConsejo[];
   sectores: Sector[];
   destacamentos: Destacamento[];
+  tareas: Tarea[];
 }
 
 interface Actions {
@@ -125,6 +129,17 @@ interface Actions {
   actualizarContactoRed: (id: string, cambios: Partial<ContactoRed>) => void;
   archivarContactoRed: (id: string) => void;
   registrarUsoContactoRed: (id: string, tipo: 'llamada' | 'whatsapp' | 'email') => void;
+  // TAREAS POR SECTOR
+  crearTarea: (
+    input: Omit<Tarea, 'id' | 'creadaEn' | 'estado' | 'historial' | 'prioridad'> & {
+      prioridad?: Tarea['prioridad'];
+    },
+  ) => Tarea;
+  tomarTarea: (id: string) => void;
+  marcarTareaHecha: (id: string, comentario?: string) => void;
+  bloquearTarea: (id: string, motivo: string) => void;
+  validarTarea: (id: string) => void;
+  reabrirTarea: (id: string, nota?: string) => void;
 }
 
 type FaroStore = State & Actions;
@@ -156,6 +171,7 @@ const initialState: State = {
   consejo: consejoMock,
   sectores: sectoresMock,
   destacamentos: destacamentosMock,
+  tareas: tareasMock,
 };
 
 function recalcularRendicion(state: State, cuartelId: string): State {
@@ -487,6 +503,160 @@ export const useFaroStore = create<FaroStore>()(
           ),
         });
       },
+      // ====== TAREAS POR SECTOR ======
+      crearTarea(input) {
+        const actor = get().sesion?.personaId ?? input.asignadaPor;
+        const now = new Date().toISOString();
+        const tarea: Tarea = {
+          ...input,
+          id: genId('tarea'),
+          creadaEn: now,
+          estado: 'asignada',
+          prioridad: input.prioridad ?? 'media',
+          historial: [{ fecha: now, actorId: actor, accion: 'asignada' }],
+        };
+        const notif: Notificacion = {
+          id: genId('notif'),
+          cuartelId: tarea.cuartelId,
+          destinatarioId: tarea.asignadaA,
+          tipo: 'tarea',
+          titulo: 'Nueva tarea asignada',
+          descripcion: tarea.titulo,
+          leida: false,
+          fecha: now,
+          linkPagina: '/bombero/tareas',
+        };
+        set({ tareas: [tarea, ...get().tareas], notificaciones: [notif, ...get().notificaciones] });
+        return tarea;
+      },
+      tomarTarea(id) {
+        const actor = get().sesion?.personaId ?? 'sistema';
+        const now = new Date().toISOString();
+        const ev: TareaEvento = { fecha: now, actorId: actor, accion: 'tomada' };
+        set({
+          tareas: get().tareas.map((t) =>
+            t.id === id ? { ...t, estado: 'en_progreso', historial: [...t.historial, ev] } : t,
+          ),
+        });
+      },
+      marcarTareaHecha(id, comentario) {
+        const actor = get().sesion?.personaId ?? 'sistema';
+        const now = new Date().toISOString();
+        const tarea = get().tareas.find((t) => t.id === id);
+        if (!tarea) return;
+        const ev: TareaEvento = { fecha: now, actorId: actor, accion: 'hecha', nota: comentario };
+        const notif: Notificacion = {
+          id: genId('notif'),
+          cuartelId: tarea.cuartelId,
+          destinatarioId: tarea.asignadaPor,
+          tipo: 'tarea',
+          titulo: 'Tarea marcada como hecha',
+          descripcion: `${tarea.titulo} — esperando tu validación`,
+          leida: false,
+          fecha: now,
+          linkPagina: '/mando/tareas',
+        };
+        set({
+          tareas: get().tareas.map((t) =>
+            t.id === id
+              ? {
+                  ...t,
+                  estado: 'hecha',
+                  comentarioCierre: comentario,
+                  historial: [...t.historial, ev],
+                }
+              : t,
+          ),
+          notificaciones: [notif, ...get().notificaciones],
+        });
+      },
+      bloquearTarea(id, motivo) {
+        const actor = get().sesion?.personaId ?? 'sistema';
+        const now = new Date().toISOString();
+        const tarea = get().tareas.find((t) => t.id === id);
+        if (!tarea) return;
+        const ev: TareaEvento = { fecha: now, actorId: actor, accion: 'bloqueada', nota: motivo };
+        const notif: Notificacion = {
+          id: genId('notif'),
+          cuartelId: tarea.cuartelId,
+          destinatarioId: tarea.asignadaPor,
+          tipo: 'tarea',
+          titulo: 'Tarea bloqueada',
+          descripcion: `${tarea.titulo} — ${motivo}`,
+          leida: false,
+          fecha: now,
+          linkPagina: '/mando/tareas',
+        };
+        set({
+          tareas: get().tareas.map((t) =>
+            t.id === id
+              ? {
+                  ...t,
+                  estado: 'bloqueada',
+                  motivoBloqueo: motivo,
+                  historial: [...t.historial, ev],
+                }
+              : t,
+          ),
+          notificaciones: [notif, ...get().notificaciones],
+        });
+      },
+      validarTarea(id) {
+        const actor = get().sesion?.personaId ?? 'sistema';
+        const now = new Date().toISOString();
+        const tarea = get().tareas.find((t) => t.id === id);
+        if (!tarea) return;
+        const ev: TareaEvento = { fecha: now, actorId: actor, accion: 'validada' };
+        const notif: Notificacion = {
+          id: genId('notif'),
+          cuartelId: tarea.cuartelId,
+          destinatarioId: tarea.asignadaA,
+          tipo: 'tarea',
+          titulo: 'Tu tarea fue validada',
+          descripcion: tarea.titulo,
+          leida: false,
+          fecha: now,
+          linkPagina: '/bombero/tareas',
+        };
+        set({
+          tareas: get().tareas.map((t) =>
+            t.id === id
+              ? {
+                  ...t,
+                  estado: 'validada',
+                  validadaPor: actor,
+                  validadaEn: now,
+                  historial: [...t.historial, ev],
+                }
+              : t,
+          ),
+          notificaciones: [notif, ...get().notificaciones],
+        });
+      },
+      reabrirTarea(id, nota) {
+        const actor = get().sesion?.personaId ?? 'sistema';
+        const now = new Date().toISOString();
+        const tarea = get().tareas.find((t) => t.id === id);
+        if (!tarea) return;
+        const ev: TareaEvento = { fecha: now, actorId: actor, accion: 'reabierta', nota };
+        const notif: Notificacion = {
+          id: genId('notif'),
+          cuartelId: tarea.cuartelId,
+          destinatarioId: tarea.asignadaA,
+          tipo: 'tarea',
+          titulo: 'Tu tarea fue reabierta',
+          descripcion: nota ? `${tarea.titulo} — ${nota}` : tarea.titulo,
+          leida: false,
+          fecha: now,
+          linkPagina: '/bombero/tareas',
+        };
+        set({
+          tareas: get().tareas.map((t) =>
+            t.id === id ? { ...t, estado: 'reabierta', historial: [...t.historial, ev] } : t,
+          ),
+          notificaciones: [notif, ...get().notificaciones],
+        });
+      },
       presentarRendicion(rendicionId, mandoId) {
         const r = get().rendiciones[rendicionId];
         if (!r) return;
@@ -521,6 +691,7 @@ export const useFaroStore = create<FaroStore>()(
         asistencias: s.asistencias,
         rendiciones: s.rendiciones,
         notificaciones: s.notificaciones,
+        tareas: s.tareas,
       }),
       // Mantiene la sesión y el progreso transaccional, pero descarta cualquier
       // estructura de mock que usuarios viejos (v ≤ 6) tengan persistida.

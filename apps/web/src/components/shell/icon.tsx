@@ -56,6 +56,7 @@ import {
   UsersRound,
   // Organización
   Network,
+  ClipboardList,
   type LucideIcon,
 } from 'lucide-react';
 
@@ -113,6 +114,7 @@ const iconMap: Record<string, LucideIcon> = {
   'book-marked': BookMarked,
   'users-round': UsersRound,
   network: Network,
+  'clipboard-list': ClipboardList,
 };
 
 export function Icon({

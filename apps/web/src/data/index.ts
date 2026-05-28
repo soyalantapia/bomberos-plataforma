@@ -11,3 +11,4 @@ export * from './finanzas';
 export * from './regiones';
 export * from './contactos-red';
 export * from './organizacion';
+export * from './tareas';
