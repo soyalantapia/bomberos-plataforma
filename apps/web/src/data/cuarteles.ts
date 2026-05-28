@@ -38,12 +38,23 @@ function cumpFor(idx: number): { c: Cuartel['cumplimiento']; p: number } {
  *   - Resto: Federación Bonaerense (fedbonaerense.org.ar)
  */
 const LOGO_BY_SLUG: Record<string, string> = {
-  // Norte GBA
+  // Norte GBA — cuarteles con logo propio
   'villa-ballester': '/cuarteles/villa-ballester.png',
   'san-martin': '/cuarteles/san-martin.png',
   'san-isidro': '/cuarteles/san-isidro.png',
   tigre: '/cuarteles/tigre.png',
   'vicente-lopez': '/cuarteles/vicente-lopez.png',
+  benavidez: '/cuarteles/benavidez.png',
+  // Norte GBA — destacamentos comparten escudo con su cuartel central:
+  //   Boulogne, Villa Adelina → BV San Isidro
+  //   Florida (HQ), Munro, Carapachay → BV Vicente López
+  //   José León Suárez → BV Villa Ballester
+  //   El Talar (Troncos del Talar) → BV Tigre
+  boulogne: '/cuarteles/san-isidro.png',
+  florida: '/cuarteles/vicente-lopez.png',
+  munro: '/cuarteles/vicente-lopez.png',
+  'jose-leon-suarez': '/cuarteles/villa-ballester.png',
+  'el-talar': '/cuarteles/tigre.png',
   // Sur GBA + La Plata y Sudeste + Interior PBA Norte (Federación Bonaerense)
   'almirante-brown': '/cuarteles/almirante-brown.png',
   avellaneda: '/cuarteles/avellaneda.png',
