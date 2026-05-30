@@ -525,7 +525,7 @@ export default function ComunicacionPage() {
                     </div>
                     <div
                       className={cn(
-                        'mt-0.5 flex items-center gap-1 text-[10px] text-slate-400',
+                        'mt-0.5 flex items-center gap-1 text-[10px] text-slate-500',
                         m.mio ? 'justify-end' : 'justify-start',
                       )}
                     >
@@ -534,7 +534,7 @@ export default function ComunicacionPage() {
                         <span
                           className={cn(
                             'ml-1 font-medium',
-                            m.leido ? 'text-status-ok' : 'text-slate-400',
+                            m.leido ? 'text-status-ok' : 'text-slate-500',
                           )}
                         >
                           ✓✓

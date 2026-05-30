@@ -199,7 +199,7 @@ export default function RadioPage() {
       <Card>
         <CardContent className="p-3">
           <div className="relative">
-            <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+            <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" />
             <input
               value={search}
               onChange={(e) => setSearch(e.target.value)}
@@ -320,7 +320,7 @@ export default function RadioPage() {
       {/* Compliance */}
       <Card className="border-slate-200 bg-slate-50">
         <CardContent className="flex items-start gap-3 p-4 text-sm text-slate-600">
-          <Signal size={18} className="mt-0.5 shrink-0 text-slate-400" />
+          <Signal size={18} className="mt-0.5 shrink-0 text-slate-500" />
           <div>
             <strong className="text-slate-900">Cuánto tiempo se guarda:</strong> los audios se
             guardan 90 días y las transcripciones 7 años. Están encriptados. Solo se accede a ellos

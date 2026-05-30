@@ -223,7 +223,7 @@ export default function NotificacionesPage() {
 
       <Card className="border-slate-200 bg-slate-50">
         <CardContent className="flex items-start gap-3 p-4 text-sm text-slate-600">
-          <Bell size={18} className="mt-0.5 shrink-0 text-slate-400" />
+          <Bell size={18} className="mt-0.5 shrink-0 text-slate-500" />
           <div>
             <strong className="text-slate-900">Configurás los canales por tipo</strong> desde
             <Link
@@ -273,9 +273,9 @@ function NotifBody({
           {n.titulo}
         </div>
         <div className="mt-0.5 text-xs text-slate-600">{n.descripcion}</div>
-        <div className="mt-1 text-[11px] text-slate-400">{fechaRelativa(n.fecha)}</div>
+        <div className="mt-1 text-[11px] text-slate-500">{fechaRelativa(n.fecha)}</div>
       </div>
-      <ChevronRight size={16} className="shrink-0 text-slate-400" />
+      <ChevronRight size={16} className="shrink-0 text-slate-500" />
     </div>
   );
 }

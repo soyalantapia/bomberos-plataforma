@@ -181,7 +181,7 @@ export default function MiLegajo() {
                   },
                 ].map((f) => (
                   <div key={f.k} className="flex items-center gap-3 px-4 py-3 hover:bg-slate-50">
-                    <div className="shrink-0 text-slate-400">{f.icon}</div>
+                    <div className="shrink-0 text-slate-500">{f.icon}</div>
                     <div className="w-32 shrink-0 text-xs text-slate-500">{f.k}</div>
                     <div className="flex-1 truncate text-sm font-medium text-slate-900">{f.v}</div>
                     {f.editable && (

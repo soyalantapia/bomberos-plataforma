@@ -380,7 +380,7 @@ export default function PresupuestoPage() {
 
       <Card className="border-slate-200 bg-slate-50">
         <CardContent className="flex items-start gap-3 p-4 text-sm text-slate-600">
-          <Target size={18} className="mt-0.5 shrink-0 text-slate-400" />
+          <Target size={18} className="mt-0.5 shrink-0 text-slate-500" />
           <div>
             <strong className="text-slate-900">Cómo leer:</strong> la barra vertical marca el % del
             año transcurrido ({pctAnio.toFixed(0)}%). Si una cuenta tiene la barra a ese nivel o por

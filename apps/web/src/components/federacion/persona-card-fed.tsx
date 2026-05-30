@@ -68,7 +68,7 @@ export function PersonaCardFed({ persona, cuartel, onOpenLegajo }: Props) {
           )}
         >
           {JERARQUIA_LABEL[persona.jerarquia]}
-          {cuartel && <span className="text-slate-400"> · BV {cuartel.nombre}</span>}
+          {cuartel && <span className="text-slate-500"> · BV {cuartel.nombre}</span>}
         </div>
       </div>
     </div>

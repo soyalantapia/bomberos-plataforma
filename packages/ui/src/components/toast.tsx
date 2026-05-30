@@ -41,19 +41,29 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
   return (
     <Ctx.Provider value={{ push }}>
       {children}
-      <div aria-live="polite" className="fixed bottom-20 md:bottom-4 left-1/2 -translate-x-1/2 z-50 flex flex-col gap-2 w-full max-w-sm px-4">
+      <div
+        aria-live="polite"
+        className="fixed bottom-20 left-1/2 z-50 flex w-full max-w-sm -translate-x-1/2 flex-col gap-2 px-4 md:bottom-4"
+      >
         {toasts.map((t) => (
-          <div key={t.id} className={cn('flex gap-3 items-start bg-white rounded-xl border border-slate-200 shadow-lg p-3')}>
+          <div
+            key={t.id}
+            className={cn(
+              'flex items-start gap-3 rounded-xl border border-slate-200 bg-white p-3 shadow-lg',
+            )}
+          >
             <div className="mt-0.5">{icon[t.kind]}</div>
-            <div className="flex-1 min-w-0">
+            <div className="min-w-0 flex-1">
               <div className="text-sm font-semibold text-slate-900">{t.title}</div>
-              {t.description && <div className="text-sm text-slate-600 mt-0.5">{t.description}</div>}
+              {t.description && (
+                <div className="mt-0.5 text-sm text-slate-600">{t.description}</div>
+              )}
             </div>
             <button
               type="button"
               onClick={() => dismiss(t.id)}
               aria-label="Cerrar notificación"
-              className="text-slate-400 hover:text-slate-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-400 rounded-md p-0.5 -m-0.5"
+              className="-m-0.5 rounded-md p-0.5 text-slate-500 hover:text-slate-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-400"
             >
               <X size={16} />
             </button>

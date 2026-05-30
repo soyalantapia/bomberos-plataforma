@@ -82,7 +82,7 @@ export function CuartelDrawer({ cuartel, personas, onClose, onOpenLegajo }: Prop
                     <h3 className="text-xs font-bold uppercase tracking-wider text-slate-500">
                       Cuerpo Activo
                     </h3>
-                    <span className="text-xs text-slate-400">{activos.length}</span>
+                    <span className="text-xs text-slate-500">{activos.length}</span>
                   </div>
                   <div className="space-y-2">
                     {activos.map((p) => (
@@ -103,7 +103,7 @@ export function CuartelDrawer({ cuartel, personas, onClose, onOpenLegajo }: Prop
                     <h3 className="text-xs font-bold uppercase tracking-wider text-slate-500">
                       Comisión Directiva
                     </h3>
-                    <span className="text-xs text-slate-400">{admins.length}</span>
+                    <span className="text-xs text-slate-500">{admins.length}</span>
                   </div>
                   <div className="space-y-2">
                     {admins.map((p) => (
@@ -119,7 +119,7 @@ export function CuartelDrawer({ cuartel, personas, onClose, onOpenLegajo }: Prop
               )}
 
               {activos.length === 0 && admins.length === 0 && (
-                <div className="grid h-32 place-items-center text-sm text-slate-400">
+                <div className="grid h-32 place-items-center text-sm text-slate-500">
                   Sin personas cargadas en este cuartel
                 </div>
               )}

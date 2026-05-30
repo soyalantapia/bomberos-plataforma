@@ -643,7 +643,7 @@ export default function TruckCheckPage() {
                                   onClick={() => setEstado(item.id, e)}
                                   className={cn(
                                     'grid h-7 w-7 place-items-center rounded text-xs text-white transition-transform hover:scale-110',
-                                    item.estado === e ? c.color : 'bg-slate-200 text-slate-400',
+                                    item.estado === e ? c.color : 'bg-slate-200 text-slate-500',
                                   )}
                                   aria-label={c.label}
                                 >
@@ -664,7 +664,7 @@ export default function TruckCheckPage() {
 
         <Card className="border-slate-200 bg-slate-50">
           <CardContent className="flex items-start gap-3 p-4 text-sm text-slate-600">
-            <ClipboardCheck size={18} className="mt-0.5 shrink-0 text-slate-400" />
+            <ClipboardCheck size={18} className="mt-0.5 shrink-0 text-slate-500" />
             <div>
               <strong className="text-slate-900">Al firmar:</strong> queda guardada para siempre la
               revisión completa con notas, fotos y los datos del jefe. Si hay fallas, el móvil se

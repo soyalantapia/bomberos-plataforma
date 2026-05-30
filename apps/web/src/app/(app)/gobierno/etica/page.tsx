@@ -292,7 +292,7 @@ export default function EticaPage() {
                     <div className="mt-0.5 text-xs text-slate-600">
                       {h.detalle}
                       {h.porQuien && (
-                        <span className="ml-1 text-slate-400">· por {h.porQuien}</span>
+                        <span className="ml-1 text-slate-500">· por {h.porQuien}</span>
                       )}
                     </div>
                   </div>
@@ -321,7 +321,7 @@ export default function EticaPage() {
                     {o.firma} · {o.fecha}
                   </div>
                 </div>
-                <ChevronRight size={16} className="text-slate-400" />
+                <ChevronRight size={16} className="text-slate-500" />
               </div>
             </div>
           ))}

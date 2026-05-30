@@ -237,7 +237,7 @@ export default function PlanCuentasPage() {
             <ChevronRight
               size={13}
               className={cn(
-                'text-slate-400 transition-transform duration-150 group-hover:text-slate-700',
+                'text-slate-500 transition-transform duration-150 group-hover:text-slate-700',
                 estaExpandido && 'rotate-90',
               )}
             />
@@ -278,7 +278,7 @@ export default function PlanCuentasPage() {
             <div className="hidden shrink-0 text-right sm:block">
               <div className="font-mono text-xs font-bold text-slate-900">{arsCompact(ejec)}</div>
               {presup > 0 && (
-                <div className="font-mono text-[10px] text-slate-400">/ {arsCompact(presup)}</div>
+                <div className="font-mono text-[10px] text-slate-500">/ {arsCompact(presup)}</div>
               )}
             </div>
           )}
@@ -500,7 +500,7 @@ export default function PlanCuentasPage() {
       <Card>
         <CardContent className="flex items-center gap-2 p-3">
           <div className="relative flex-1">
-            <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+            <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" />
             <Input
               value={busqueda}
               onChange={(e) => setBusqueda(e.target.value)}
@@ -511,7 +511,7 @@ export default function PlanCuentasPage() {
               <button
                 type="button"
                 onClick={() => setBusqueda('')}
-                className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-700"
+                className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-700"
               >
                 <X size={14} />
               </button>

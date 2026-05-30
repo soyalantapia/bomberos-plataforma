@@ -143,7 +143,7 @@ export default function FichaPersonaMandoView() {
               <h4 className="mb-2 text-xs font-bold uppercase text-slate-500">Contacto</h4>
               <dl className="space-y-2 text-sm">
                 <div className="flex items-center gap-2">
-                  <Mail size={12} className="text-slate-400" />
+                  <Mail size={12} className="text-slate-500" />
                   <a
                     href={`mailto:${persona.email}`}
                     className="text-brand-700 truncate hover:underline"
@@ -152,7 +152,7 @@ export default function FichaPersonaMandoView() {
                   </a>
                 </div>
                 <div className="flex items-center gap-2">
-                  <Phone size={12} className="text-slate-400" />
+                  <Phone size={12} className="text-slate-500" />
                   <a
                     href={`tel:${persona.telefono}`}
                     className="text-brand-700 truncate hover:underline"
@@ -161,7 +161,7 @@ export default function FichaPersonaMandoView() {
                   </a>
                 </div>
                 <div className="flex items-center gap-2">
-                  <Calendar size={12} className="text-slate-400" />
+                  <Calendar size={12} className="text-slate-500" />
                   <span className="text-slate-700">
                     Ingreso {new Date(persona.fechaIngreso).toLocaleDateString('es-AR')}
                   </span>
@@ -256,7 +256,7 @@ export default function FichaPersonaMandoView() {
                 <ul className="divide-y divide-slate-100">
                   {persona.cursos!.map((c) => (
                     <li key={c.id} className="flex items-center gap-3 p-3 text-sm">
-                      <Award size={14} className="shrink-0 text-slate-400" />
+                      <Award size={14} className="shrink-0 text-slate-500" />
                       <div className="min-w-0 flex-1">
                         <div className="truncate font-medium text-slate-900">{c.nombre}</div>
                         <div className="text-xs text-slate-500">

@@ -185,7 +185,7 @@ export default function CapacitacionBombero() {
                       <div className="font-bold text-slate-900">{c.nombre}</div>
                       <div className="mt-0.5 text-xs text-slate-600">{c.centro}</div>
                       <div className="mt-2 flex items-center gap-2 text-xs">
-                        <CalendarClock size={11} className="text-slate-400" />
+                        <CalendarClock size={11} className="text-slate-500" />
                         <span className="text-slate-600">Vence {c.vencimiento}</span>
                         <Badge intent={v.color as 'ok' | 'warn' | 'risk'}>
                           {c.diasRestantes < 0
@@ -256,7 +256,7 @@ export default function CapacitacionBombero() {
                 <div className="mt-0.5 text-xs text-slate-600">{d.centro}</div>
 
                 <div className="mt-3 flex items-center gap-1.5 text-xs">
-                  <CalendarClock size={11} className="text-slate-400" />
+                  <CalendarClock size={11} className="text-slate-500" />
                   <span className="font-medium text-slate-700">Inicia {d.inicio}</span>
                 </div>
 
@@ -328,7 +328,7 @@ export default function CapacitacionBombero() {
                 </div>
                 <Download
                   size={16}
-                  className="group-hover:text-brand-600 shrink-0 text-slate-400 transition-colors"
+                  className="group-hover:text-brand-600 shrink-0 text-slate-500 transition-colors"
                 />
               </div>
             </button>

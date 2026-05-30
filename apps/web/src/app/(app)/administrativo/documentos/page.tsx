@@ -172,7 +172,7 @@ export default function DocumentosPage() {
           <div className="relative">
             <FileSearch
               size={18}
-              className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400"
+              className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500"
             />
             <Input
               value={q}
@@ -266,7 +266,7 @@ export default function DocumentosPage() {
               </div>
             </div>
 
-            <div className="mt-2 flex items-center gap-1 text-[10px] text-slate-400">
+            <div className="mt-2 flex items-center gap-1 text-[10px] text-slate-500">
               <Clock size={10} /> Actualizado {d.actualizado}
             </div>
           </button>

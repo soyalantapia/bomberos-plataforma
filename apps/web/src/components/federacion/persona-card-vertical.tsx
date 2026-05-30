@@ -49,7 +49,7 @@ export function PersonaCardVertical({ persona, cuartel, onOpenFicha }: Props) {
             {JERARQUIA_LABEL[persona.jerarquia]}
           </div>
           {cuartel && (
-            <div className="mt-0.5 truncate text-[11px] text-slate-400">BV {cuartel.nombre}</div>
+            <div className="mt-0.5 truncate text-[11px] text-slate-500">BV {cuartel.nombre}</div>
           )}
         </div>
       </div>

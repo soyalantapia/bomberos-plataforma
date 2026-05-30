@@ -282,7 +282,7 @@ export default function PrediccionesPage() {
       {/* Cómo funciona */}
       <Card className="border-slate-200 bg-slate-50">
         <CardContent className="flex items-start gap-3 p-4 text-sm text-slate-600">
-          <AlertCircle size={18} className="mt-0.5 shrink-0 text-slate-400" />
+          <AlertCircle size={18} className="mt-0.5 shrink-0 text-slate-500" />
           <div>
             <strong className="text-slate-900">Cómo se hacen las estimaciones:</strong> el sistema
             analiza 36 meses de tu historial de servicios, datos del clima y calendario de eventos

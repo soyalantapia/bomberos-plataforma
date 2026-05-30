@@ -86,7 +86,7 @@ export function PersonaCard({ persona, onClick, compact = false }: Props) {
           </Badge>
         </div>
 
-        {onClick && <ChevronRight size={18} className="shrink-0 text-slate-400" />}
+        {onClick && <ChevronRight size={18} className="shrink-0 text-slate-500" />}
       </div>
 
       {!compact && (

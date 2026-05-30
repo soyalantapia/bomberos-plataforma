@@ -171,7 +171,7 @@ export default function CajasPage() {
                 key={c.id}
                 initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="cursor-pointer focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-600 rounded-xl"
+                className="focus-visible:outline-brand-600 cursor-pointer rounded-xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
                 onClick={() => setCajaSel(c)}
                 onKeyDown={(e) => {
                   if (e.key === 'Enter' || e.key === ' ') {
@@ -227,7 +227,7 @@ export default function CajasPage() {
                                 e.stopPropagation();
                                 copiar(c.cbu!, 'CBU');
                               }}
-                              className="hover:text-brand-600 text-slate-400"
+                              className="hover:text-brand-600 text-slate-500"
                             >
                               <Copy size={11} />
                             </button>
@@ -243,7 +243,7 @@ export default function CajasPage() {
                                 e.stopPropagation();
                                 copiar(c.alias!, 'Alias');
                               }}
-                              className="hover:text-brand-600 text-slate-400"
+                              className="hover:text-brand-600 text-slate-500"
                             >
                               <Copy size={11} />
                             </button>
@@ -274,7 +274,7 @@ export default function CajasPage() {
 
         <Card className="border-slate-200 bg-slate-50">
           <CardContent className="flex items-start gap-3 p-4 text-sm text-slate-600">
-            <ClipboardCopy size={18} className="mt-0.5 shrink-0 text-slate-400" />
+            <ClipboardCopy size={18} className="mt-0.5 shrink-0 text-slate-500" />
             <div>
               <strong className="text-slate-900">¿Para qué sirve esto?</strong> Mostramos lo que
               tendría que haber en cada cuenta según los movimientos cargados. Cada mes compará con

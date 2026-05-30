@@ -155,7 +155,7 @@ export default function MiPerfilPage() {
                   { k: 'Email secundario', v: '—', icon: <AtSign size={14} />, action: 'Agregar' },
                 ].map((f) => (
                   <div key={f.k} className="flex items-center gap-3 px-4 py-3 hover:bg-slate-50">
-                    <div className="shrink-0 text-slate-400">{f.icon}</div>
+                    <div className="shrink-0 text-slate-500">{f.icon}</div>
                     <div className="w-40 shrink-0 text-xs text-slate-500">{f.k}</div>
                     <div className="flex-1 truncate text-sm font-medium text-slate-900">{f.v}</div>
                     <button
@@ -173,7 +173,7 @@ export default function MiPerfilPage() {
 
           <Card className="mt-3 border-slate-200 bg-slate-50">
             <CardContent className="flex items-start gap-3 p-4 text-sm text-slate-600">
-              <ShieldCheck size={18} className="mt-0.5 shrink-0 text-slate-400" />
+              <ShieldCheck size={18} className="mt-0.5 shrink-0 text-slate-500" />
               <div>
                 <strong className="text-slate-900">
                   Cambios confirmados con código al celular
@@ -354,7 +354,7 @@ export default function MiPerfilPage() {
                         Verificá que tu canal recibe los códigos
                       </div>
                     </div>
-                    <ChevronRight size={16} className="text-slate-400" />
+                    <ChevronRight size={16} className="text-slate-500" />
                   </button>
                 </div>
               </CardContent>

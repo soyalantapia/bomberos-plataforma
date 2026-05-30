@@ -105,7 +105,7 @@ export default function MobileTacticalPage() {
               <div
                 className={cn(
                   'text-xs uppercase tracking-wider',
-                  modoNoche ? 'text-red-300' : 'text-slate-400',
+                  modoNoche ? 'text-red-300' : 'text-slate-500',
                 )}
               >
                 Próximo PAR
@@ -171,7 +171,7 @@ export default function MobileTacticalPage() {
                         {p.nombre}
                       </div>
                       <div
-                        className={cn('text-xs', modoNoche ? 'text-red-300/70' : 'text-slate-400')}
+                        className={cn('text-xs', modoNoche ? 'text-red-300/70' : 'text-slate-500')}
                       >
                         {p.rol}
                       </div>
@@ -205,7 +205,7 @@ export default function MobileTacticalPage() {
                     Mapa táctico
                   </div>
                   <div
-                    className={cn('mt-1 text-xs', modoNoche ? 'text-red-400/70' : 'text-slate-400')}
+                    className={cn('mt-1 text-xs', modoNoche ? 'text-red-400/70' : 'text-slate-500')}
                   >
                     Móvil BV-3 · 14° rumbo · 0 km/h
                   </div>
@@ -279,7 +279,7 @@ export default function MobileTacticalPage() {
                   <div
                     className={cn(
                       'text-[10px] uppercase',
-                      modoNoche ? 'text-red-300/70' : 'text-slate-400',
+                      modoNoche ? 'text-red-300/70' : 'text-slate-500',
                     )}
                   >
                     Temp.
@@ -297,7 +297,7 @@ export default function MobileTacticalPage() {
                   <div
                     className={cn(
                       'text-[10px] uppercase',
-                      modoNoche ? 'text-red-300/70' : 'text-slate-400',
+                      modoNoche ? 'text-red-300/70' : 'text-slate-500',
                     )}
                   >
                     Viento
@@ -315,7 +315,7 @@ export default function MobileTacticalPage() {
                   <div
                     className={cn(
                       'text-[10px] uppercase',
-                      modoNoche ? 'text-red-300/70' : 'text-slate-400',
+                      modoNoche ? 'text-red-300/70' : 'text-slate-500',
                     )}
                   >
                     Hum.
@@ -333,7 +333,7 @@ export default function MobileTacticalPage() {
                   <div
                     className={cn(
                       'text-[10px] uppercase',
-                      modoNoche ? 'text-red-300/70' : 'text-slate-400',
+                      modoNoche ? 'text-red-300/70' : 'text-slate-500',
                     )}
                   >
                     Riesgo

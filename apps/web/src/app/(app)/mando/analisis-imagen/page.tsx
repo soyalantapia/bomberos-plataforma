@@ -162,7 +162,7 @@ export default function AnalisisImagenPage() {
                     className="relative aspect-square overflow-hidden rounded-lg bg-slate-200"
                   >
                     <div className="absolute inset-0 grid place-items-center">
-                      <ImageIcon size={32} className="text-slate-400" />
+                      <ImageIcon size={32} className="text-slate-500" />
                     </div>
                     <div className="absolute bottom-1 left-1 rounded bg-black/60 px-1.5 py-0.5 text-[10px] font-bold text-white">
                       Foto {i + 1}

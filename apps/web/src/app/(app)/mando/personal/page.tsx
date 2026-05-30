@@ -347,7 +347,7 @@ export default function PersonalMando() {
           {filtradas.length === 0 ? (
             <Card>
               <CardContent className="p-8 text-center">
-                <div className="mx-auto grid h-12 w-12 place-items-center rounded-full bg-slate-100 text-slate-400">
+                <div className="mx-auto grid h-12 w-12 place-items-center rounded-full bg-slate-100 text-slate-500">
                   <Users size={24} />
                 </div>
                 <h3 className="mt-3 font-semibold text-slate-900">
@@ -530,7 +530,7 @@ export default function PersonalMando() {
 
           <Card className="border-slate-200 bg-slate-50">
             <CardContent className="flex items-start gap-3 p-4 text-sm text-slate-600">
-              <Sparkles size={18} className="mt-0.5 shrink-0 text-slate-400" />
+              <Sparkles size={18} className="mt-0.5 shrink-0 text-slate-500" />
               <div>
                 <strong className="text-slate-900">El sistema sugiere:</strong> si un turno queda
                 sin cubrir, Faro propone candidatos según disponibilidad, cercanía, horas trabajadas
@@ -603,7 +603,7 @@ export default function PersonalMando() {
                       </div>
                       <div className="text-right">
                         <div className="flex items-center gap-1 text-sm font-bold text-slate-900">
-                          <Clock size={14} className="text-slate-400" />
+                          <Clock size={14} className="text-slate-500" />
                           {r.horas} hs
                         </div>
                         <div className="flex items-center gap-1 text-xs text-slate-600">

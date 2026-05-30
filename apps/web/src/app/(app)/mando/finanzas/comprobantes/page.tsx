@@ -242,7 +242,7 @@ export default function ComprobantesPage() {
             <div className="relative min-w-[200px] flex-1">
               <Search
                 size={14}
-                className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
+                className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500"
               />
               <Input
                 value={busqueda}
@@ -320,7 +320,7 @@ export default function ComprobantesPage() {
                     >
                       <div className="absolute inset-0 flex items-center justify-center">
                         {tieneComp ? (
-                          <FileText size={48} className="text-slate-400" />
+                          <FileText size={48} className="text-slate-500" />
                         ) : (
                           <AlertTriangle size={48} className="text-status-warn-fg" />
                         )}
@@ -355,7 +355,7 @@ export default function ComprobantesPage() {
                         <div className="truncate text-xs text-slate-600">
                           {m.contraparte}
                           {m.cuitContraparte && (
-                            <span className="ml-1 font-mono text-[10px] text-slate-400">
+                            <span className="ml-1 font-mono text-[10px] text-slate-500">
                               {m.cuitContraparte}
                             </span>
                           )}
@@ -382,7 +382,7 @@ export default function ComprobantesPage() {
 
         <Card className="border-slate-200 bg-slate-50">
           <CardContent className="flex items-start gap-3 p-4 text-sm text-slate-600">
-            <Receipt size={18} className="mt-0.5 shrink-0 text-slate-400" />
+            <Receipt size={18} className="mt-0.5 shrink-0 text-slate-500" />
             <div>
               <strong className="text-slate-900">¿Por qué necesitás facturas?</strong> Cada gasto
               del cuartel tiene que tener su factura o recibo (la pide AFIP). Subí la foto del
@@ -421,7 +421,7 @@ export default function ComprobantesPage() {
                 <Upload size={32} className="text-brand-600" />
                 <span className="font-semibold text-slate-900">Subir factura o recibo</span>
                 <span className="text-xs text-slate-500">Foto o PDF · hasta 10MB</span>
-                <span className="text-xs text-slate-400">o sacá una foto con la cámara</span>
+                <span className="text-xs text-slate-500">o sacá una foto con la cámara</span>
               </button>
               <Button intent="ghost" fullWidth className="mt-3" onClick={procesarOcr}>
                 <Camera size={14} /> Tomar foto
@@ -565,7 +565,7 @@ export default function ComprobantesPage() {
         {detalleSel && (
           <div className="space-y-3 text-sm">
             <div className="grid h-40 place-items-center rounded-lg bg-gradient-to-br from-slate-100 to-slate-200">
-              <FileText size={56} className="text-slate-400" />
+              <FileText size={56} className="text-slate-500" />
             </div>
             <dl className="grid grid-cols-2 gap-2 text-xs">
               <dt className="text-slate-500">Tipo</dt>

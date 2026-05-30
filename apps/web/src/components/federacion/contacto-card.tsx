@@ -67,7 +67,7 @@ export function ContactoCard({ contacto }: Props) {
           <h3 className="truncate text-base font-bold text-slate-900">{contacto.nombre}</h3>
           <p className="truncate text-sm text-slate-600">{contacto.cargo}</p>
           {contacto.organismo && (
-            <p className="truncate text-xs text-slate-400">{contacto.organismo}</p>
+            <p className="truncate text-xs text-slate-500">{contacto.organismo}</p>
           )}
         </div>
       </div>

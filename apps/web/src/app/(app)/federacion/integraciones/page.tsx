@@ -260,7 +260,7 @@ export default function IntegracionesFed() {
             <Webhook size={18} className="text-slate-700" /> Registro de llamadas
           </h3>
           <div className="rounded-lg border border-dashed border-slate-300 bg-slate-50 p-8 text-center">
-            <Clock size={28} className="mx-auto text-slate-400" />
+            <Clock size={28} className="mx-auto text-slate-500" />
             <p className="mt-2 text-sm text-slate-600">
               Sin actividad todavía. Cuando una integración esté activa, las llamadas aparecen acá
               con su tiempo de respuesta y resultado.

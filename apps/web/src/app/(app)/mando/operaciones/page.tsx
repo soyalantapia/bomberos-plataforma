@@ -472,7 +472,7 @@ export default function OperacionesPage() {
 
           <Card className="border-slate-200 bg-slate-50">
             <CardContent className="flex items-start gap-3 p-4 text-sm text-slate-600">
-              <Radio size={18} className="mt-0.5 shrink-0 text-slate-400" />
+              <Radio size={18} className="mt-0.5 shrink-0 text-slate-500" />
               <div>
                 <strong className="text-slate-900">Operativo en vivo:</strong> seguís la posición
                 del móvil con la app del jefe de servicio enviando GPS cada 30 segundos. El
@@ -563,7 +563,7 @@ export default function OperacionesPage() {
                         {s.estado === 'validado' && <Badge intent="ok">Validado</Badge>}
                       </div>
                       <div className="mt-1 flex items-center gap-1 text-sm text-slate-700">
-                        <MapPin size={12} className="shrink-0 text-slate-400" />
+                        <MapPin size={12} className="shrink-0 text-slate-500" />
                         <span className="truncate">{s.direccion}</span>
                       </div>
                       <div className="mt-1 text-xs text-slate-500">
@@ -594,9 +594,9 @@ export default function OperacionesPage() {
                         </Button>
                       )}
                       {isExpanded ? (
-                        <ChevronUp size={18} className="text-slate-400" />
+                        <ChevronUp size={18} className="text-slate-500" />
                       ) : (
-                        <ChevronDown size={18} className="text-slate-400" />
+                        <ChevronDown size={18} className="text-slate-500" />
                       )}
                     </div>
                   </div>

@@ -122,7 +122,7 @@ export default function EquidadGeneroPage() {
               title={`Mujeres: ${eq.mujeres}`}
             />
             <div
-              className="h-full bg-slate-400"
+              className="h-full bg-slate-500"
               style={{ width: `${eq.total ? (eq.varones / eq.total) * 100 : 0}%` }}
               title={`Varones: ${eq.varones}`}
             />
@@ -139,7 +139,7 @@ export default function EquidadGeneroPage() {
             </div>
             <div className="rounded-xl bg-slate-50 p-3">
               <div className="inline-flex items-center gap-1.5 text-xs font-medium text-slate-600">
-                <span className="h-2.5 w-2.5 rounded-full bg-slate-400" /> Varones
+                <span className="h-2.5 w-2.5 rounded-full bg-slate-500" /> Varones
               </div>
               <div className="mt-1 text-xl font-bold text-slate-900">
                 {eq.varones}{' '}
@@ -187,7 +187,7 @@ export default function EquidadGeneroPage() {
                     )}
                     {f.varones + f.otros > 0 && (
                       <div
-                        className="grid h-full flex-1 place-items-center bg-slate-400 text-[10px] font-bold text-white"
+                        className="grid h-full flex-1 place-items-center bg-slate-500 text-[10px] font-bold text-white"
                         title={`Varones/otros: ${f.varones + f.otros}`}
                       >
                         {f.varones + f.otros}
@@ -236,7 +236,7 @@ export default function EquidadGeneroPage() {
             </div>
             <div className="rounded-xl bg-slate-50 p-3">
               <div className="inline-flex items-center gap-1.5 text-xs font-medium text-slate-600">
-                <span className="h-2.5 w-2.5 rounded-full bg-slate-400" /> Varones
+                <span className="h-2.5 w-2.5 rounded-full bg-slate-500" /> Varones
               </div>
               <div className="mt-1 text-2xl font-bold text-slate-900">{ef.globalVarones}%</div>
               <div className="text-[11px] text-slate-500">promedio · {ef.nVarones} activos</div>
@@ -263,7 +263,7 @@ export default function EquidadGeneroPage() {
                   </div>
                   <div className="h-2 overflow-hidden rounded-full bg-slate-100">
                     <div
-                      className="h-full rounded-full bg-slate-400"
+                      className="h-full rounded-full bg-slate-500"
                       style={{ width: `${c.varones}%` }}
                     />
                   </div>

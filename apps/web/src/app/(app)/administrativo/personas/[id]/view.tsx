@@ -404,7 +404,7 @@ export default function FichaPersonaView() {
                         </div>
                         {c.vencimiento && (
                           <div className="mt-2 flex items-center gap-2">
-                            <Calendar size={11} className="text-slate-400" />
+                            <Calendar size={11} className="text-slate-500" />
                             <span className="text-xs text-slate-600">
                               Vence {fmtFechaCorta(c.vencimiento)}
                             </span>
@@ -511,7 +511,7 @@ export default function FichaPersonaView() {
 
       <Card className="border-slate-200 bg-slate-50">
         <CardContent className="flex items-start gap-3 p-4 text-sm text-slate-600">
-          <History size={18} className="mt-0.5 shrink-0 text-slate-400" />
+          <History size={18} className="mt-0.5 shrink-0 text-slate-500" />
           <div>
             <strong className="text-slate-900">Historial de cambios:</strong> cada edición de esta
             ficha queda en el{' '}
@@ -553,7 +553,7 @@ function FieldRow({
 }) {
   return (
     <div className="flex items-center gap-3 px-4 py-3 hover:bg-slate-50">
-      {icon && <div className="shrink-0 text-slate-400">{icon}</div>}
+      {icon && <div className="shrink-0 text-slate-500">{icon}</div>}
       <div className="w-36 shrink-0 text-xs text-slate-500">{k}</div>
       <div className="flex-1 truncate text-sm font-medium text-slate-900">{v}</div>
       {badge && <Badge intent={badge.intent}>{badge.label}</Badge>}

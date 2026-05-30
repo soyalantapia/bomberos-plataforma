@@ -232,7 +232,7 @@ export default function BomberoInicio() {
                       Check-in geolocalizado en el cuartel
                     </div>
                   </div>
-                  <ArrowRight size={18} className="shrink-0 text-slate-400" />
+                  <ArrowRight size={18} className="shrink-0 text-slate-500" />
                 </CardContent>
               </Card>
             </Link>
@@ -256,7 +256,7 @@ export default function BomberoInicio() {
                         : 'Datos al día'}
                     </div>
                   </div>
-                  <ArrowRight size={18} className="shrink-0 text-slate-400" />
+                  <ArrowRight size={18} className="shrink-0 text-slate-500" />
                 </CardContent>
               </Card>
             </Link>

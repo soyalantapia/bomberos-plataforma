@@ -112,7 +112,7 @@ const MENSAJES_RECIENTES: Mensaje[] = [
 ];
 
 const ESTADO_COLOR = {
-  enviado: 'text-slate-400',
+  enviado: 'text-slate-500',
   entregado: 'text-slate-500',
   leido: 'text-brand-600',
   respondido: 'text-status-ok-fg',
@@ -315,7 +315,7 @@ export default function WhatsAppPage() {
           {/* Privacidad */}
           <Card className="border-slate-200 bg-slate-50">
             <CardContent className="flex items-start gap-3 p-4 text-sm text-slate-600">
-              <AlertCircle size={18} className="mt-0.5 shrink-0 text-slate-400" />
+              <AlertCircle size={18} className="mt-0.5 shrink-0 text-slate-500" />
               <div>
                 <strong className="text-slate-900">Privacidad:</strong> el WhatsApp del voluntario
                 se guarda encriptado. Cada despacho permite responder "STOP" para no recibir más.

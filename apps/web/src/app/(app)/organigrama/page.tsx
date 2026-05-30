@@ -117,7 +117,7 @@ export default function OrganigramaPage() {
           <h2 className="text-sm font-bold uppercase tracking-wide text-slate-700">
             Consejo Directivo
           </h2>
-          <span className="text-xs text-slate-400">· administrativo</span>
+          <span className="text-xs text-slate-500">· administrativo</span>
         </div>
 
         {/* Presidente — autoridad máxima */}
@@ -164,7 +164,7 @@ export default function OrganigramaPage() {
               {m.telefono && (
                 <a
                   href={`tel:${soloDigitos(m.telefono)}`}
-                  className="hover:bg-brand-50 hover:text-brand-700 grid h-9 w-9 shrink-0 place-items-center rounded-full text-slate-400 transition-colors"
+                  className="hover:bg-brand-50 hover:text-brand-700 grid h-9 w-9 shrink-0 place-items-center rounded-full text-slate-500 transition-colors"
                   aria-label={`Llamar a ${m.nombre}`}
                 >
                   <Phone size={16} />
@@ -182,7 +182,7 @@ export default function OrganigramaPage() {
           <h2 className="text-sm font-bold uppercase tracking-wide text-slate-700">
             Cuerpo Activo
           </h2>
-          <span className="text-xs text-slate-400">· operativo</span>
+          <span className="text-xs text-slate-500">· operativo</span>
         </div>
         <div className="grid gap-2 sm:grid-cols-2">
           {[jefeCuerpo, segundoJefe].filter(Boolean).map((p) => (
@@ -221,7 +221,7 @@ export default function OrganigramaPage() {
             </h2>
           </div>
           <div className="relative sm:w-64">
-            <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+            <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" />
             <input
               type="text"
               value={busqueda}
@@ -233,7 +233,7 @@ export default function OrganigramaPage() {
               <button
                 type="button"
                 onClick={() => setBusqueda('')}
-                className="absolute right-2 top-1/2 grid h-5 w-5 -translate-y-1/2 place-items-center rounded-full text-slate-400 hover:bg-slate-100"
+                className="absolute right-2 top-1/2 grid h-5 w-5 -translate-y-1/2 place-items-center rounded-full text-slate-500 hover:bg-slate-100"
               >
                 <X size={12} />
               </button>
@@ -285,7 +285,7 @@ export default function OrganigramaPage() {
                       </a>
                     </div>
                   ) : (
-                    <div className="mt-2 text-xs italic text-slate-400">
+                    <div className="mt-2 text-xs italic text-slate-500">
                       Sin responsable asignado
                     </div>
                   )}

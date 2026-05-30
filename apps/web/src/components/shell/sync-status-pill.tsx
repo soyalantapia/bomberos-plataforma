@@ -232,7 +232,7 @@ export function SyncStatusPill() {
                         )}
                       </div>
                       <div className="truncate text-xs text-slate-700">{item.descripcion}</div>
-                      <div className="mt-0.5 text-[10px] text-slate-400">{item.cuando}</div>
+                      <div className="mt-0.5 text-[10px] text-slate-500">{item.cuando}</div>
                     </div>
                   </motion.div>
                 ))}

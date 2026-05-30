@@ -531,7 +531,7 @@ export default function RegistrarServicio() {
                 >
                   <Paperclip
                     size={28}
-                    className={cn('mx-auto', arrastrando ? 'text-brand-600' : 'text-slate-400')}
+                    className={cn('mx-auto', arrastrando ? 'text-brand-600' : 'text-slate-500')}
                   />
                   <div className="mt-2 text-sm font-medium text-slate-700">
                     {arrastrando ? 'Soltá para subir' : 'Arrastrá archivos o tocá un botón'}

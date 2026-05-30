@@ -139,7 +139,7 @@ export default function DisponibilidadPage() {
                       className="px-2 py-3 text-center text-xs font-semibold text-slate-700"
                     >
                       <div className="flex flex-col items-center">
-                        <span className="text-slate-400">{d.label}</span>
+                        <span className="text-slate-500">{d.label}</span>
                         <span className="text-[10px] uppercase">{d.nombre.slice(0, 3)}</span>
                       </div>
                     </th>
@@ -171,7 +171,7 @@ export default function DisponibilidadPage() {
                                 'grid h-12 w-12 place-items-center rounded-lg transition-colors',
                                 activo
                                   ? 'bg-status-ok text-white shadow-md'
-                                  : 'bg-slate-100 text-slate-400 hover:bg-slate-200',
+                                  : 'bg-slate-100 text-slate-500 hover:bg-slate-200',
                               )}
                               aria-label={`${d.nombre} ${t.label} ${activo ? 'disponible' : 'no disponible'}`}
                             >

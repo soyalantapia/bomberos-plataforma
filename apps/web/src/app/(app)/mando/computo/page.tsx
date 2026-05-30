@@ -186,7 +186,7 @@ export default function ComputoPage() {
                           <div className="text-lg font-bold tabular-nums text-slate-900">
                             {c.total}
                           </div>
-                          <div className="text-[10px] uppercase text-slate-400">hs total</div>
+                          <div className="text-[10px] uppercase text-slate-500">hs total</div>
                         </div>
                       </div>
                       {desglose.length > 0 && (

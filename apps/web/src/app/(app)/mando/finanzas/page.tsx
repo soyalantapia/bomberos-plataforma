@@ -341,7 +341,7 @@ export default function FinanzasDashboardPage() {
                   >
                     <div className="flex h-32 w-full items-end justify-center gap-1">
                       {sinDatos ? (
-                        <div className="w-full self-center text-center text-[10px] text-slate-400">
+                        <div className="w-full self-center text-center text-[10px] text-slate-500">
                           sin datos
                         </div>
                       ) : (

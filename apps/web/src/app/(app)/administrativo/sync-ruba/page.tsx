@@ -291,7 +291,7 @@ export default function SyncRubaPage() {
                                 <span className="rounded bg-slate-100 px-1.5 py-0.5 text-slate-600 line-through">
                                   {c.faroValor}
                                 </span>
-                                <ChevronRight size={10} className="text-slate-400" />
+                                <ChevronRight size={10} className="text-slate-500" />
                                 <span className="bg-brand-100 text-brand-800 rounded px-1.5 py-0.5 font-medium">
                                   {c.rubaValor}
                                 </span>
@@ -346,7 +346,7 @@ export default function SyncRubaPage() {
       {/* Documentación contextual */}
       <Card className="border-slate-200 bg-slate-50">
         <CardContent className="flex items-start gap-3 p-4 text-sm text-slate-600">
-          <Database size={18} className="mt-0.5 shrink-0 text-slate-400" />
+          <Database size={18} className="mt-0.5 shrink-0 text-slate-500" />
           <div>
             <strong className="text-slate-900">Por qué es importante:</strong> RUBA es el registro
             reconocido por el Art. 9 de la Ley 25.054. Si no actualizás, los datos críticos

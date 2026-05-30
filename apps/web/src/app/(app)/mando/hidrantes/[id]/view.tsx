@@ -270,7 +270,7 @@ export default function FichaHidranteView() {
                         ? 'text-status-risk-fg'
                         : variacion > 50
                           ? 'text-status-ok-fg'
-                          : 'text-slate-400',
+                          : 'text-slate-500',
                     )}
                   >
                     {variacion === 0

@@ -121,7 +121,7 @@ export default function BuscarPage() {
           <div className="relative">
             <SearchIcon
               size={18}
-              className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400"
+              className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500"
             />
             <Input
               autoFocus
@@ -218,7 +218,7 @@ export default function BuscarPage() {
                       {d.cuerpo}
                     </div>
                   </div>
-                  <ChevronRight size={16} className="shrink-0 text-slate-400" />
+                  <ChevronRight size={16} className="shrink-0 text-slate-500" />
                 </Link>
               ))}
             </ResultGroup>
@@ -282,7 +282,7 @@ function PersonaRow({ p }: { p: Persona }) {
           {fmtJerarquia(p.jerarquia)} · Legajo {p.legajo}
         </div>
       </div>
-      <ArrowRight size={14} className="shrink-0 text-slate-400" />
+      <ArrowRight size={14} className="shrink-0 text-slate-500" />
     </Link>
   );
 }
@@ -308,7 +308,7 @@ function ServicioRow({ s }: { s: Servicio }) {
         </div>
         <div className="mt-0.5 text-xs text-slate-600">{fmtFechaHora(s.horaSalida)}</div>
       </div>
-      <ArrowRight size={14} className="shrink-0 text-slate-400" />
+      <ArrowRight size={14} className="shrink-0 text-slate-500" />
     </Link>
   );
 }

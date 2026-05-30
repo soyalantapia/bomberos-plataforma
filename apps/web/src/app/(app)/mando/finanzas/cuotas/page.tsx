@@ -179,7 +179,7 @@ export default function CuotasPage() {
             <div className="relative min-w-[200px] flex-1">
               <Search
                 size={14}
-                className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
+                className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500"
               />
               <Input
                 value={busqueda}
@@ -204,7 +204,7 @@ export default function CuotasPage() {
               </select>
               <ChevronDown
                 size={12}
-                className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-slate-400"
+                className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-slate-500"
               />
             </div>
             <div className="flex gap-1">
@@ -425,7 +425,7 @@ export default function CuotasPage() {
 
         <Card className="border-slate-200 bg-slate-50">
           <CardContent className="flex items-start gap-3 p-4 text-sm text-slate-600">
-            <BadgeDollarSign size={18} className="mt-0.5 shrink-0 text-slate-400" />
+            <BadgeDollarSign size={18} className="mt-0.5 shrink-0 text-slate-500" />
             <div>
               <strong className="text-slate-900">¿Qué son las cuotas sociales?</strong> Es el aporte
               mensual de los socios que ayudan a sostener el cuartel (no son los bomberos activos).
@@ -478,7 +478,7 @@ export default function CuotasPage() {
               </select>
               <ChevronDown
                 size={14}
-                className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-400"
+                className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-500"
               />
             </div>
           </div>
@@ -489,7 +489,7 @@ export default function CuotasPage() {
                 value={cobroCaja}
                 onChange={(e) => setCobroCaja(e.target.value)}
                 disabled={cajas.length === 0}
-                className="focus:border-brand-400 focus:ring-brand-100 w-full appearance-none rounded-lg border border-slate-200 bg-white py-2 pl-3 pr-9 text-sm outline-none focus:ring-2 disabled:bg-slate-50 disabled:text-slate-400"
+                className="focus:border-brand-400 focus:ring-brand-100 w-full appearance-none rounded-lg border border-slate-200 bg-white py-2 pl-3 pr-9 text-sm outline-none focus:ring-2 disabled:bg-slate-50 disabled:text-slate-500"
               >
                 {cajas.length === 0 && <option value="">Sin cajas configuradas</option>}
                 {cajas.map((c) => (
@@ -500,7 +500,7 @@ export default function CuotasPage() {
               </select>
               <ChevronDown
                 size={14}
-                className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-400"
+                className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-500"
               />
             </div>
           </div>

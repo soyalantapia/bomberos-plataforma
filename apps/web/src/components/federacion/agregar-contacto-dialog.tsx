@@ -211,7 +211,7 @@ export function AgregarContactoDialog({ open, onClose }: Props) {
                   !habilitado && 'cursor-not-allowed opacity-50',
                 )}
               >
-                {!habilitado && <Lock size={14} className="mt-0.5 shrink-0 text-slate-400" />}
+                {!habilitado && <Lock size={14} className="mt-0.5 shrink-0 text-slate-500" />}
                 <div className="min-w-0">
                   <div className="text-sm font-medium text-slate-900">{label}</div>
                   {!habilitado && (

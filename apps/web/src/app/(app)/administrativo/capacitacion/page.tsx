@@ -270,7 +270,7 @@ export default function CapacitacionGestion() {
                     <div className="text-xs text-slate-500">{c.requiere}</div>
                   </div>
                   <Badge intent="brand">{c.cursos}</Badge>
-                  <ChevronRight size={16} className="text-slate-400" />
+                  <ChevronRight size={16} className="text-slate-500" />
                 </button>
               ))}
             </div>

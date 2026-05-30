@@ -141,7 +141,7 @@ export default function AgendaFederalPage() {
               <span
                 className={cn(
                   'ml-1.5 text-xs font-bold',
-                  nivel === n.id ? 'text-brand-700' : 'text-slate-400',
+                  nivel === n.id ? 'text-brand-700' : 'text-slate-500',
                 )}
               >
                 {n.count}
@@ -160,7 +160,7 @@ export default function AgendaFederalPage() {
       {/* Búsqueda + filtros en una línea */}
       <div className="flex items-center gap-2">
         <div className="relative flex-1">
-          <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
+          <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500" />
           <input
             type="text"
             value={busqueda}
@@ -172,7 +172,7 @@ export default function AgendaFederalPage() {
             <button
               type="button"
               onClick={() => setBusqueda('')}
-              className="absolute right-2 top-1/2 grid h-6 w-6 -translate-y-1/2 place-items-center rounded-full text-slate-400 hover:bg-slate-100 hover:text-slate-700"
+              className="absolute right-2 top-1/2 grid h-6 w-6 -translate-y-1/2 place-items-center rounded-full text-slate-500 hover:bg-slate-100 hover:text-slate-700"
             >
               <X size={13} />
             </button>

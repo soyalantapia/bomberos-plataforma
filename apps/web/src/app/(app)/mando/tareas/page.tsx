@@ -245,7 +245,7 @@ export default function MandoTareasPage() {
 
         <Card className="border-slate-200 bg-slate-50">
           <CardContent className="flex items-start gap-3 p-4 text-sm text-slate-600">
-            <Ban size={18} className="mt-0.5 shrink-0 text-slate-400" />
+            <Ban size={18} className="mt-0.5 shrink-0 text-slate-500" />
             <div>
               <strong className="text-slate-900">Cadena de mando:</strong> si asignaste una tarea y
               la persona no la cumplió, queda registrado que vos informaste en tiempo y forma. Si

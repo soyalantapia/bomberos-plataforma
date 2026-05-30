@@ -359,7 +359,7 @@ export default function BroadcastPage() {
                 <p className="mt-1 whitespace-pre-wrap text-sm text-slate-700">
                   {cuerpo || 'El cuerpo del mensaje aparecerá aquí...'}
                 </p>
-                <div className="mt-3 text-[10px] text-slate-400">
+                <div className="mt-3 text-[10px] text-slate-500">
                   Mariana Pereyra · Comandante · Hoy
                 </div>
               </div>

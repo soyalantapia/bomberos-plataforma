@@ -190,7 +190,7 @@ export default function CumplimientoPage() {
                 <Card key={persona.id}>
                   <CardContent className="p-3.5">
                     <div className="flex items-center gap-3">
-                      <div className="w-6 shrink-0 text-center text-sm font-bold text-slate-400">
+                      <div className="w-6 shrink-0 text-center text-sm font-bold text-slate-500">
                         {idx + 1}
                       </div>
                       <Avatar
@@ -232,7 +232,7 @@ export default function CumplimientoPage() {
                         <div className="text-lg font-bold tabular-nums text-slate-900">
                           {c.global}%
                         </div>
-                        <div className="text-[10px] uppercase text-slate-400">cumple</div>
+                        <div className="text-[10px] uppercase text-slate-500">cumple</div>
                       </div>
                     </div>
 
@@ -340,7 +340,7 @@ export default function CumplimientoPage() {
                 return (
                   <Card key={f.id}>
                     <CardContent className="flex items-center gap-3 p-3">
-                      <Clock size={16} className="shrink-0 text-slate-400" />
+                      <Clock size={16} className="shrink-0 text-slate-500" />
                       <Avatar
                         name={p ? `${p.nombre} ${p.apellido}` : '—'}
                         src={p?.fotoUrl}

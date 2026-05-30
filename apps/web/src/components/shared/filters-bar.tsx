@@ -44,7 +44,7 @@ export function FiltersBar<T extends string>({
             <div className="relative flex-1">
               <Search
                 size={16}
-                className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
+                className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-slate-500"
               />
               <Input
                 value={search ?? ''}
@@ -56,7 +56,7 @@ export function FiltersBar<T extends string>({
                 <button
                   type="button"
                   onClick={() => onSearch('')}
-                  className="absolute right-2 top-1/2 -translate-y-1/2 rounded-md p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-700"
+                  className="absolute right-2 top-1/2 -translate-y-1/2 rounded-md p-1 text-slate-500 hover:bg-slate-100 hover:text-slate-700"
                   aria-label="Limpiar búsqueda"
                 >
                   <X size={14} />

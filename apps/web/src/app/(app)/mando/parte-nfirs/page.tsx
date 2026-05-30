@@ -322,7 +322,7 @@ export default function ParteNFIRSPage() {
 
         <Card className="bg-slate-50">
           <CardContent className="flex items-start gap-3 p-4 text-sm text-slate-600">
-            <ShieldCheck size={18} className="mt-0.5 shrink-0 text-slate-400" />
+            <ShieldCheck size={18} className="mt-0.5 shrink-0 text-slate-500" />
             <div>
               <strong className="text-slate-900">Queda registrado de forma permanente.</strong> El
               parte se vincula con la rendición del mes y no se puede modificar después de firmarlo.
@@ -449,7 +449,7 @@ export default function ParteNFIRSPage() {
                     </select>
                     <ChevronDown
                       size={14}
-                      className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-400"
+                      className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-500"
                     />
                   </div>
                   {errors.tipo && (

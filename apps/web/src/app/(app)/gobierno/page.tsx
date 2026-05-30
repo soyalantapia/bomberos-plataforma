@@ -176,7 +176,7 @@ export default function OrdenInterno() {
                     <div className="font-semibold text-slate-900">{s.nombre}</div>
                     <div className="mt-0.5 text-xs text-slate-500">{s.jerarquia}</div>
                   </div>
-                  <ChevronRight size={16} className="shrink-0 text-slate-400" />
+                  <ChevronRight size={16} className="shrink-0 text-slate-500" />
                 </div>
                 <div className="mt-3 flex items-center justify-between text-xs">
                   <Badge intent="neutral">{s.personasIds.length} personas</Badge>

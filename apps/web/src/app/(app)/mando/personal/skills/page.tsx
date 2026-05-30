@@ -272,7 +272,7 @@ export default function SkillsMatrixPage() {
                     </div>
                   </Link>
                   {cursadas.length === 0 ? (
-                    <div className="mt-2 text-xs italic text-slate-400">
+                    <div className="mt-2 text-xs italic text-slate-500">
                       Sin especialidades cursadas
                     </div>
                   ) : (

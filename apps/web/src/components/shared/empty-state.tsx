@@ -31,7 +31,7 @@ interface Props {
 
 const VARIANT_CONFIG = {
   default: {
-    iconBg: 'bg-slate-100 text-slate-400',
+    iconBg: 'bg-slate-100 text-slate-500',
     cardBg: '',
   },
   success: {

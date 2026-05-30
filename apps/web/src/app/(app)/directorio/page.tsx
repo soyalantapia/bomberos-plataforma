@@ -96,7 +96,7 @@ export default function DirectorioFederacionPage() {
 
       {/* Búsqueda al frente */}
       <div className="relative">
-        <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
+        <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500" />
         <input
           type="text"
           value={busqueda}
@@ -108,7 +108,7 @@ export default function DirectorioFederacionPage() {
           <button
             type="button"
             onClick={() => setBusqueda('')}
-            className="absolute right-2 top-1/2 grid h-6 w-6 -translate-y-1/2 place-items-center rounded-full text-slate-400 hover:bg-slate-100 hover:text-slate-700"
+            className="absolute right-2 top-1/2 grid h-6 w-6 -translate-y-1/2 place-items-center rounded-full text-slate-500 hover:bg-slate-100 hover:text-slate-700"
           >
             <X size={13} />
           </button>
@@ -150,7 +150,7 @@ export default function DirectorioFederacionPage() {
                         {cuartel && ` · ${cuartel.nombre}`}
                       </div>
                     </div>
-                    <ChevronRight size={16} className="shrink-0 text-slate-400" />
+                    <ChevronRight size={16} className="shrink-0 text-slate-500" />
                   </motion.button>
                 );
               })}

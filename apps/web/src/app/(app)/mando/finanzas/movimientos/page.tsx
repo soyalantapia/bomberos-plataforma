@@ -222,7 +222,7 @@ export default function MovimientosPage() {
               <div className="relative min-w-[200px] flex-1">
                 <Search
                   size={14}
-                  className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
+                  className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500"
                 />
                 <Input
                   value={busqueda}
@@ -288,7 +288,7 @@ export default function MovimientosPage() {
                 </select>
                 <ChevronDown
                   size={12}
-                  className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-slate-400"
+                  className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-slate-500"
                 />
               </div>
 
@@ -310,7 +310,7 @@ export default function MovimientosPage() {
                 </select>
                 <ChevronDown
                   size={12}
-                  className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-slate-400"
+                  className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-slate-500"
                 />
               </div>
 
@@ -330,7 +330,7 @@ export default function MovimientosPage() {
                 </select>
                 <ChevronDown
                   size={12}
-                  className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-slate-400"
+                  className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-slate-500"
                 />
               </div>
 
@@ -588,7 +588,7 @@ export default function MovimientosPage() {
                                 </div>
                               </div>
                             ) : (
-                              <span className="text-slate-400">—</span>
+                              <span className="text-slate-500">—</span>
                             )}
                           </td>
                           <td className="px-3 py-2 text-right">
@@ -657,7 +657,7 @@ export default function MovimientosPage() {
 
         <Card className="border-slate-200 bg-slate-50">
           <CardContent className="flex items-start gap-3 p-4 text-sm text-slate-600">
-            <BookOpen size={18} className="mt-0.5 shrink-0 text-slate-400" />
+            <BookOpen size={18} className="mt-0.5 shrink-0 text-slate-500" />
             <div>
               <strong className="text-slate-900">Buena práctica:</strong> cada movimiento queda con
               la firma de quien lo cargó y el día y hora. Cuando anulás algo, no se borra del

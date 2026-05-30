@@ -219,7 +219,7 @@ export default function FichaAuditView() {
                     <span className="font-medium text-slate-900">
                       {actor ? `${actor.nombre} ${actor.apellido}` : evento.actor}
                     </span>
-                    <ExternalLink size={11} className="text-slate-400" />
+                    <ExternalLink size={11} className="text-slate-500" />
                   </Link>
                 </dd>
               </div>

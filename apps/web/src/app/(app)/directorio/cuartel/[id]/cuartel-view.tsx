@@ -131,7 +131,7 @@ export function CuartelDetalladoView({ slug }: { slug: string }) {
               <MapPin size={12} /> {cuartel.ciudad} · {cuartel.region}
             </span>
             {cuartel.matricula && (
-              <span className="font-mono text-xs text-slate-400">{cuartel.matricula}</span>
+              <span className="font-mono text-xs text-slate-500">{cuartel.matricula}</span>
             )}
           </div>
           {cuartel.jefe && (
@@ -187,7 +187,7 @@ export function CuartelDetalladoView({ slug }: { slug: string }) {
           ))}
         </div>
         <div className="relative flex-1">
-          <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+          <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" />
           <input
             type="text"
             value={busqueda}
@@ -199,7 +199,7 @@ export function CuartelDetalladoView({ slug }: { slug: string }) {
             <button
               type="button"
               onClick={() => setBusqueda('')}
-              className="absolute right-2 top-1/2 grid h-6 w-6 -translate-y-1/2 place-items-center rounded-full text-slate-400 hover:bg-slate-100"
+              className="absolute right-2 top-1/2 grid h-6 w-6 -translate-y-1/2 place-items-center rounded-full text-slate-500 hover:bg-slate-100"
             >
               <X size={12} />
             </button>
