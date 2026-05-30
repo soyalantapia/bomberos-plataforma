@@ -168,7 +168,7 @@ export default function GovernanceFederacionPage() {
                     </div>
                   </div>
                   {g.riesgo === 'ok' ? (
-                    <span className="inline-flex items-center gap-1 text-xs font-medium text-slate-400">
+                    <span className="inline-flex items-center gap-1 text-xs font-medium text-slate-500">
                       <ShieldCheck size={14} /> Sin observaciones
                     </span>
                   ) : pedido ? (
