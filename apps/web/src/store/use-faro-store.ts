@@ -70,6 +70,8 @@ interface State {
   modoSimple: boolean;
   /** IDs de guardias que el bombero confirmó (transaccional, persiste). */
   guardiasConfirmadas: string[];
+  /** Si ya le ofrecimos el modo simple al bombero (para no repetir el cartel). */
+  modoSimpleOfrecido: boolean;
   sesion: SesionUsuario | null;
   cuarteles: Cuartel[];
   personas: Persona[];
@@ -171,6 +173,7 @@ interface Actions {
   solicitarInformeGobernanza: (cuartelId: string, nombre: string) => void;
   // PREFERENCIAS UX
   setModoSimple: (v: boolean) => void;
+  marcarModoSimpleOfrecido: () => void;
   // GUARDIAS
   confirmarGuardia: (id: string) => void;
 }
@@ -181,6 +184,7 @@ const initialState: State = {
   hidratado: false,
   modoSimple: false,
   guardiasConfirmadas: [],
+  modoSimpleOfrecido: false,
   sesion: null,
   cuarteles: cuartelesMock,
   personas: personasMock,
@@ -863,6 +867,9 @@ export const useFaroStore = create<FaroStore>()(
       setModoSimple(v) {
         set({ modoSimple: v });
       },
+      marcarModoSimpleOfrecido() {
+        set({ modoSimpleOfrecido: true });
+      },
       confirmarGuardia(id) {
         if (get().guardiasConfirmadas.includes(id)) return;
         set({ guardiasConfirmadas: [...get().guardiasConfirmadas, id] });
@@ -879,6 +886,7 @@ export const useFaroStore = create<FaroStore>()(
       partialize: (s) => ({
         modoSimple: s.modoSimple,
         guardiasConfirmadas: s.guardiasConfirmadas,
+        modoSimpleOfrecido: s.modoSimpleOfrecido,
         sesion: s.sesion,
         servicios: s.servicios,
         asistencias: s.asistencias,
