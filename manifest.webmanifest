@@ -1,6 +1,6 @@
 {
-  "name": "Faro · Gestión bomberil",
-  "short_name": "Faro",
+  "name": "Vulcano · Gestión bomberil",
+  "short_name": "Vulcano",
   "description": "Plataforma de gestión para bomberos voluntarios — mobile, offline y en tiempo real.",
   "start_url": "/",
   "display": "standalone",
