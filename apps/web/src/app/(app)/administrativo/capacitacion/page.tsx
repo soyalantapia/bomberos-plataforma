@@ -259,19 +259,19 @@ export default function CapacitacionGestion() {
             </h3>
             <div className="space-y-2">
               {categorias.map((c) => (
-                <button
+                <div
                   key={c.nombre}
-                  type="button"
-                  className="flex w-full items-center gap-3 rounded-xl border border-slate-200 bg-white p-3 text-left hover:border-slate-300"
+                  className="flex w-full items-center gap-3 rounded-xl border border-slate-200 bg-white p-3 text-left"
                 >
                   <div className={cn('h-10 w-1.5 rounded-full', c.color)} />
                   <div className="flex-1">
                     <div className="font-semibold text-slate-900">{c.nombre}</div>
                     <div className="text-xs text-slate-500">{c.requiere}</div>
                   </div>
-                  <Badge intent="brand">{c.cursos}</Badge>
-                  <ChevronRight size={16} className="text-slate-500" />
-                </button>
+                  <Badge intent="brand">
+                    {c.cursos} curso{c.cursos === 1 ? '' : 's'}
+                  </Badge>
+                </div>
               ))}
             </div>
           </CardContent>
