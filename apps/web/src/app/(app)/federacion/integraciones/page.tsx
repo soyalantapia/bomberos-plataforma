@@ -80,7 +80,7 @@ export default function IntegracionesFed() {
     <div className="mx-auto max-w-6xl space-y-5">
       <PageHero
         objetivo="Federación · Integraciones"
-        titulo="Conectar Faro con los sistemas que ya existen"
+        titulo="Conectar Vulcano con los sistemas que ya existen"
         descripcion="Identidad, salud laboral y coordinación operativa. Pensado para no duplicar carga y que todo quede registrado."
         icono={<Cable size={26} />}
         meta={
@@ -128,7 +128,7 @@ export default function IntegracionesFed() {
                   Arquitectura
                 </div>
                 <div className="text-lg font-bold text-slate-900">
-                  Cómo se conecta Faro a otros sistemas
+                  Cómo se conecta Vulcano a otros sistemas
                 </div>
               </div>
             </div>
@@ -140,7 +140,7 @@ export default function IntegracionesFed() {
               <div className="ring-brand-100 mx-auto mb-2 grid h-16 w-16 place-items-center rounded-2xl bg-white shadow-sm ring-2">
                 <span className="text-3xl">🚒</span>
               </div>
-              <div className="font-bold text-slate-900">Faro</div>
+              <div className="font-bold text-slate-900">Vulcano</div>
               <div className="text-slate-500">Plataforma</div>
             </div>
 

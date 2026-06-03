@@ -41,7 +41,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             <div className="bg-fire-600 grid h-7 w-7 place-items-center rounded-md">
               <Flame size={14} className="text-white" />
             </div>
-            <div className="font-bold leading-none text-slate-900">Faro</div>
+            <div className="font-bold leading-none text-slate-900">Vulcano</div>
           </div>
           <div className="ml-auto flex items-center gap-2 text-sm text-slate-500">
             <div className="border-brand-200 border-t-brand-600 h-4 w-4 animate-spin rounded-full border-2" />
@@ -77,7 +77,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             <Flame size={20} className="text-white" />
           </div>
           <div>
-            <div className="text-base font-bold leading-tight tracking-tight">Faro</div>
+            <div className="text-base font-bold leading-tight tracking-tight">Vulcano</div>
             <div className="text-xs text-white/60">{cuartel?.nombre ?? '—'}</div>
           </div>
         </div>
@@ -152,7 +152,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             <div className="bg-fire-600 grid h-7 w-7 place-items-center rounded-md">
               <Flame size={14} className="text-white" />
             </div>
-            <div className="font-bold leading-none text-slate-900">Faro</div>
+            <div className="font-bold leading-none text-slate-900">Vulcano</div>
           </div>
           <div className="hidden items-center gap-2 text-sm text-slate-600 md:flex">
             <span>{cuartel?.nombre}</span>
@@ -265,7 +265,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                   <Flame size={20} className="text-white" />
                 </div>
                 <div>
-                  <div className="font-bold leading-tight tracking-tight">Faro</div>
+                  <div className="font-bold leading-tight tracking-tight">Vulcano</div>
                   <div className="text-xs text-white/60">{cuartel?.nombre}</div>
                 </div>
               </div>

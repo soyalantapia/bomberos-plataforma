@@ -176,7 +176,7 @@ export default function ReportesPage() {
       [
         ['Reporte', titulo],
         ['Generado', demoToday().toLocaleString('es-AR')],
-        ['Origen', 'Faro · histórico reportes'],
+        ['Origen', 'Vulcano · histórico reportes'],
       ],
     );
     toast.push({ kind: 'success', title: `Descargando ${titulo}` });

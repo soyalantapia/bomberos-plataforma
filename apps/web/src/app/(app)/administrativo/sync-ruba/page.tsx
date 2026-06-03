@@ -162,8 +162,8 @@ export default function SyncRubaPage() {
               Listo para actualizar con RUBA
             </h2>
             <p className="mx-auto mt-1 max-w-md text-sm text-slate-600">
-              Trae todos los registros del padrón en RUBA y los compara con tu padrón en Faro. Vos
-              decidís qué aplicar.
+              Trae todos los registros del padrón en RUBA y los compara con tu padrón en Vulcano.
+              Vos decidís qué aplicar.
             </p>
             <Button intent="primary" size="lg" onClick={comparar} className="mt-4">
               <RefreshCw size={18} /> Comparar con RUBA

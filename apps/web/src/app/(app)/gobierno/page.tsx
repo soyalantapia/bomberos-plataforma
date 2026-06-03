@@ -283,7 +283,7 @@ export default function OrdenInterno() {
       {/* Acceso rápido a herramientas nuevas */}
       <FeaturesGrid
         titulo="Auditoría e integridad"
-        descripcion="Lo nuevo de Faro para verificar datos"
+        descripcion="Lo nuevo de Vulcano para verificar datos"
         columnas={2}
         cards={[
           {

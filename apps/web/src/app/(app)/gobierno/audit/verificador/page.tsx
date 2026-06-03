@@ -142,7 +142,7 @@ export default function VerificadorPage() {
       <PageHero
         objetivo="Gobierno · Auditoría"
         titulo="Verificador de integridad del registro"
-        descripcion="Cualquier auditor externo puede validar la integridad del registro permanente. No hace falta confiar en Faro."
+        descripcion="Cualquier auditor externo puede validar la integridad del registro permanente. No hace falta confiar en Vulcano."
         icono={<FileSearch size={26} />}
         meta={
           resultado ? (

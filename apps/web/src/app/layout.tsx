@@ -5,8 +5,9 @@ import { Providers } from '../components/providers';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'Faro · Gestión bomberil',
-  description: 'Plataforma de gestión para bomberos voluntarios — capturás una vez en la calle y la rendición se arma sola.',
+  title: 'Vulcano · Gestión bomberil',
+  description:
+    'Plataforma de gestión para bomberos voluntarios — capturás una vez en la calle y la rendición se arma sola.',
   manifest: '/manifest.webmanifest',
 };
 

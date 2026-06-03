@@ -104,7 +104,7 @@ export default function BuscarPage() {
     <div className="mx-auto max-w-4xl space-y-5">
       <PageHero
         objetivo="Búsqueda global · IA"
-        titulo="Preguntale a Faro en lenguaje natural"
+        titulo="Preguntale a Vulcano en lenguaje natural"
         descripcion="Buscás personas, servicios, móviles, documentos. La IA entiende preguntas tipo 'quién tiene rescate vehicular vigente esta noche'."
         icono={<SearchIcon size={26} />}
       />

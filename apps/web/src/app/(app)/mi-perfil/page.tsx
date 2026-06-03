@@ -390,8 +390,8 @@ export default function MiPerfilPage() {
                   <Sparkles size={18} /> Datos personales
                 </h3>
                 <p className="text-sm text-slate-700">
-                  Pedí exportar todo lo que Faro tiene sobre vos (Ley 25.326) o solicitá la baja de
-                  tu cuenta. Ambos requieren código al celular y quedan registrados.
+                  Pedí exportar todo lo que Vulcano tiene sobre vos (Ley 25.326) o solicitá la baja
+                  de tu cuenta. Ambos requieren código al celular y quedan registrados.
                 </p>
                 <div className="mt-3 flex flex-wrap gap-2">
                   <Button

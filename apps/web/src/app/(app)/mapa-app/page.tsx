@@ -33,7 +33,7 @@ export default function MapaAppPage() {
     <div className="mx-auto max-w-7xl space-y-5">
       <PageHero
         objetivo="Mapa de la aplicación"
-        titulo="Todas las pantallas de Faro"
+        titulo="Todas las pantallas de Vulcano"
         descripcion={`${totalPaginas} pantallas distribuidas en 5 perfiles. Click para abrir.`}
         icono={<Icon name="layout-dashboard" size={26} />}
         meta={

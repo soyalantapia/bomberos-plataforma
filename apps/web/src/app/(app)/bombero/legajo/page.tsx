@@ -77,7 +77,7 @@ export default function MiLegajo() {
   return (
     <div className="mx-auto max-w-4xl space-y-5">
       <PageHero
-        objetivo="Tu legajo en Faro"
+        objetivo="Tu legajo en Vulcano"
         titulo={`${persona.nombre} ${persona.apellido}`}
         descripcion={`Lo ves vos; lo edita Administrativo con doble validación. ${alertas.length > 0 ? `Tenés ${alertas.length} alerta${alertas.length === 1 ? '' : 's'} para revisar.` : 'Todo al día.'}`}
         icono={

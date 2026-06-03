@@ -533,8 +533,9 @@ export default function PersonalMando() {
               <Sparkles size={18} className="mt-0.5 shrink-0 text-slate-500" />
               <div>
                 <strong className="text-slate-900">El sistema sugiere:</strong> si un turno queda
-                sin cubrir, Faro propone candidatos según disponibilidad, cercanía, horas trabajadas
-                en el mes y cursos vigentes. La asignación final siempre la decide un jefe.
+                sin cubrir, Vulcano propone candidatos según disponibilidad, cercanía, horas
+                trabajadas en el mes y cursos vigentes. La asignación final siempre la decide un
+                jefe.
               </div>
             </CardContent>
           </Card>

@@ -6,23 +6,38 @@
 import type { PropuestaServicioIA, TipoServicio } from '@faro/types';
 
 const tipoPorPalabra: Record<string, TipoServicio> = {
-  incendio: 'incendio', fuego: 'incendio', llamas: 'incendio', humo: 'incendio',
-  rescate: 'rescate', altura: 'rescate', atrapada: 'rescate',
-  accidente: 'accidente', choque: 'accidente', vehicular: 'accidente',
-  forestal: 'forestal', pastizal: 'forestal',
+  incendio: 'incendio',
+  fuego: 'incendio',
+  llamas: 'incendio',
+  humo: 'incendio',
+  rescate: 'rescate',
+  altura: 'rescate',
+  atrapada: 'rescate',
+  accidente: 'accidente',
+  choque: 'accidente',
+  vehicular: 'accidente',
+  forestal: 'forestal',
+  pastizal: 'forestal',
 };
 
 function fallbackExtractor(texto: string): PropuestaServicioIA {
   const t = texto.toLowerCase();
   let tipo: TipoServicio | undefined;
   for (const [palabra, m] of Object.entries(tipoPorPalabra)) {
-    if (t.includes(palabra)) { tipo = m; break; }
+    if (t.includes(palabra)) {
+      tipo = m;
+      break;
+    }
   }
   const movilMatch = t.match(/(?:móvil|movil|bv)[ -]?(\d+)/i);
   const movilCodigo = movilMatch?.[1] ? `BV-${movilMatch[1]}` : undefined;
-  const dirMatch = texto.match(/(?:en |sobre )(av(?:enida)?\.?\s+[\wáéíóúñ ]+\d+|[\wáéíóúñ ]+\s+\d{2,4})/i);
+  const dirMatch = texto.match(
+    /(?:en |sobre )(av(?:enida)?\.?\s+[\wáéíóúñ ]+\d+|[\wáéíóúñ ]+\s+\d{2,4})/i,
+  );
   const direccion = dirMatch?.[1]?.trim();
-  const horas = [...texto.matchAll(/(\d{1,2}):(\d{2})/g)].map((m) => `${m[1]?.padStart(2, '0')}:${m[2]}`);
+  const horas = [...texto.matchAll(/(\d{1,2}):(\d{2})/g)].map(
+    (m) => `${m[1]?.padStart(2, '0')}:${m[2]}`,
+  );
 
   return {
     tipo,
@@ -35,7 +50,7 @@ function fallbackExtractor(texto: string): PropuestaServicioIA {
   };
 }
 
-const SYSTEM = `Sos el asistente de Faro, una plataforma de gestión bomberil argentina.
+const SYSTEM = `Sos el asistente de Vulcano, una plataforma de gestión bomberil argentina.
 Extraés campos estructurados de un parte de servicio dictado por voz por un bombero.
 
 Reglas:
