@@ -43,7 +43,8 @@ import {
   selectPersonaActual,
 } from '../../../store/use-faro-store';
 
-interface Guardia {
+interface GuardiaProgramada {
+  id: string;
   fecha: string;
   diaSemana: string;
   diaNum: number;
@@ -53,9 +54,10 @@ interface Guardia {
   estado: 'confirmada' | 'pendiente' | 'pasada';
 }
 
-// TODO: pull from store cuando exista slice de guardias
-const PROXIMAS_GUARDIAS: Guardia[] = [
+// Guardias demo del inicio. La confirmación SÍ persiste (store.guardiasConfirmadas).
+const PROXIMAS_GUARDIAS: GuardiaProgramada[] = [
   {
+    id: 'g-1',
     fecha: '25 may',
     diaSemana: 'Lun',
     diaNum: 25,
@@ -65,6 +67,7 @@ const PROXIMAS_GUARDIAS: Guardia[] = [
     estado: 'confirmada',
   },
   {
+    id: 'g-2',
     fecha: '28 may',
     diaSemana: 'Jue',
     diaNum: 28,
@@ -101,7 +104,8 @@ export default function BomberoInicio() {
   const modoSimple = useFaroStore((s) => s.modoSimple);
   const setModoSimple = useFaroStore((s) => s.setModoSimple);
   const [tab, setTab] = useState('hoy');
-  const [guardiasConfirmadas, setGuardiasConfirmadas] = useState<Set<number>>(new Set());
+  const guardiasConfirmadas = useFaroStore((s) => s.guardiasConfirmadas);
+  const confirmarGuardia = useFaroStore((s) => s.confirmarGuardia);
   const toast = useToast();
 
   const computo = useMemo(
@@ -322,11 +326,11 @@ export default function BomberoInicio() {
                 <Badge intent="brand">{PROXIMAS_GUARDIAS.length} programadas</Badge>
               </div>
               <div className="space-y-2.5">
-                {PROXIMAS_GUARDIAS.map((g, idx) => {
-                  const estado = guardiasConfirmadas.has(idx) ? 'confirmada' : g.estado;
+                {PROXIMAS_GUARDIAS.map((g) => {
+                  const estado = guardiasConfirmadas.includes(g.id) ? 'confirmada' : g.estado;
                   return (
                     <div
-                      key={idx}
+                      key={g.id}
                       className={cn(
                         'flex items-center gap-3 rounded-xl border p-3.5',
                         estado === 'confirmada'
@@ -357,7 +361,7 @@ export default function BomberoInicio() {
                         <button
                           type="button"
                           onClick={() => {
-                            setGuardiasConfirmadas((prev) => new Set(prev).add(idx));
+                            confirmarGuardia(g.id);
                             toast.push({
                               kind: 'success',
                               title: 'Guardia confirmada',

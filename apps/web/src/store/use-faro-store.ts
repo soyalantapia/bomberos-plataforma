@@ -68,6 +68,8 @@ interface State {
   hidratado: boolean;
   /** Preferencia de UX: inicio simplificado para el usuario menos técnico. */
   modoSimple: boolean;
+  /** IDs de guardias que el bombero confirmó (transaccional, persiste). */
+  guardiasConfirmadas: string[];
   sesion: SesionUsuario | null;
   cuarteles: Cuartel[];
   personas: Persona[];
@@ -169,6 +171,8 @@ interface Actions {
   solicitarInformeGobernanza: (cuartelId: string, nombre: string) => void;
   // PREFERENCIAS UX
   setModoSimple: (v: boolean) => void;
+  // GUARDIAS
+  confirmarGuardia: (id: string) => void;
 }
 
 type FaroStore = State & Actions;
@@ -176,6 +180,7 @@ type FaroStore = State & Actions;
 const initialState: State = {
   hidratado: false,
   modoSimple: false,
+  guardiasConfirmadas: [],
   sesion: null,
   cuarteles: cuartelesMock,
   personas: personasMock,
@@ -858,6 +863,10 @@ export const useFaroStore = create<FaroStore>()(
       setModoSimple(v) {
         set({ modoSimple: v });
       },
+      confirmarGuardia(id) {
+        if (get().guardiasConfirmadas.includes(id)) return;
+        set({ guardiasConfirmadas: [...get().guardiasConfirmadas, id] });
+      },
     }),
     {
       name: 'faro-store',
@@ -869,6 +878,7 @@ export const useFaroStore = create<FaroStore>()(
       // del initialState para que cambios en mocks se reflejen al recargar.
       partialize: (s) => ({
         modoSimple: s.modoSimple,
+        guardiasConfirmadas: s.guardiasConfirmadas,
         sesion: s.sesion,
         servicios: s.servicios,
         asistencias: s.asistencias,
