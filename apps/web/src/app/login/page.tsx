@@ -132,7 +132,8 @@ export default function LoginPage() {
                 <div>
                   <h2 className="text-xl font-bold text-slate-900">Ingresar</h2>
                   <p className="mt-1 text-sm text-slate-600">
-                    Te enviamos un código por WhatsApp o email al canal que tengas registrado.
+                    Te mandamos un código por WhatsApp o email. Es una sola vez: después quedás
+                    adentro, sin volver a pedírtelo.
                   </p>
                 </div>
                 <div>
@@ -186,7 +187,7 @@ export default function LoginPage() {
                 <div>
                   <h2 className="text-xl font-bold text-slate-900">Tu código</h2>
                   <p className="mt-1 text-sm text-slate-600">
-                    Ingresá los 6 dígitos que te enviamos. Demoramos hasta 1 minuto.
+                    Ingresá los 6 dígitos que te mandamos. Suele llegar en unos segundos.
                   </p>
                 </div>
 
