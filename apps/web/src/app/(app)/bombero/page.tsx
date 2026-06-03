@@ -27,6 +27,7 @@ import {
   TabsList,
   TabsTrigger,
   cn,
+  useToast,
 } from '@faro/ui';
 
 import { InicioSimple } from '../../../components/bombero/inicio-simple';
@@ -100,6 +101,8 @@ export default function BomberoInicio() {
   const modoSimple = useFaroStore((s) => s.modoSimple);
   const setModoSimple = useFaroStore((s) => s.setModoSimple);
   const [tab, setTab] = useState('hoy');
+  const [guardiasConfirmadas, setGuardiasConfirmadas] = useState<Set<number>>(new Set());
+  const toast = useToast();
 
   const computo = useMemo(
     () => (cuartel ? calcularComputoMensual(asistencias, cuartel.id, mesActual()) : []),
@@ -319,45 +322,56 @@ export default function BomberoInicio() {
                 <Badge intent="brand">{PROXIMAS_GUARDIAS.length} programadas</Badge>
               </div>
               <div className="space-y-2.5">
-                {PROXIMAS_GUARDIAS.map((g, idx) => (
-                  <div
-                    key={idx}
-                    className={cn(
-                      'flex items-center gap-3 rounded-xl border p-3.5',
-                      g.estado === 'confirmada'
-                        ? 'border-status-ok/40 bg-status-ok-bg/20'
-                        : 'border-status-warn/40 bg-status-warn-bg/20',
-                    )}
-                  >
-                    <div className="grid h-14 w-14 shrink-0 place-items-center rounded-xl bg-white text-center shadow-sm ring-1 ring-slate-200">
-                      <div className="text-[10px] uppercase tracking-wide text-slate-500">
-                        {g.diaSemana}
+                {PROXIMAS_GUARDIAS.map((g, idx) => {
+                  const estado = guardiasConfirmadas.has(idx) ? 'confirmada' : g.estado;
+                  return (
+                    <div
+                      key={idx}
+                      className={cn(
+                        'flex items-center gap-3 rounded-xl border p-3.5',
+                        estado === 'confirmada'
+                          ? 'border-status-ok/40 bg-status-ok-bg/20'
+                          : 'border-status-warn/40 bg-status-warn-bg/20',
+                      )}
+                    >
+                      <div className="grid h-14 w-14 shrink-0 place-items-center rounded-xl bg-white text-center shadow-sm ring-1 ring-slate-200">
+                        <div className="text-[10px] uppercase tracking-wide text-slate-500">
+                          {g.diaSemana}
+                        </div>
+                        <div className="text-xl font-bold leading-none text-slate-900">
+                          {g.diaNum}
+                        </div>
                       </div>
-                      <div className="text-xl font-bold leading-none text-slate-900">
-                        {g.diaNum}
+                      <div className="min-w-0 flex-1">
+                        <div className="flex flex-wrap items-center gap-2">
+                          <span className="font-semibold text-slate-900">{g.turno}</span>
+                          <Badge intent={estado === 'confirmada' ? 'ok' : 'warn'}>
+                            {estado === 'confirmada' ? 'Confirmada' : 'Pendiente'}
+                          </Badge>
+                        </div>
+                        <div className="mt-0.5 text-xs text-slate-600">
+                          Móvil <strong>{g.movil}</strong> · con {g.dotacion.join(', ')}
+                        </div>
                       </div>
+                      {estado === 'pendiente' && (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setGuardiasConfirmadas((prev) => new Set(prev).add(idx));
+                            toast.push({
+                              kind: 'success',
+                              title: 'Guardia confirmada',
+                              description: `${g.diaSemana} ${g.diaNum} · ${g.turno} · Móvil ${g.movil}`,
+                            });
+                          }}
+                          className="bg-status-ok shrink-0 rounded-md px-2.5 py-1.5 text-xs font-semibold text-white hover:opacity-90"
+                        >
+                          Confirmar
+                        </button>
+                      )}
                     </div>
-                    <div className="min-w-0 flex-1">
-                      <div className="flex flex-wrap items-center gap-2">
-                        <span className="font-semibold text-slate-900">{g.turno}</span>
-                        <Badge intent={g.estado === 'confirmada' ? 'ok' : 'warn'}>
-                          {g.estado === 'confirmada' ? 'Confirmada' : 'Pendiente'}
-                        </Badge>
-                      </div>
-                      <div className="mt-0.5 text-xs text-slate-600">
-                        Móvil <strong>{g.movil}</strong> · con {g.dotacion.join(', ')}
-                      </div>
-                    </div>
-                    {g.estado === 'pendiente' && (
-                      <button
-                        type="button"
-                        className="bg-status-ok shrink-0 rounded-md px-2.5 py-1.5 text-xs font-semibold text-white hover:opacity-90"
-                      >
-                        Confirmar
-                      </button>
-                    )}
-                  </div>
-                ))}
+                  );
+                })}
               </div>
               <p className="mt-4 text-xs text-slate-500">
                 Las guardias se asignan automáticamente respetando descansos, capacidades y
