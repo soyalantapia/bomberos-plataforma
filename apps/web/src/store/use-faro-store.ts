@@ -72,6 +72,11 @@ import {
   type MovilFicha,
 } from '../data/automotores';
 import { accionesFedMock, type AccionFed, type TipoAccionFed } from '../data/acciones-fed';
+import {
+  comunicadosFedMock,
+  type CanalComunicado,
+  type ComunicadoFed,
+} from '../data/comunicados-fed';
 import { calcularComputoMensual } from '../lib/utils/computo';
 import { demoToday } from '../lib/utils/demo-today';
 
@@ -125,6 +130,8 @@ interface State {
   fichasMovil: MovilFicha[];
   // ACCIONES DE LA FEDERACIÓN sobre cuarteles (bitácora de control)
   accionesFed: AccionFed[];
+  // COMUNICADOS de la Federación a la red (broadcast nacional/regional)
+  comunicadosFed: ComunicadoFed[];
 }
 
 interface Actions {
@@ -158,6 +165,13 @@ interface Actions {
     detalle?: string;
   }) => void;
   resolverAccionFed: (id: string) => void;
+  enviarComunicadoFed: (input: {
+    asunto: string;
+    cuerpo: string;
+    region: string | null;
+    canales: CanalComunicado[];
+    prioridad: 'alta' | 'normal';
+  }) => ComunicadoFed;
   presentarRendicion: (rendicionId: string, mandoId: string) => void;
   marcarNotifLeida: (id: string) => void;
   marcarTodasLeidas: () => void;
@@ -267,6 +281,7 @@ const initialState: State = {
   broadcasts: broadcastsMock,
   fichasMovil: fichasMovilMock,
   accionesFed: accionesFedMock,
+  comunicadosFed: comunicadosFedMock,
 };
 
 function recalcularRendicion(state: State, cuartelId: string): State {
@@ -534,6 +549,49 @@ export const useFaroStore = create<FaroStore>()(
             a.id === id ? { ...a, estado: 'resuelta' as const } : a,
           ),
         });
+      },
+      enviarComunicadoFed(input) {
+        const s = get();
+        const audiencia = input.region
+          ? s.cuarteles.filter((c) => c.region === input.region)
+          : s.cuarteles;
+        // Cada mando activo de la audiencia recibe una notificación real (campanita).
+        let notificaciones = s.notificaciones;
+        let notificados = 0;
+        audiencia.forEach((c) => {
+          const mando = s.personas.find(
+            (x) => x.cuartelId === c.id && x.estado === 'activo' && x.perfiles.includes('mando'),
+          );
+          if (mando) {
+            const notif: Notificacion = {
+              id: genId('notif'),
+              cuartelId: c.id,
+              destinatarioId: mando.id,
+              tipo: 'comunicado',
+              titulo: 'Comunicado de la Federación',
+              descripcion: input.asunto,
+              leida: false,
+              fecha: demoToday().toISOString(),
+              linkPagina: '/notificaciones',
+            };
+            notificaciones = [notif, ...notificaciones];
+            notificados++;
+          }
+        });
+        const comunicado: ComunicadoFed = {
+          id: genId('cf'),
+          asunto: input.asunto,
+          cuerpo: input.cuerpo,
+          audiencia: input.region ?? 'Toda la red',
+          region: input.region,
+          cuartelesAlcanzados: audiencia.length,
+          notificados,
+          canales: input.canales,
+          prioridad: input.prioridad,
+          fecha: demoToday().toISOString(),
+        };
+        set({ comunicadosFed: [comunicado, ...s.comunicadosFed], notificaciones });
+        return comunicado;
       },
       marcarNotifLeida(id) {
         set({
