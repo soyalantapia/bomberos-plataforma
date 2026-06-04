@@ -62,6 +62,7 @@ import {
   serviciosMock,
   tareasMock,
 } from '../data';
+import { equipoEPPMock, type EquipoEPP } from '../data/epp';
 import { calcularComputoMensual } from '../lib/utils/computo';
 
 interface State {
@@ -104,6 +105,8 @@ interface State {
   calificaciones: Calificacion[];
   // SALUD Y SEGURIDAD
   lesiones: Lesion[];
+  // EQUIPO DE PROTECCIÓN PERSONAL (por bombero)
+  equipoEPP: EquipoEPP[];
 }
 
 interface Actions {
@@ -114,6 +117,8 @@ interface Actions {
   crearServicio: (input: Omit<Servicio, 'id' | 'creadoEn' | 'estado'>) => Servicio;
   validarServicio: (servicioId: string, mandoId: string) => void;
   rechazarServicio: (servicioId: string, mandoId: string, motivo?: string) => void;
+  registrarExposicionEpp: (eppId: string) => void;
+  marcarEppFueraDeServicio: (eppId: string, fuera: boolean) => void;
   presentarRendicion: (rendicionId: string, mandoId: string) => void;
   marcarNotifLeida: (id: string) => void;
   marcarTodasLeidas: () => void;
@@ -218,6 +223,7 @@ const initialState: State = {
   calificaciones: calificacionesMock,
   // SALUD Y SEGURIDAD
   lesiones: lesionesMock,
+  equipoEPP: equipoEPPMock,
 };
 
 function recalcularRendicion(state: State, cuartelId: string): State {
@@ -344,6 +350,26 @@ export const useFaroStore = create<FaroStore>()(
         const after = { ...get(), servicios };
         const cuartelId = servicios.find((s) => s.id === servicioId)?.cuartelId;
         set(cuartelId ? recalcularRendicion(after, cuartelId) : after);
+      },
+      registrarExposicionEpp(eppId) {
+        set({
+          equipoEPP: get().equipoEPP.map((e) =>
+            e.id === eppId
+              ? {
+                  ...e,
+                  exposiciones: e.exposiciones + 1,
+                  ultimaExposicion: new Date().toISOString(),
+                }
+              : e,
+          ),
+        });
+      },
+      marcarEppFueraDeServicio(eppId, fuera) {
+        set({
+          equipoEPP: get().equipoEPP.map((e) =>
+            e.id === eppId ? { ...e, fueraServicio: fuera } : e,
+          ),
+        });
       },
       marcarNotifLeida(id) {
         set({

@@ -4,39 +4,24 @@ import { motion } from 'framer-motion';
 import {
   AlertTriangle,
   Calendar,
-  Camera,
   Flame,
+  PauseCircle,
+  PlayCircle,
   QrCode,
   Shield,
   ShieldCheck,
   Wind,
 } from 'lucide-react';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 
-import { Avatar, Badge, Button, Card, CardContent, Kpi, cn } from '@faro/ui';
+import { Avatar, Badge, Button, Card, CardContent, Kpi, cn, useToast } from '@faro/ui';
 
 import { PageHero } from '../../../../components/shared/page-hero';
+import type { EquipoEPP, EstadoEPP, TipoEPP } from '../../../../data/epp';
 import { demoToday } from '../../../../lib/utils/demo-today';
 import { selectPersonaActual, useFaroStore } from '../../../../store/use-faro-store';
 
-interface EquipoEPP {
-  id: string;
-  tipo: 'casco' | 'chaqueta' | 'pantalon' | 'botas' | 'guantes' | 'capucha' | 'scba' | 'mascara';
-  fabricante: string;
-  modelo: string;
-  fechaCompra: string;
-  vencimiento: string;
-  qrCode: string;
-  exposiciones: number; // veces que entró en hot zone
-  ultimaExposicion?: string;
-  estado: 'vigente' | 'por_vencer' | 'vencido' | 'fuera_servicio';
-  notas?: string;
-}
-
-const TIPOS_EPP: Record<
-  EquipoEPP['tipo'],
-  { label: string; icon: React.ReactNode; color: string }
-> = {
+const TIPOS_EPP: Record<TipoEPP, { label: string; icon: React.ReactNode; color: string }> = {
   casco: { label: 'Casco', icon: <Shield size={16} />, color: 'bg-fire-700' },
   chaqueta: { label: 'Chaqueta de bombero', icon: <Shield size={16} />, color: 'bg-fire-600' },
   pantalon: { label: 'Pantalón de bombero', icon: <Shield size={16} />, color: 'bg-fire-600' },
@@ -47,140 +32,86 @@ const TIPOS_EPP: Record<
   mascara: { label: 'Máscara facial', icon: <Wind size={16} />, color: 'bg-brand-600' },
 };
 
-const EQUIPO_MOCK: EquipoEPP[] = [
-  {
-    id: 'epp-001',
-    tipo: 'casco',
-    fabricante: 'MSA Cairns',
-    modelo: '1010 Traditional',
-    fechaCompra: '2024-03-15',
-    vencimiento: '2034-03-15',
-    qrCode: 'FARO-EPP-31456-CASCO',
-    exposiciones: 47,
-    ultimaExposicion: '2026-05-22',
-    estado: 'vigente',
-  },
-  {
-    id: 'epp-002',
-    tipo: 'chaqueta',
-    fabricante: 'Globe',
-    modelo: 'GX-7 Athletix',
-    fechaCompra: '2023-08-20',
-    vencimiento: '2033-08-20',
-    qrCode: 'FARO-EPP-31456-CHAQ',
-    exposiciones: 62,
-    ultimaExposicion: '2026-05-22',
-    estado: 'vigente',
-    notas: '2 reparaciones menores en costura del puño',
-  },
-  {
-    id: 'epp-003',
-    tipo: 'pantalon',
-    fabricante: 'Globe',
-    modelo: 'GX-7 Athletix',
-    fechaCompra: '2023-08-20',
-    vencimiento: '2033-08-20',
-    qrCode: 'FARO-EPP-31456-PANT',
-    exposiciones: 62,
-    estado: 'vigente',
-  },
-  {
-    id: 'epp-004',
-    tipo: 'botas',
-    fabricante: 'Haix',
-    modelo: 'Fire Hero Xtreme',
-    fechaCompra: '2022-11-10',
-    vencimiento: '2027-11-10',
-    qrCode: 'FARO-EPP-31456-BOTAS',
-    exposiciones: 89,
-    estado: 'por_vencer',
-    notas: 'Suela desgastada, agendar reemplazo',
-  },
-  {
-    id: 'epp-005',
-    tipo: 'guantes',
-    fabricante: 'Pro-Tech 8',
-    modelo: 'Titan',
-    fechaCompra: '2025-01-15',
-    vencimiento: '2030-01-15',
-    qrCode: 'FARO-EPP-31456-GUAN',
-    exposiciones: 28,
-    estado: 'vigente',
-  },
-  {
-    id: 'epp-006',
-    tipo: 'capucha',
-    fabricante: 'Majestic',
-    modelo: 'PAC II',
-    fechaCompra: '2024-06-01',
-    vencimiento: '2029-06-01',
-    qrCode: 'FARO-EPP-31456-CAPU',
-    exposiciones: 41,
-    estado: 'vigente',
-  },
-  {
-    id: 'epp-007',
-    tipo: 'scba',
-    fabricante: 'Scott Safety',
-    modelo: 'Air-Pak X3 Pro',
-    fechaCompra: '2020-09-15',
-    vencimiento: '2035-09-15',
-    qrCode: 'FARO-EPP-31456-AIRE',
-    exposiciones: 73,
-    ultimaExposicion: '2026-05-22',
-    estado: 'vigente',
-    notas: 'Prueba de presión próxima: agosto 2026',
-  },
-  {
-    id: 'epp-008',
-    tipo: 'mascara',
-    fabricante: 'Scott Safety',
-    modelo: 'AV-3000 HT',
-    fechaCompra: '2024-02-20',
-    vencimiento: '2029-02-20',
-    qrCode: 'FARO-EPP-31456-MASC',
-    exposiciones: 47,
-    estado: 'vigente',
-  },
-];
+const ESTADO_BADGE: Record<
+  EstadoEPP,
+  { label: string; intent: 'ok' | 'warn' | 'risk' | 'neutral' }
+> = {
+  vigente: { label: 'Vigente', intent: 'ok' },
+  por_vencer: { label: 'Por vencer', intent: 'warn' },
+  vencido: { label: 'Vencido', intent: 'risk' },
+  fuera_servicio: { label: 'Fuera de servicio', intent: 'neutral' },
+};
 
 function diasHasta(fecha: string) {
-  const hoy = demoToday();
-  const f = new Date(fecha);
-  return Math.round((f.getTime() - hoy.getTime()) / 86400000);
+  return Math.round((new Date(fecha).getTime() - demoToday().getTime()) / 86400000);
+}
+
+/** El estado se DERIVA: fuera de servicio > vencimiento vs hoy. No se guarda. */
+function estadoDe(item: EquipoEPP): EstadoEPP {
+  if (item.fueraServicio) return 'fuera_servicio';
+  const dias = diasHasta(item.vencimiento);
+  if (dias < 0) return 'vencido';
+  if (dias < 60) return 'por_vencer';
+  return 'vigente';
 }
 
 export default function EquipoPage() {
+  const toast = useToast();
   const persona = useFaroStore(selectPersonaActual);
+  const equipoEPP = useFaroStore((s) => s.equipoEPP);
+  const registrarExposicion = useFaroStore((s) => s.registrarExposicionEpp);
+  const marcarFueraDeServicio = useFaroStore((s) => s.marcarEppFueraDeServicio);
   const [qrAbierto, setQrAbierto] = useState<string | null>(null);
 
-  const totalExpos = EQUIPO_MOCK.reduce((a, e) => a + e.exposiciones, 0);
-  const conAlertas = EQUIPO_MOCK.filter(
-    (e) => e.estado === 'por_vencer' || e.estado === 'vencido',
-  ).length;
+  const items = useMemo(
+    () => equipoEPP.filter((e) => e.personaId === persona?.id),
+    [equipoEPP, persona?.id],
+  );
+
+  const totalExpos = items.reduce((a, e) => a + e.exposiciones, 0);
+  const vigentes = items.filter((e) => estadoDe(e) === 'vigente').length;
+  const conAlertas = items.filter((e) => {
+    const est = estadoDe(e);
+    return est === 'por_vencer' || est === 'vencido' || est === 'fuera_servicio';
+  }).length;
+
+  function exponer(item: EquipoEPP) {
+    registrarExposicion(item.id);
+    toast.push({
+      kind: 'success',
+      title: 'Exposición registrada',
+      description: `${TIPOS_EPP[item.tipo].label} · ${item.exposiciones + 1} acumuladas.`,
+    });
+  }
+
+  function toggleServicio(item: EquipoEPP) {
+    const nuevo = !item.fueraServicio;
+    marcarFueraDeServicio(item.id, nuevo);
+    toast.push({
+      kind: nuevo ? 'info' : 'success',
+      title: nuevo ? 'Marcado fuera de servicio' : 'De vuelta en servicio',
+      description: `${TIPOS_EPP[item.tipo].label}.`,
+    });
+  }
 
   return (
     <div className="mx-auto max-w-5xl space-y-5">
       <PageHero
         objetivo="Bombero · Tu equipo"
         titulo="Tu uniforme individual"
-        descripcion="8 ítems con vencimientos (10 años máximo). Cada exposición a fuego queda registrada. QR único por pieza."
+        descripcion="Cada pieza con su vencimiento (10 años de vida útil). El estado se calcula solo. Cada exposición a fuego queda registrada. QR único por pieza."
         icono={<Shield size={26} />}
         meta={
           <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
-            <Kpi label="Items" value={EQUIPO_MOCK.length} intent="brand" />
-            <Kpi
-              label="Vigentes"
-              value={EQUIPO_MOCK.filter((e) => e.estado === 'vigente').length}
-              intent="ok"
-            />
+            <Kpi label="Items" value={items.length} intent="brand" />
+            <Kpi label="Vigentes" value={vigentes} intent="ok" />
             <Kpi label="Alertas" value={conAlertas} intent={conAlertas > 0 ? 'warn' : 'ok'} />
             <Kpi label="Exposiciones" value={totalExpos} hint="acumuladas" intent="neutral" />
           </div>
         }
       />
 
-      {/* Resumen */}
+      {/* Resumen del bombero */}
       <Card className="bg-brand-50/40 border-brand-100">
         <CardContent className="p-4">
           <div className="flex items-center gap-3">
@@ -194,152 +125,167 @@ export default function EquipoPage() {
                 {persona?.apellido}, {persona?.nombre}
               </div>
               <p className="text-brand-900/80 mt-0.5 text-sm">
-                Legajo {persona?.legajo} · {totalExpos} exposiciones registradas en los últimos 12
-                meses
+                Legajo {persona?.legajo} · {items.length} piezas · {totalExpos} exposiciones
+                registradas
               </p>
             </div>
           </div>
         </CardContent>
       </Card>
 
-      {/* Grid de EPP */}
-      <div className="grid gap-3 sm:grid-cols-2">
-        {EQUIPO_MOCK.map((item, idx) => {
-          const cfg = TIPOS_EPP[item.tipo];
-          const dias = diasHasta(item.vencimiento);
-          const meses = Math.round(dias / 30);
-          return (
-            <motion.div
-              key={item.id}
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: idx * 0.04 }}
-            >
-              <Card
-                className={cn(
-                  'border-2',
-                  item.estado === 'por_vencer'
-                    ? 'border-status-warn/30'
-                    : item.estado === 'vencido'
-                      ? 'border-status-risk/30'
-                      : 'border-slate-200',
-                )}
+      {items.length === 0 ? (
+        <Card>
+          <CardContent className="py-10 text-center text-sm text-slate-500">
+            No tenés equipo cargado todavía. Pedile a tu jefe de material que registre tu uniforme.
+          </CardContent>
+        </Card>
+      ) : (
+        <div className="grid gap-3 sm:grid-cols-2">
+          {items.map((item, idx) => {
+            const cfg = TIPOS_EPP[item.tipo];
+            const estado = estadoDe(item);
+            const badge = ESTADO_BADGE[estado];
+            const dias = diasHasta(item.vencimiento);
+            const meses = Math.round(dias / 30);
+            return (
+              <motion.div
+                key={item.id}
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: idx * 0.04 }}
               >
-                <CardContent className="p-4">
-                  <div className="flex items-start gap-3">
-                    <div
-                      className={cn(
-                        'grid h-12 w-12 shrink-0 place-items-center rounded-xl text-white',
-                        cfg.color,
-                      )}
-                    >
-                      {cfg.icon}
-                    </div>
-                    <div className="min-w-0 flex-1">
-                      <div className="flex items-center gap-2">
-                        <span className="font-bold text-slate-900">{cfg.label}</span>
-                        <Badge
-                          intent={
-                            item.estado === 'vigente'
-                              ? 'ok'
-                              : item.estado === 'por_vencer'
-                                ? 'warn'
-                                : 'risk'
-                          }
-                        >
-                          {item.estado === 'vigente'
-                            ? 'Vigente'
-                            : item.estado === 'por_vencer'
-                              ? 'Por vencer'
-                              : item.estado === 'fuera_servicio'
-                                ? 'Fuera de servicio'
-                                : 'Vencido'}
-                        </Badge>
+                <Card
+                  className={cn(
+                    'border-2',
+                    estado === 'por_vencer'
+                      ? 'border-status-warn/30'
+                      : estado === 'vencido'
+                        ? 'border-status-risk/40'
+                        : estado === 'fuera_servicio'
+                          ? 'border-slate-300 bg-slate-50/60'
+                          : 'border-slate-200',
+                  )}
+                >
+                  <CardContent className="p-4">
+                    <div className="flex items-start gap-3">
+                      <div
+                        className={cn(
+                          'grid h-12 w-12 shrink-0 place-items-center rounded-xl text-white',
+                          estado === 'fuera_servicio' ? 'bg-slate-400' : cfg.color,
+                        )}
+                      >
+                        {cfg.icon}
                       </div>
-                      <div className="mt-0.5 text-xs text-slate-600">
-                        {item.fabricante} · {item.modelo}
-                      </div>
+                      <div className="min-w-0 flex-1">
+                        <div className="flex items-center gap-2">
+                          <span className="font-bold text-slate-900">{cfg.label}</span>
+                          <Badge intent={badge.intent}>{badge.label}</Badge>
+                        </div>
+                        <div className="mt-0.5 text-xs text-slate-600">
+                          {item.fabricante} · {item.modelo}
+                        </div>
 
-                      <div className="mt-3 grid grid-cols-2 gap-2 text-xs">
-                        <div className="rounded-md bg-slate-50 p-2">
-                          <div className="text-slate-500">Vence</div>
-                          <div
-                            className={cn(
-                              'font-bold',
-                              dias < 60 && 'text-status-warn-fg',
-                              dias < 0 && 'text-status-risk-fg',
-                            )}
+                        <div className="mt-3 grid grid-cols-2 gap-2 text-xs">
+                          <div className="rounded-md bg-slate-50 p-2">
+                            <div className="text-slate-500">Vence</div>
+                            <div
+                              className={cn(
+                                'font-bold',
+                                dias < 60 && dias >= 0 && 'text-status-warn-fg',
+                                dias < 0 && 'text-status-risk-fg',
+                              )}
+                            >
+                              {dias < 0
+                                ? 'Vencido'
+                                : meses > 12
+                                  ? `${Math.floor(meses / 12)} años`
+                                  : `${meses} meses`}
+                            </div>
+                          </div>
+                          <div className="rounded-md bg-slate-50 p-2">
+                            <div className="text-slate-500">Exposiciones</div>
+                            <div className="flex items-center gap-1 font-bold text-slate-900">
+                              <Flame size={11} className="text-fire-600" />
+                              {item.exposiciones}
+                            </div>
+                          </div>
+                        </div>
+
+                        {item.ultimaExposicion && (
+                          <div className="mt-2 text-[11px] text-slate-500">
+                            <Calendar size={10} className="mr-1 inline" />
+                            Última exposición:{' '}
+                            {new Date(item.ultimaExposicion).toLocaleDateString('es-AR')}
+                          </div>
+                        )}
+
+                        {item.notas && (
+                          <div className="bg-status-warn-bg/40 text-status-warn-fg mt-2 flex items-start gap-2 rounded p-2 text-xs">
+                            <AlertTriangle size={11} className="mt-0.5 shrink-0" />
+                            <span>{item.notas}</span>
+                          </div>
+                        )}
+
+                        <div className="mt-3 flex flex-wrap items-center gap-2">
+                          <button
+                            type="button"
+                            onClick={() => setQrAbierto(qrAbierto === item.id ? null : item.id)}
+                            className="bg-brand-50 text-brand-700 hover:bg-brand-100 inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-medium"
                           >
-                            {meses > 12 ? `${Math.floor(meses / 12)} años` : `${meses} meses`}
-                          </div>
+                            <QrCode size={12} /> Ver QR
+                          </button>
+                          <Button
+                            intent="ghost"
+                            size="sm"
+                            onClick={() => exponer(item)}
+                            disabled={item.fueraServicio}
+                          >
+                            <Flame size={12} /> Registrar exposición
+                          </Button>
+                          <Button intent="ghost" size="sm" onClick={() => toggleServicio(item)}>
+                            {item.fueraServicio ? (
+                              <>
+                                <PlayCircle size={12} /> Volver a servicio
+                              </>
+                            ) : (
+                              <>
+                                <PauseCircle size={12} /> Fuera de servicio
+                              </>
+                            )}
+                          </Button>
                         </div>
-                        <div className="rounded-md bg-slate-50 p-2">
-                          <div className="text-slate-500">Exposiciones</div>
-                          <div className="flex items-center gap-1 font-bold text-slate-900">
-                            <Flame size={11} className="text-fire-600" />
-                            {item.exposiciones}
-                          </div>
-                        </div>
-                      </div>
 
-                      {item.ultimaExposicion && (
-                        <div className="mt-2 text-[11px] text-slate-500">
-                          <Calendar size={10} className="mr-1 inline" />
-                          Última exposición:{' '}
-                          {new Date(item.ultimaExposicion).toLocaleDateString('es-AR')}
-                        </div>
-                      )}
-
-                      {item.notas && (
-                        <div className="bg-status-warn-bg/40 text-status-warn-fg mt-2 flex items-start gap-2 rounded p-2 text-xs">
-                          <AlertTriangle size={11} className="mt-0.5 shrink-0" />
-                          <span>{item.notas}</span>
-                        </div>
-                      )}
-
-                      <div className="mt-3 flex items-center gap-2">
-                        <button
-                          type="button"
-                          onClick={() => setQrAbierto(qrAbierto === item.id ? null : item.id)}
-                          className="bg-brand-50 text-brand-700 hover:bg-brand-100 inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-medium"
-                        >
-                          <QrCode size={12} /> Ver QR
-                        </button>
-                        <Button intent="ghost" size="sm">
-                          <Camera size={12} /> Foto
-                        </Button>
-                      </div>
-
-                      {qrAbierto === item.id && (
-                        <motion.div
-                          initial={{ height: 0, opacity: 0 }}
-                          animate={{ height: 'auto', opacity: 1 }}
-                          className="mt-3 overflow-hidden"
-                        >
-                          <div className="flex items-center gap-3 rounded-lg bg-white p-3 ring-1 ring-slate-200">
-                            <div className="grid h-20 w-20 shrink-0 place-items-center rounded bg-slate-900 text-white">
-                              <QrCode size={48} />
-                            </div>
-                            <div className="min-w-0 flex-1 text-xs">
-                              <div className="font-mono font-bold text-slate-900">
-                                {item.qrCode}
+                        {qrAbierto === item.id && (
+                          <motion.div
+                            initial={{ height: 0, opacity: 0 }}
+                            animate={{ height: 'auto', opacity: 1 }}
+                            className="mt-3 overflow-hidden"
+                          >
+                            <div className="flex items-center gap-3 rounded-lg bg-white p-3 ring-1 ring-slate-200">
+                              <div className="grid h-20 w-20 shrink-0 place-items-center rounded bg-slate-900 text-white">
+                                <QrCode size={48} />
                               </div>
-                              <div className="mt-1 text-slate-600">
-                                Escaneá al entrar y salir del fuego para registrar la exposición de
-                                forma automática.
+                              <div className="min-w-0 flex-1 text-xs">
+                                <div className="font-mono font-bold text-slate-900">
+                                  {item.qrCode}
+                                </div>
+                                <div className="mt-1 text-slate-600">
+                                  Escaneá al entrar y salir del fuego para registrar la exposición
+                                  de forma automática.
+                                </div>
                               </div>
                             </div>
-                          </div>
-                        </motion.div>
-                      )}
+                          </motion.div>
+                        )}
+                      </div>
                     </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </motion.div>
-          );
-        })}
-      </div>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            );
+          })}
+        </div>
+      )}
 
       <Card className="bg-brand-50/40 border-brand-100">
         <CardContent className="flex items-start gap-3 p-4">
@@ -349,9 +295,10 @@ export default function EquipoPage() {
           <div className="text-sm">
             <strong className="text-brand-900">Vida útil del traje: 10 años</strong>
             <p className="text-brand-900/80 mt-0.5">
-              El traje de bombero se reemplaza cada 10 años desde su fabricación. Te avisamos con 60
-              días de anticipación. El registro de exposiciones sirve para auditorías después de un
-              siniestro y reclamos a aseguradoras.
+              El traje se reemplaza cada 10 años desde su fabricación. El estado de cada pieza se
+              calcula solo según el vencimiento; te avisamos con 60 días de anticipación. El
+              registro de exposiciones sirve para auditorías después de un siniestro y reclamos a
+              aseguradoras.
             </p>
           </div>
         </CardContent>
