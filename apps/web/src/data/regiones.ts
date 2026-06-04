@@ -39,36 +39,6 @@ export const regionesMock: RegionInfo[] = [
     nombre: 'Interior PBA Sur',
     descripcion: 'Bahía Blanca, Olavarría, Azul, Tres Arroyos, Coronel Suárez y región sur.',
   },
-  {
-    id: 'cordoba',
-    nombre: 'Córdoba',
-    descripcion: 'Cuarteles de la provincia de Córdoba.',
-  },
-  {
-    id: 'santa-fe',
-    nombre: 'Santa Fe',
-    descripcion: 'Cuarteles de la provincia de Santa Fe.',
-  },
-  {
-    id: 'litoral',
-    nombre: 'Litoral',
-    descripcion: 'Entre Ríos, Corrientes, Misiones, Chaco y Formosa.',
-  },
-  {
-    id: 'cuyo',
-    nombre: 'Cuyo',
-    descripcion: 'Mendoza, San Juan y San Luis.',
-  },
-  {
-    id: 'noa',
-    nombre: 'NOA',
-    descripcion: 'Tucumán, Salta, Jujuy, Catamarca, La Rioja y Santiago del Estero.',
-  },
-  {
-    id: 'patagonia',
-    nombre: 'Patagonia',
-    descripcion: 'Neuquén, Río Negro, Chubut, Santa Cruz y Tierra del Fuego.',
-  },
 ];
 
 export const REGION_NOMBRE_A_ID: Record<string, string> = {
@@ -79,12 +49,6 @@ export const REGION_NOMBRE_A_ID: Record<string, string> = {
   'Costa Atlántica': 'costa-atlantica',
   'Interior PBA Norte': 'interior-pba-norte',
   'Interior PBA Sur': 'interior-pba-sur',
-  Córdoba: 'cordoba',
-  'Santa Fe': 'santa-fe',
-  Litoral: 'litoral',
-  Cuyo: 'cuyo',
-  NOA: 'noa',
-  Patagonia: 'patagonia',
 };
 
 export const REGION_ID_A_NOMBRE: Record<string, string> = {
@@ -95,10 +59,4 @@ export const REGION_ID_A_NOMBRE: Record<string, string> = {
   'costa-atlantica': 'Costa Atlántica',
   'interior-pba-norte': 'Interior PBA Norte',
   'interior-pba-sur': 'Interior PBA Sur',
-  cordoba: 'Córdoba',
-  'santa-fe': 'Santa Fe',
-  litoral: 'Litoral',
-  cuyo: 'Cuyo',
-  noa: 'NOA',
-  patagonia: 'Patagonia',
 };

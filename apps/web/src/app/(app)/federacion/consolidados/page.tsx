@@ -7,6 +7,7 @@ import type { TipoServicio } from '@faro/types';
 
 import { Badge, Card, CardContent, Kpi, cn } from '@faro/ui';
 
+import { RegionCrest } from '../../../../components/federacion/region-crest';
 import { PageHero } from '../../../../components/shared/page-hero';
 import { mesKey } from '../../../../lib/utils/date';
 import { demoToday } from '../../../../lib/utils/demo-today';
@@ -81,8 +82,8 @@ export default function ConsolidadosFed() {
   return (
     <div className="mx-auto max-w-6xl space-y-5">
       <PageHero
-        objetivo="Federación · Consolidados"
-        titulo="La red en números"
+        objetivo="Federación Bonaerense · Consolidados"
+        titulo="La provincia en números"
         descripcion="Lo que antes había que pedir cuartel por cuartel, sumado en vivo desde el sistema. Todo calculado de los datos cargados — sin números inventados."
         icono={<BarChart3 size={26} />}
         meta={
@@ -189,28 +190,31 @@ export default function ConsolidadosFed() {
               <h3 className="mb-3 font-bold text-slate-900">Regiones por cumplimiento</h3>
               <div className="space-y-2.5">
                 {d.regiones.map((r) => (
-                  <div key={r.region}>
-                    <div className="mb-1 flex items-baseline justify-between text-sm">
-                      <span className="font-medium text-slate-900">{r.region}</span>
-                      <span className="tabular-nums text-slate-600">
-                        {r.prom}% · {r.n}
-                        {r.riesgo > 0 && (
-                          <span className="text-status-risk-fg ml-1">· {r.riesgo} riesgo</span>
-                        )}
-                      </span>
-                    </div>
-                    <div className="h-2.5 overflow-hidden rounded-full bg-slate-100">
-                      <div
-                        className={cn(
-                          'h-full rounded-full',
-                          r.prom >= 90
-                            ? 'bg-status-ok'
-                            : r.prom >= 70
-                              ? 'bg-status-warn'
-                              : 'bg-status-risk',
-                        )}
-                        style={{ width: `${(r.prom / maxReg) * 100}%` }}
-                      />
+                  <div key={r.region} className="flex items-center gap-2.5">
+                    <RegionCrest region={r.region} size={32} />
+                    <div className="min-w-0 flex-1">
+                      <div className="mb-1 flex items-baseline justify-between text-sm">
+                        <span className="font-medium text-slate-900">{r.region}</span>
+                        <span className="tabular-nums text-slate-600">
+                          {r.prom}% · {r.n}
+                          {r.riesgo > 0 && (
+                            <span className="text-status-risk-fg ml-1">· {r.riesgo} riesgo</span>
+                          )}
+                        </span>
+                      </div>
+                      <div className="h-2.5 overflow-hidden rounded-full bg-slate-100">
+                        <div
+                          className={cn(
+                            'h-full rounded-full',
+                            r.prom >= 90
+                              ? 'bg-status-ok'
+                              : r.prom >= 70
+                                ? 'bg-status-warn'
+                                : 'bg-status-risk',
+                          )}
+                          style={{ width: `${(r.prom / maxReg) * 100}%` }}
+                        />
+                      </div>
                     </div>
                   </div>
                 ))}

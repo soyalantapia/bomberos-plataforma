@@ -18,12 +18,6 @@ const REGION_COLOR: Record<string, { bg: string; fg: string }> = {
   'Costa Atlántica': { bg: 'bg-cyan-100', fg: 'text-cyan-700' },
   'Interior PBA Norte': { bg: 'bg-lime-100', fg: 'text-lime-800' },
   'Interior PBA Sur': { bg: 'bg-orange-100', fg: 'text-orange-800' },
-  Córdoba: { bg: 'bg-pink-100', fg: 'text-pink-700' },
-  'Santa Fe': { bg: 'bg-teal-100', fg: 'text-teal-700' },
-  Litoral: { bg: 'bg-indigo-100', fg: 'text-indigo-700' },
-  Cuyo: { bg: 'bg-rose-100', fg: 'text-rose-700' },
-  NOA: { bg: 'bg-yellow-100', fg: 'text-yellow-800' },
-  Patagonia: { bg: 'bg-sky-100', fg: 'text-sky-700' },
 };
 
 /** Iniciales de hasta 2 letras a partir del nombre del cuartel. */

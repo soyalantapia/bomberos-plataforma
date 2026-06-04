@@ -16,6 +16,7 @@ import { useState } from 'react';
 
 import { Badge, Card, CardContent, CardHeader, CardTitle, cn, Kpi, StatusPill } from '@faro/ui';
 
+import { RegionCrest } from '../../../components/federacion/region-crest';
 import { FeaturesGrid } from '../../../components/shared/features-grid';
 import { MapView } from '../../../components/shared/map-view';
 import { PageHero } from '../../../components/shared/page-hero';
@@ -42,7 +43,7 @@ export default function TableroFederacion() {
     (a, b) => a.porcentajeRendicion - b.porcentajeRendicion,
   )[1];
 
-  // Rollup por región (Nación → Región) y los cuarteles más críticos del país.
+  // Rollup por región (Provincia → Región) y los cuarteles más críticos de la provincia.
   const byReg: Record<string, { n: number; suma: number; riesgo: number }> = {};
   cuarteles.forEach((c) => {
     const r = (byReg[c.region] ??= { n: 0, suma: 0, riesgo: 0 });
@@ -69,13 +70,13 @@ export default function TableroFederacion() {
   return (
     <div className="mx-auto max-w-6xl space-y-5">
       <PageHero
-        objetivo="Federación · Norte GBA"
+        objetivo="Federación Bonaerense · Provincia de Buenos Aires"
         titulo={
           enRiesgo.length > 0
             ? `${enRiesgo.length} cuartel${enRiesgo.length === 1 ? '' : 'es'} en riesgo`
-            : `Región al ${promedio}%`
+            : `La provincia al ${promedio}%`
         }
-        descripcion="Estado del mes y los cuarteles que necesitan acción."
+        descripcion="Las 7 regiones bonaerenses: el estado del mes y los cuarteles que necesitan acción."
         icono={<Flag size={26} />}
         variant={enRiesgo.length > 0 ? 'critical' : promedio >= 90 ? 'success' : 'default'}
         meta={
@@ -208,22 +209,23 @@ export default function TableroFederacion() {
                   href={`/federacion/region/${encodeURIComponent(r.region)}` as never}
                   className="hover:border-brand-300 group flex items-center gap-3 rounded-xl border border-slate-200 p-3 transition-all hover:shadow-md"
                 >
-                  <div
-                    className={cn(
-                      'grid h-12 w-12 shrink-0 place-items-center rounded-xl text-sm font-bold text-white shadow-sm',
-                      r.sem === 'ok' && 'bg-status-ok',
-                      r.sem === 'warn' && 'bg-status-warn',
-                      r.sem === 'risk' && 'bg-status-risk',
-                    )}
-                  >
-                    {r.prom}
-                  </div>
+                  <RegionCrest region={r.region} size={46} />
                   <div className="min-w-0 flex-1">
                     <div className="truncate font-bold text-slate-900">{r.region}</div>
                     <div className="text-xs text-slate-500">
                       {r.n} cuarteles{r.riesgo > 0 ? ` · ${r.riesgo} en riesgo` : ''}
                     </div>
                   </div>
+                  <span
+                    className={cn(
+                      'shrink-0 rounded-full px-2.5 py-1 text-xs font-bold text-white shadow-sm',
+                      r.sem === 'ok' && 'bg-status-ok',
+                      r.sem === 'warn' && 'bg-status-warn',
+                      r.sem === 'risk' && 'bg-status-risk',
+                    )}
+                  >
+                    {r.prom}%
+                  </span>
                   <ArrowRight
                     size={18}
                     className="group-hover:text-brand-600 shrink-0 text-slate-300 transition-colors"
@@ -285,7 +287,7 @@ export default function TableroFederacion() {
 
         <Card className="lg:col-span-2">
           <CardHeader>
-            <CardTitle>Cuarteles más críticos del país</CardTitle>
+            <CardTitle>Cuarteles más críticos de la provincia</CardTitle>
           </CardHeader>
           <CardContent className="p-0">
             <div className="overflow-x-auto">

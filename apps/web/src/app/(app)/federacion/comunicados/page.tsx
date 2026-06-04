@@ -120,7 +120,7 @@ export default function ComunicadosFed() {
   return (
     <div className="mx-auto max-w-7xl space-y-5">
       <PageHero
-        objetivo="Federación · Comunicados"
+        objetivo="Federación Bonaerense · Comunicados"
         titulo={`Hablás con ${cuarteles.length} cuarteles a la vez`}
         descripcion="Elegís la audiencia —toda la red o una región— y el sistema deja un aviso real en la campanita de cada mando con cuenta activa. Queda registrado, no se pierde."
         icono={<Megaphone size={26} />}

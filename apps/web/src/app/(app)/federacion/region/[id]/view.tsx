@@ -1,18 +1,21 @@
 'use client';
 
-import { AlertTriangle, ArrowLeft, Flag, TrendingUp, Users } from 'lucide-react';
+import { AlertTriangle, ArrowLeft, Flag, Users } from 'lucide-react';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import { useMemo } from 'react';
 
 import { Badge, Card, CardContent, CardHeader, CardTitle, Kpi, StatusPill, cn } from '@faro/ui';
 
+import { RegionCrest } from '../../../../../components/federacion/region-crest';
 import { EmptyState } from '../../../../../components/shared/empty-state';
+import { regionesMock } from '../../../../../data/regiones';
 import { useFaroStore } from '../../../../../store/use-faro-store';
 
 export default function RegionFederacion() {
   const params = useParams<{ id: string }>();
   const region = decodeURIComponent(params.id);
+  const regionInfo = regionesMock.find((r) => r.nombre === region);
   const cuarteles = useFaroStore((s) => s.cuarteles);
   const personas = useFaroStore((s) => s.personas);
   const accionesFed = useFaroStore((s) => s.accionesFed);
@@ -69,16 +72,20 @@ export default function RegionFederacion() {
 
       <Card>
         <CardContent className="p-5">
-          <div className="flex items-center gap-3">
-            <div className="bg-brand-600 grid h-12 w-12 shrink-0 place-items-center rounded-xl text-white">
-              <TrendingUp size={22} />
-            </div>
-            <div>
+          <div className="flex items-center gap-4">
+            <RegionCrest region={region} size={64} />
+            <div className="min-w-0">
+              <p className="text-[11px] font-semibold uppercase tracking-wide text-slate-400">
+                Federación Bonaerense · Buenos Aires
+              </p>
               <h1 className="text-2xl font-black text-slate-900">{region}</h1>
               <p className="text-sm text-slate-600">
                 {cs.length} cuarteles · promedio {promedio}%
                 {accionesAbiertas > 0 ? ` · ${accionesAbiertas} acciones abiertas` : ''}
               </p>
+              {regionInfo?.descripcion && (
+                <p className="mt-0.5 text-xs text-slate-500">{regionInfo.descripcion}</p>
+              )}
             </div>
           </div>
           <div className="mt-4 grid grid-cols-2 gap-2 sm:grid-cols-4">

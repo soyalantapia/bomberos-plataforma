@@ -134,8 +134,8 @@ export default function MapaFederacionPage() {
       {/* Mapa */}
       <Card className="overflow-hidden p-0">
         <MapView
-          center={{ lat: -34.53, lng: -58.55 }}
-          zoom={11}
+          center={{ lat: -36.7, lng: -60 }}
+          zoom={6}
           pins={filtrados.map((c) => ({
             id: c.id,
             lat: c.lat,
