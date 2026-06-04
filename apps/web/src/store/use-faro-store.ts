@@ -113,6 +113,7 @@ interface Actions {
   cerrarSesion: () => void;
   crearServicio: (input: Omit<Servicio, 'id' | 'creadoEn' | 'estado'>) => Servicio;
   validarServicio: (servicioId: string, mandoId: string) => void;
+  rechazarServicio: (servicioId: string, mandoId: string, motivo?: string) => void;
   presentarRendicion: (rendicionId: string, mandoId: string) => void;
   marcarNotifLeida: (id: string) => void;
   marcarTodasLeidas: () => void;
@@ -321,6 +322,22 @@ export const useFaroStore = create<FaroStore>()(
                 estado: 'validado' as const,
                 confirmadoPor: mandoId,
                 confirmadoEn: new Date().toISOString(),
+              }
+            : s,
+        );
+        const after = { ...get(), servicios };
+        const cuartelId = servicios.find((s) => s.id === servicioId)?.cuartelId;
+        set(cuartelId ? recalcularRendicion(after, cuartelId) : after);
+      },
+      rechazarServicio(servicioId, mandoId, motivo) {
+        const servicios = get().servicios.map((s) =>
+          s.id === servicioId
+            ? {
+                ...s,
+                estado: 'rechazado' as const,
+                confirmadoPor: mandoId,
+                confirmadoEn: new Date().toISOString(),
+                notas: motivo ? `Rechazado: ${motivo}` : s.notas,
               }
             : s,
         );

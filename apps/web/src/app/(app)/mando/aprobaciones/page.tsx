@@ -4,6 +4,9 @@ import {
   Calendar,
   Check,
   ClipboardCheck,
+  Clock,
+  FileSignature,
+  Flame,
   ShieldAlert,
   ShieldCheck,
   TrendingUp,
@@ -31,6 +34,13 @@ import {
 
 import { PageHero } from '../../../../components/shared/page-hero';
 import { demoTodayMinus } from '../../../../lib/utils/demo-today';
+import { fmtFechaHora } from '../../../../lib/utils/date';
+import { tipoServicioLabel } from '../../../../lib/utils/tipo-servicio';
+import {
+  selectCuartelActivo,
+  selectPersonaActual,
+  useFaroStore,
+} from '../../../../store/use-faro-store';
 
 type Categoria = 'licencia' | 'ascenso' | 'sancion';
 interface Solicitud {
@@ -199,6 +209,41 @@ export default function AprobacionesPage() {
   const [motivoTexto, setMotivoTexto] = useState('');
   const toast = useToast();
 
+  // Servicios reales esperando validación (cierra el loop con el Tablero)
+  const cuartel = useFaroStore(selectCuartelActivo);
+  const persona = useFaroStore(selectPersonaActual);
+  const serviciosAll = useFaroStore((s) => s.servicios);
+  const validarServicio = useFaroStore((s) => s.validarServicio);
+  const rechazarServicio = useFaroStore((s) => s.rechazarServicio);
+
+  const serviciosPend = useMemo(
+    () =>
+      serviciosAll.filter(
+        (s) => s.cuartelId === cuartel?.id && s.estado === 'pendiente_validacion',
+      ),
+    [serviciosAll, cuartel?.id],
+  );
+
+  function validarParte(id: string) {
+    if (!persona) return;
+    validarServicio(id, persona.id);
+    toast.push({
+      kind: 'success',
+      title: 'Servicio validado',
+      description: 'Queda firmado y baja del Tablero del Comandante.',
+    });
+  }
+
+  function rechazarParte(id: string) {
+    if (!persona) return;
+    rechazarServicio(id, persona.id);
+    toast.push({
+      kind: 'info',
+      title: 'Servicio devuelto',
+      description: 'Vuelve al bombero para corregir el parte.',
+    });
+  }
+
   function aplicarDecision(id: string, accion: 'aprobar' | 'rechazar') {
     setItems((arr) =>
       arr.map((s) =>
@@ -300,6 +345,61 @@ export default function AprobacionesPage() {
           </div>
         }
       />
+
+      {/* Servicios sin firma — REAL, conectado al store. Validar baja el Tablero. */}
+      {serviciosPend.length > 0 && (
+        <Card className="border-status-warn/40 bg-status-warn-bg/15 border-2">
+          <CardContent className="p-4">
+            <h3 className="text-status-warn-fg flex items-center gap-2 text-sm font-black uppercase tracking-wide">
+              <FileSignature size={16} />
+              {serviciosPend.length} servicio{serviciosPend.length === 1 ? '' : 's'} sin tu firma
+            </h3>
+            <p className="mt-0.5 text-xs text-slate-600">
+              Partes cargados por los bomberos que esperan tu validación. Al firmar, bajan del
+              Tablero del Comandante y suman al cómputo del mes.
+            </p>
+            <div className="mt-3 space-y-2">
+              {serviciosPend.map((s) => (
+                <div
+                  key={s.id}
+                  className="ring-status-warn/15 flex flex-col gap-2 rounded-xl bg-white p-3 ring-1 sm:flex-row sm:items-center"
+                >
+                  <div className="bg-fire-600 grid h-9 w-9 shrink-0 place-items-center rounded-lg text-white">
+                    <Flame size={16} />
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center gap-2">
+                      <span className="font-semibold text-slate-900">
+                        {tipoServicioLabel[s.tipo]}
+                      </span>
+                      <span className="text-xs text-slate-500">
+                        · {s.dotacionIds.length} en dotación
+                      </span>
+                    </div>
+                    <div className="truncate text-sm text-slate-600">{s.direccion}</div>
+                    <div className="mt-0.5 flex items-center gap-1 text-[11px] text-slate-500">
+                      <Clock size={10} /> {fmtFechaHora(s.horaSalida)}
+                    </div>
+                  </div>
+                  <div className="flex shrink-0 gap-2">
+                    <Button intent="success" size="sm" onClick={() => validarParte(s.id)}>
+                      <Check size={14} /> Validar
+                    </Button>
+                    <Button
+                      intent="secondary"
+                      size="sm"
+                      onClick={() => rechazarParte(s.id)}
+                      aria-label={`Devolver el parte de ${tipoServicioLabel[s.tipo]} en ${s.direccion}`}
+                    >
+                      <X size={14} /> Devolver
+                    </Button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       <Tabs value={tab} onChange={(v) => setTab(v as 'todas' | Categoria)}>
         <TabsList>
