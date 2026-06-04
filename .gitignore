@@ -71,3 +71,4 @@ docker/data/
 *.pem
 .vercel
 .netlify
+.gstack/
