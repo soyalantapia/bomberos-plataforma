@@ -118,11 +118,11 @@ export default function LoginPage() {
 
       <div className="relative w-full max-w-md">
         <div className="mb-6 text-center">
-          <div className="bg-fire-600 shadow-fire-600/30 mb-3 inline-flex h-14 w-14 items-center justify-center rounded-2xl shadow-lg">
+          <div className="from-fire-500 to-fire-700 shadow-fire-600/40 mb-3 inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br shadow-lg">
             <Flame size={28} className="text-white" />
           </div>
           <h1 className="text-3xl font-bold text-white">Vulcano</h1>
-          <p className="mt-1 text-sm text-white/70">Gestión bomberil</p>
+          <p className="mt-1 text-sm font-medium tracking-wide text-white/80">Dominá el fuego</p>
         </div>
 
         <Card className="bg-white/95 shadow-2xl backdrop-blur">
