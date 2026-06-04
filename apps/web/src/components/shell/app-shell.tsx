@@ -1,7 +1,7 @@
 'use client';
 
 import { AnimatePresence, motion } from 'framer-motion';
-import { Bell, Flame, LayoutGrid, LogOut, Menu, Search, X } from 'lucide-react';
+import { Bell, LayoutGrid, LogOut, Menu, Search, X } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
@@ -12,6 +12,7 @@ import { useFaroStore, selectCuartelActivo, selectPersonaActual } from '../../st
 import { perfilLabel } from '../../lib/utils/perfil';
 import { fmtJerarquia } from '../../lib/utils/jerarquia';
 
+import { VulcanoLogo } from '../brand/vulcano-mark';
 import { PageSkeleton } from '../shared/page-skeleton';
 
 import { navByPerfil } from './nav-config';
@@ -38,9 +39,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       <div className="min-h-dvh bg-slate-50">
         <div className="sticky top-0 z-30 flex items-center gap-2 border-b border-slate-200 bg-white px-4 pb-2.5 pt-[calc(0.625rem+env(safe-area-inset-top))] sm:px-6">
           <div className="flex items-center gap-2">
-            <div className="bg-fire-600 grid h-7 w-7 place-items-center rounded-md">
-              <Flame size={14} className="text-white" />
-            </div>
+            <VulcanoLogo tile={28} className="rounded-md" />
             <div className="font-bold leading-none text-slate-900">Vulcano</div>
           </div>
           <div className="ml-auto flex items-center gap-2 text-sm text-slate-500">
@@ -73,9 +72,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       {/* Sidebar desktop */}
       <aside className="bg-brand-900 sticky top-0 hidden h-screen w-64 shrink-0 flex-col px-3 py-4 text-white md:flex">
         <div className="flex items-center gap-2 px-2 py-2">
-          <div className="bg-fire-600 grid h-9 w-9 place-items-center rounded-lg">
-            <Flame size={20} className="text-white" />
-          </div>
+          <VulcanoLogo tile={36} className="rounded-lg" />
           <div>
             <div className="text-base font-bold leading-tight tracking-tight">Vulcano</div>
             <div className="text-xs text-white/60">{cuartel?.nombre ?? '—'}</div>
@@ -149,9 +146,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             <Menu size={22} />
           </button>
           <div className="flex items-center gap-2 md:hidden">
-            <div className="bg-fire-600 grid h-7 w-7 place-items-center rounded-md">
-              <Flame size={14} className="text-white" />
-            </div>
+            <VulcanoLogo tile={28} className="rounded-md" />
             <div className="font-bold leading-none text-slate-900">Vulcano</div>
           </div>
           <div className="hidden items-center gap-2 text-sm text-slate-600 md:flex">
@@ -261,9 +256,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           >
             <div className="mb-4 flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <div className="bg-fire-600 grid h-9 w-9 place-items-center rounded-lg">
-                  <Flame size={20} className="text-white" />
-                </div>
+                <VulcanoLogo tile={36} className="rounded-lg" />
                 <div>
                   <div className="font-bold leading-tight tracking-tight">Vulcano</div>
                   <div className="text-xs text-white/60">{cuartel?.nombre}</div>

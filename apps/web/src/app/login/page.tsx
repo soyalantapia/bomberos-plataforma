@@ -1,10 +1,11 @@
 'use client';
 
 import { Button, Card, Input, Label, cn, useToast } from '@faro/ui';
-import { ArrowRight, ShieldCheck, Sparkles, Flame, AlertCircle, Loader2 } from 'lucide-react';
+import { ArrowRight, ShieldCheck, Sparkles, AlertCircle, Loader2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 
+import { VulcanoMark } from '../../components/brand/vulcano-mark';
 import { PERSONA_DEMO_ID, CUARTEL_PRINCIPAL_ID } from '../../data';
 import { useFaroStore } from '../../store/use-faro-store';
 
@@ -118,8 +119,8 @@ export default function LoginPage() {
 
       <div className="relative w-full max-w-md">
         <div className="mb-6 text-center">
-          <div className="from-fire-500 to-fire-700 shadow-fire-600/40 mb-3 inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br shadow-lg">
-            <Flame size={28} className="text-white" />
+          <div className="from-brand-800 to-brand-950 shadow-fire-600/30 mb-3 inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br shadow-lg ring-1 ring-white/10">
+            <VulcanoMark size={30} />
           </div>
           <h1 className="text-3xl font-bold text-white">Vulcano</h1>
           <p className="mt-1 text-sm font-medium tracking-wide text-white/80">Dominá el fuego</p>

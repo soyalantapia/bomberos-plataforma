@@ -19,6 +19,8 @@ import type { TipoServicio } from '@faro/types';
 
 import { Button, cn } from '@faro/ui';
 
+import { VulcanoLogo } from '../../components/brand/vulcano-mark';
+
 import {
   selectCuartelActivo,
   selectPersonaActual,
@@ -159,9 +161,7 @@ export default function InformePage() {
         <header className="bg-brand-900 px-8 py-6 text-white sm:px-10">
           <div className="flex items-start justify-between gap-4">
             <div className="flex items-center gap-3">
-              <div className="from-fire-500 to-fire-700 grid h-12 w-12 shrink-0 place-items-center rounded-xl bg-gradient-to-br shadow-lg">
-                <Flame size={26} className="text-white" />
-              </div>
+              <VulcanoLogo tile={48} className="rounded-xl shadow-lg" />
               <div>
                 <div className="text-lg font-black leading-tight">
                   Cuerpo de Bomberos Voluntarios
