@@ -1,1 +1,0 @@
-self.__SSG_MANIFEST=new Set(["\u002Fadministrativo\u002Fpersonas\u002F[id]","\u002Fdirectorio\u002Fcuartel\u002F[id]","\u002Fgobierno\u002Faudit\u002F[id]","\u002Fmando\u002Fautomotores\u002F[id]","\u002Fmando\u002Fhidrantes\u002F[id]","\u002Fmando\u002Foperaciones\u002F[id]","\u002Fmando\u002Fpersonal\u002F[id]"]);self.__SSG_MANIFEST_CB&&self.__SSG_MANIFEST_CB()
