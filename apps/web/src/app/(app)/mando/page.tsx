@@ -30,6 +30,7 @@ import {
   cn,
 } from '@faro/ui';
 
+import { TableroComandante } from '../../../components/mando/tablero-comandante';
 import { SemaforoRendicion } from '../../../components/rendicion/semaforo-rendicion';
 import {
   useFaroStore,
@@ -297,6 +298,9 @@ export default function MandoDashboard() {
           </div>
         </CardContent>
       </Card>
+
+      {/* Tablero del Comandante: la foto que el hero no da + tu bandeja de pendientes */}
+      <TableroComandante />
 
       <Tabs value={tab} onChange={setTab}>
         <TabsList>

@@ -1,6 +1,6 @@
 'use client';
 
-import { Award, Ban, Clock, Star, UserCheck } from 'lucide-react';
+import { AlertTriangle, Award, Ban, Clock, Star, UserCheck } from 'lucide-react';
 import { useMemo, useState } from 'react';
 
 import {
@@ -90,6 +90,17 @@ export default function CumplimientoPage() {
   const promedioCumpl = ranking.length
     ? Math.round(ranking.reduce((a, r) => a + r.c.global, 0) / ranking.length)
     : 0;
+
+  // Los flojos al frente: bajo cumplimiento o sin apto médico, peor primero,
+  // arriba de todo para que el jefe no tenga que scrollear el ranking entero.
+  const UMBRAL_FALTA = 60;
+  const enFalta = useMemo(
+    () =>
+      ranking
+        .filter(({ c }) => c.global < UMBRAL_FALTA || !c.certificadoMedico)
+        .sort((a, b) => a.c.global - b.c.global),
+    [ranking],
+  );
   const premios = reconocimientos.filter(
     (r) => r.cuartelId === cuartel?.id && r.tipo === 'premio',
   ).length;
@@ -180,6 +191,58 @@ export default function CumplimientoPage() {
 
           {/* ───── CUMPLIMIENTO (ranking) ───── */}
           <TabsContent value="cumplimiento" className="space-y-2">
+            {/* Los flojos al frente */}
+            {enFalta.length > 0 ? (
+              <Card className="border-status-risk/40 bg-status-risk-bg/20 border-2">
+                <CardContent className="p-3.5">
+                  <h3 className="text-status-risk-fg flex items-center gap-1.5 text-sm font-bold">
+                    <AlertTriangle size={16} />
+                    {enFalta.length} en falta este mes
+                  </h3>
+                  <p className="mt-0.5 text-xs text-slate-600">
+                    Bajo cumplimiento o sin apto médico vigente. Acá, al frente, para que no se te
+                    escapen.
+                  </p>
+                  <div className="mt-2.5 space-y-1.5">
+                    {enFalta.map(({ persona, c }) => (
+                      <div
+                        key={persona.id}
+                        className="ring-status-risk/15 flex items-center gap-2.5 rounded-xl bg-white p-2.5 ring-1"
+                      >
+                        <Avatar
+                          name={`${persona.nombre} ${persona.apellido}`}
+                          src={persona.fotoUrl}
+                          size={32}
+                        />
+                        <div className="min-w-0 flex-1">
+                          <div className="truncate text-sm font-semibold text-slate-900">
+                            {persona.apellido}, {persona.nombre}
+                          </div>
+                          <div className="mt-0.5 flex flex-wrap gap-1">
+                            {c.global < UMBRAL_FALTA && (
+                              <Badge intent="risk">Cumple {c.global}%</Badge>
+                            )}
+                            {!c.certificadoMedico && <Badge intent="risk">Sin apto médico</Badge>}
+                          </div>
+                        </div>
+                        <Button
+                          intent="ghost"
+                          size="sm"
+                          onClick={() => abrir(persona.id, 'sancion')}
+                        >
+                          <Ban size={14} /> Sancionar
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            ) : (
+              <div className="bg-status-ok-bg/30 text-status-ok-fg flex items-center gap-2 rounded-xl px-3 py-2.5 text-sm font-medium">
+                <UserCheck size={16} /> Nadie en falta este mes. Buen cuerpo.
+              </div>
+            )}
+
             <p className="px-1 text-xs text-slate-500">
               Ordenado de mayor a menor cumplimiento. Tocá una persona para ver el detalle y
               registrar un premio o una sanción.
