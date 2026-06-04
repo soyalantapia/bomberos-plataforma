@@ -1,13 +1,18 @@
 'use client';
 
-import { AlertTriangle, Calendar, Sparkles, Truck, Wrench } from 'lucide-react';
+import { AlertTriangle, Calendar, Camera, Sparkles, Truck, Wrench } from 'lucide-react';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 
-import { Badge, Card, CardContent, Kpi, StatusPill, cn } from '@faro/ui';
+import type { Movil } from '@faro/types';
+
+import { Card, CardContent, Kpi, StatusPill, cn } from '@faro/ui';
 
 import { NuevoMovilDialog } from '../../../../components/automotores/nuevo-movil-dialog';
+import { TruckIllustration } from '../../../../components/automotores/truck-illustration';
 import { PageHero } from '../../../../components/shared/page-hero';
+import type { EstadoOperativoMovil } from '../../../../data/automotores';
 import { fmtFechaCorta } from '../../../../lib/utils/date';
 import { demoToday } from '../../../../lib/utils/demo-today';
 import { useFaroStore, selectCuartelActivo } from '../../../../store/use-faro-store';
@@ -18,26 +23,45 @@ function diasHasta(iso: string): number {
   return Math.round((target - now) / 8.64e7);
 }
 
-function fmtDominio(d: string): string {
-  return d.replace(/\s+/g, ' ').toUpperCase();
-}
-
-const TIPO_COLOR: Record<string, string> = {
-  autobomba: 'bg-status-risk',
-  rescate: 'bg-status-warn',
-  forestal: 'bg-status-ok',
-  ambulancia: 'bg-brand-600',
-  utilitario: 'bg-slate-600',
+const ESTADO_OP: Record<EstadoOperativoMovil, { label: string; cls: string }> = {
+  en_servicio: { label: 'En servicio', cls: 'bg-status-ok' },
+  fuera_servicio: { label: 'Fuera de servicio', cls: 'bg-slate-700' },
+  en_taller: { label: 'En taller', cls: 'bg-status-warn' },
 };
+
+const TIPOS: Array<{ id: 'todos' | Movil['tipo']; label: string }> = [
+  { id: 'todos', label: 'Todos' },
+  { id: 'autobomba', label: 'Autobomba' },
+  { id: 'rescate', label: 'Rescate' },
+  { id: 'forestal', label: 'Forestal' },
+  { id: 'ambulancia', label: 'Ambulancia' },
+  { id: 'utilitario', label: 'Utilitario' },
+];
 
 export default function AutomotoresPage() {
   const cuartel = useFaroStore(selectCuartelActivo);
   const allMoviles = useFaroStore((s) => s.moviles);
-  const moviles = allMoviles.filter((m) => m.cuartelId === cuartel?.id);
+  const fichas = useFaroStore((s) => s.fichasMovil);
   const router = useRouter();
   const [nuevoOpen, setNuevoOpen] = useState(false);
+  const [filtroTipo, setFiltroTipo] = useState<'todos' | Movil['tipo']>('todos');
 
-  const enServicio = moviles.filter((m) => m.enServicio).length;
+  const moviles = useMemo(
+    () => allMoviles.filter((m) => m.cuartelId === cuartel?.id),
+    [allMoviles, cuartel?.id],
+  );
+  const fichaDe = (id: string) => fichas.find((f) => f.movilId === id);
+
+  const visibles = useMemo(
+    () => (filtroTipo === 'todos' ? moviles : moviles.filter((m) => m.tipo === filtroTipo)),
+    [moviles, filtroTipo],
+  );
+
+  const enServicio = moviles.filter(
+    (m) =>
+      (fichaDe(m.id)?.estadoOperativo ?? (m.enServicio ? 'en_servicio' : 'fuera_servicio')) ===
+      'en_servicio',
+  ).length;
   const porVencer = moviles.filter((m) => {
     const d = diasHasta(m.vtvVencimiento);
     return d >= 0 && d < 30;
@@ -49,7 +73,7 @@ export default function AutomotoresPage() {
       <PageHero
         objetivo="Vista Mando · Automotores"
         titulo={porVencer > 0 ? `${porVencer} VTV por vencer en 30 días` : 'Toda la flota al día'}
-        descripcion="Móviles del cuartel, vencimientos de VTV, licencias de conductores y horas de servicio acumuladas."
+        descripcion="El garaje del cuartel: cada móvil con su foto, capacidades, documentación y mantenimiento. Tocá un móvil para ver su ficha completa."
         icono={<Truck size={26} />}
         variant={porVencer > 0 ? 'critical' : 'success'}
         meta={
@@ -77,49 +101,115 @@ export default function AutomotoresPage() {
         }
       />
 
-      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-        {moviles.map((m) => {
-          const dias = diasHasta(m.vtvVencimiento);
-          const estado = dias < 0 ? 'risk' : dias < 30 ? 'warn' : 'ok';
+      {/* Filtros por tipo */}
+      <div className="flex flex-wrap gap-2">
+        {TIPOS.map((t) => {
+          const n =
+            t.id === 'todos' ? moviles.length : moviles.filter((m) => m.tipo === t.id).length;
+          if (t.id !== 'todos' && n === 0) return null;
           return (
-            <Card key={m.id} className="overflow-hidden">
-              <div className={cn('h-1.5', TIPO_COLOR[m.tipo] ?? 'bg-slate-400')} />
-              <CardContent className="p-5">
-                <div className="mb-3 flex items-start justify-between gap-3">
-                  <div className="min-w-0">
-                    <div className="text-2xl font-bold text-slate-900">{m.codigo}</div>
-                    <div className="text-xs capitalize text-slate-500">{m.tipo}</div>
+            <button
+              key={t.id}
+              type="button"
+              onClick={() => setFiltroTipo(t.id)}
+              className={cn(
+                'rounded-full px-3 py-1 text-xs font-medium transition-colors',
+                filtroTipo === t.id
+                  ? 'bg-brand-600 text-white'
+                  : 'bg-white text-slate-700 ring-1 ring-slate-200 hover:bg-slate-50',
+              )}
+            >
+              {t.label} <span className="opacity-70">{n}</span>
+            </button>
+          );
+        })}
+      </div>
+
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        {visibles.map((m) => {
+          const ficha = fichaDe(m.id);
+          const estadoOp =
+            ficha?.estadoOperativo ?? (m.enServicio ? 'en_servicio' : 'fuera_servicio');
+          const dias = diasHasta(m.vtvVencimiento);
+          const vtvEstado = dias < 0 ? 'risk' : dias < 30 ? 'warn' : 'ok';
+          const eo = ESTADO_OP[estadoOp];
+          return (
+            <Link key={m.id} href={`/mando/automotores/${m.id}` as never} className="group block">
+              <Card className="overflow-hidden transition-shadow hover:shadow-lg">
+                {/* Hero: foto real o ilustración por tipo */}
+                <div className="relative aspect-video bg-slate-100">
+                  {ficha?.fotoUrl ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={ficha.fotoUrl}
+                      alt={`Móvil ${m.codigo}`}
+                      className="h-full w-full object-cover"
+                    />
+                  ) : (
+                    <TruckIllustration codigo={m.codigo} tipo={m.tipo} className="h-full w-full" />
+                  )}
+                  <span
+                    className={cn(
+                      'absolute left-2 top-2 inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-semibold text-white shadow-sm',
+                      eo.cls,
+                    )}
+                  >
+                    {eo.label}
+                  </span>
+                  {!ficha?.fotoUrl && (
+                    <span className="absolute bottom-2 right-2 inline-flex items-center gap-1 rounded-full bg-black/45 px-2 py-0.5 text-[11px] font-medium text-white backdrop-blur-sm">
+                      <Camera size={11} /> Sin foto
+                    </span>
+                  )}
+                </div>
+
+                <CardContent className="p-4">
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="min-w-0">
+                      <div className="text-xl font-bold leading-tight text-slate-900">
+                        {m.codigo}
+                      </div>
+                      <div className="text-sm text-slate-600">
+                        {m.marca} {m.modelo} · {m.anio}
+                      </div>
+                    </div>
+                    <span className="inline-flex shrink-0 items-center rounded-md bg-slate-900 px-2 py-1 font-mono text-[11px] font-bold tracking-wider text-white">
+                      {m.dominio.toUpperCase()}
+                    </span>
                   </div>
-                  <Badge intent={m.enServicio ? 'ok' : 'warn'}>
-                    {m.enServicio ? 'En servicio' : 'Fuera'}
-                  </Badge>
-                </div>
 
-                <div className="text-sm text-slate-700">
-                  {m.marca} {m.modelo}
-                </div>
-                <div className="mt-0.5 text-xs text-slate-500">Año {m.anio}</div>
-
-                <div className="mt-2 inline-flex items-center rounded-md bg-slate-900 px-2 py-1 font-mono text-[11px] font-bold tracking-wider text-white">
-                  {fmtDominio(m.dominio)}
-                </div>
-
-                <div className="mt-4 space-y-2 border-t border-slate-100 pt-3">
-                  <div className="flex items-center justify-between text-sm">
+                  <div className="mt-3 flex items-center justify-between border-t border-slate-100 pt-2.5 text-sm">
                     <div className="flex items-center gap-1.5 text-slate-500">
                       <Calendar size={12} /> VTV
                     </div>
-                    <StatusPill status={estado} label={fmtFechaCorta(m.vtvVencimiento)} size="sm" />
+                    <StatusPill
+                      status={vtvEstado}
+                      label={fmtFechaCorta(m.vtvVencimiento)}
+                      size="sm"
+                    />
                   </div>
-                  <div className="flex items-center justify-between text-sm">
-                    <div className="flex items-center gap-1.5 text-slate-500">
-                      <Wrench size={12} /> Horas
+                  {ficha && (
+                    <div className="mt-1.5 flex items-center justify-between text-sm">
+                      <div className="flex items-center gap-1.5 text-slate-500">
+                        <Wrench size={12} /> Combustible
+                      </div>
+                      <span
+                        className={cn(
+                          'font-bold tabular-nums',
+                          ficha.combustiblePct < 25
+                            ? 'text-status-risk-fg'
+                            : ficha.combustiblePct < 50
+                              ? 'text-status-warn-fg'
+                              : 'text-slate-900',
+                        )}
+                      >
+                        {ficha.combustiblePct}%
+                      </span>
                     </div>
-                    <div className="font-bold tabular-nums text-slate-900">{m.horasServicio}</div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+                  )}
+                </CardContent>
+              </Card>
+            </Link>
           );
         })}
       </div>

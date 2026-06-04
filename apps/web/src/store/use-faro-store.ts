@@ -65,6 +65,12 @@ import {
 import { equipoEPPMock, type EquipoEPP } from '../data/epp';
 import { hidrantesMock, type Hidrante } from '../data/hidrantes';
 import { broadcastsMock, type AudienciaBroadcast, type Broadcast } from '../data/broadcasts';
+import {
+  fichasMovilMock,
+  type EstadoOperativoMovil,
+  type MantenimientoMovil,
+  type MovilFicha,
+} from '../data/automotores';
 import { calcularComputoMensual } from '../lib/utils/computo';
 import { demoToday } from '../lib/utils/demo-today';
 
@@ -114,6 +120,8 @@ interface State {
   hidrantes: Hidrante[];
   // AVISOS MASIVOS (broadcasts)
   broadcasts: Broadcast[];
+  // FICHA RICA DE AUTOMOTORES (por movilId)
+  fichasMovil: MovilFicha[];
 }
 
 interface Actions {
@@ -135,6 +143,10 @@ interface Actions {
     destinatarios: number;
     programadaPara?: string;
   }) => void;
+  setFotoMovil: (movilId: string, fotoUrl: string) => void;
+  setEstadoOperativoMovil: (movilId: string, estado: EstadoOperativoMovil) => void;
+  registrarCargaCombustible: (movilId: string, combustiblePct: number) => void;
+  registrarMantenimientoMovil: (movilId: string, mant: Omit<MantenimientoMovil, 'id'>) => void;
   presentarRendicion: (rendicionId: string, mandoId: string) => void;
   marcarNotifLeida: (id: string) => void;
   marcarTodasLeidas: () => void;
@@ -242,6 +254,7 @@ const initialState: State = {
   equipoEPP: equipoEPPMock,
   hidrantes: hidrantesMock,
   broadcasts: broadcastsMock,
+  fichasMovil: fichasMovilMock,
 };
 
 function recalcularRendicion(state: State, cuartelId: string): State {
@@ -428,6 +441,43 @@ export const useFaroStore = create<FaroStore>()(
         set({
           broadcasts: [broadcast, ...s.broadcasts],
           notificaciones: [notif, ...s.notificaciones],
+        });
+      },
+      setFotoMovil(movilId, fotoUrl) {
+        set({
+          fichasMovil: get().fichasMovil.map((f) =>
+            f.movilId === movilId ? { ...f, fotoUrl } : f,
+          ),
+        });
+      },
+      setEstadoOperativoMovil(movilId, estado) {
+        set({
+          fichasMovil: get().fichasMovil.map((f) =>
+            f.movilId === movilId ? { ...f, estadoOperativo: estado } : f,
+          ),
+        });
+      },
+      registrarCargaCombustible(movilId, combustiblePct) {
+        set({
+          fichasMovil: get().fichasMovil.map((f) =>
+            f.movilId === movilId
+              ? { ...f, combustiblePct: Math.max(0, Math.min(100, combustiblePct)) }
+              : f,
+          ),
+        });
+      },
+      registrarMantenimientoMovil(movilId, mant) {
+        const nuevo: MantenimientoMovil = { ...mant, id: genId('mant') };
+        set({
+          fichasMovil: get().fichasMovil.map((f) =>
+            f.movilId === movilId
+              ? {
+                  ...f,
+                  mantenimientos: [nuevo, ...f.mantenimientos],
+                  odometroKm: Math.max(f.odometroKm, mant.km),
+                }
+              : f,
+          ),
         });
       },
       marcarNotifLeida(id) {
