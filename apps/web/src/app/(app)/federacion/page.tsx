@@ -2,6 +2,7 @@
 
 import {
   AlertTriangle,
+  ArrowRight,
   BookMarked,
   Flag,
   Map,
@@ -34,13 +35,36 @@ export default function TableroFederacion() {
   const promedio = cuarteles.length
     ? Math.round(cuarteles.reduce((acc, c) => acc + c.porcentajeRendicion, 0) / cuarteles.length)
     : 0;
-  const ranking = [...cuarteles].sort((a, b) => b.porcentajeRendicion - a.porcentajeRendicion);
   const peorCuartel = [...cuarteles].sort(
     (a, b) => a.porcentajeRendicion - b.porcentajeRendicion,
   )[0];
   const segundoPeor = [...cuarteles].sort(
     (a, b) => a.porcentajeRendicion - b.porcentajeRendicion,
   )[1];
+
+  // Rollup por región (Nación → Región) y los cuarteles más críticos del país.
+  const byReg: Record<string, { n: number; suma: number; riesgo: number }> = {};
+  cuarteles.forEach((c) => {
+    const r = (byReg[c.region] ??= { n: 0, suma: 0, riesgo: 0 });
+    r.n++;
+    r.suma += c.porcentajeRendicion;
+    if (c.cumplimiento === 'risk') r.riesgo++;
+  });
+  const regiones = Object.entries(byReg)
+    .map(([region, r]) => {
+      const prom = Math.round(r.suma / r.n);
+      return {
+        region,
+        n: r.n,
+        prom,
+        riesgo: r.riesgo,
+        sem: (prom >= 90 ? 'ok' : prom >= 70 ? 'warn' : 'risk') as 'risk' | 'ok' | 'warn',
+      };
+    })
+    .sort((a, b) => a.prom - b.prom);
+  const criticos = [...cuarteles]
+    .sort((a, b) => a.porcentajeRendicion - b.porcentajeRendicion)
+    .slice(0, 8);
 
   return (
     <div className="mx-auto max-w-6xl space-y-5">
@@ -174,34 +198,38 @@ export default function TableroFederacion() {
       {vista === 'semaforo' && (
         <Card>
           <CardHeader>
-            <CardTitle>Cuarteles · Semáforo</CardTitle>
+            <CardTitle>Regiones · {regiones.length}</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-              {cuarteles.map((c) => {
-                const mostrarCiudad = c.ciudad && c.ciudad.toLowerCase() !== c.nombre.toLowerCase();
-                return (
-                  <Link
-                    key={c.id}
-                    href={`/federacion/cuartel/${c.id}` as never}
-                    className="focus:ring-brand-400 flex flex-col items-center rounded-xl border border-slate-200 p-4 text-center transition-all hover:-translate-y-0.5 hover:shadow-md focus:outline-none focus:ring-2"
+            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+              {regiones.map((r) => (
+                <Link
+                  key={r.region}
+                  href={`/federacion/region/${encodeURIComponent(r.region)}` as never}
+                  className="hover:border-brand-300 group flex items-center gap-3 rounded-xl border border-slate-200 p-3 transition-all hover:shadow-md"
+                >
+                  <div
+                    className={cn(
+                      'grid h-12 w-12 shrink-0 place-items-center rounded-xl text-sm font-bold text-white shadow-sm',
+                      r.sem === 'ok' && 'bg-status-ok',
+                      r.sem === 'warn' && 'bg-status-warn',
+                      r.sem === 'risk' && 'bg-status-risk',
+                    )}
                   >
-                    <div
-                      className={cn(
-                        'mb-2 grid h-16 w-16 place-items-center rounded-full text-lg font-bold text-white shadow-sm',
-                        c.cumplimiento === 'ok' && 'bg-status-ok',
-                        c.cumplimiento === 'warn' && 'bg-status-warn',
-                        c.cumplimiento === 'risk' && 'bg-status-risk',
-                        c.cumplimiento === 'neutral' && 'bg-status-neutral',
-                      )}
-                    >
-                      {c.porcentajeRendicion}
+                    {r.prom}
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <div className="truncate font-bold text-slate-900">{r.region}</div>
+                    <div className="text-xs text-slate-500">
+                      {r.n} cuarteles{r.riesgo > 0 ? ` · ${r.riesgo} en riesgo` : ''}
                     </div>
-                    <div className="font-semibold text-slate-900">{c.nombre}</div>
-                    {mostrarCiudad && <div className="text-xs text-slate-500">{c.ciudad}</div>}
-                  </Link>
-                );
-              })}
+                  </div>
+                  <ArrowRight
+                    size={18}
+                    className="group-hover:text-brand-600 shrink-0 text-slate-300 transition-colors"
+                  />
+                </Link>
+              ))}
             </div>
             <div className="mt-4 flex flex-wrap items-center gap-4 border-t border-slate-100 px-1 py-3 text-sm">
               <div className="flex items-center gap-1.5">
@@ -230,7 +258,7 @@ export default function TableroFederacion() {
           </CardHeader>
           <CardContent>
             <ul className="space-y-2">
-              {[...enRiesgo, ...atencion].map((c) => (
+              {[...enRiesgo, ...atencion].slice(0, 6).map((c) => (
                 <li key={c.id}>
                   <Link
                     href={`/federacion/cuartel/${c.id}` as never}
@@ -257,7 +285,7 @@ export default function TableroFederacion() {
 
         <Card className="lg:col-span-2">
           <CardHeader>
-            <CardTitle>Ranking del mes</CardTitle>
+            <CardTitle>Cuarteles más críticos del país</CardTitle>
           </CardHeader>
           <CardContent className="p-0">
             <div className="overflow-x-auto">
@@ -272,7 +300,7 @@ export default function TableroFederacion() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100">
-                  {ranking.map((c, idx) => (
+                  {criticos.map((c, idx) => (
                     <tr key={c.id} className="hover:bg-slate-50">
                       <td className="px-4 py-3 font-medium text-slate-500">{idx + 1}</td>
                       <td className="px-4 py-3 font-semibold">
