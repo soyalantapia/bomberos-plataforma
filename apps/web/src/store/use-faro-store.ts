@@ -71,6 +71,7 @@ import {
   type MantenimientoMovil,
   type MovilFicha,
 } from '../data/automotores';
+import { accionesFedMock, type AccionFed, type TipoAccionFed } from '../data/acciones-fed';
 import { calcularComputoMensual } from '../lib/utils/computo';
 import { demoToday } from '../lib/utils/demo-today';
 
@@ -122,6 +123,8 @@ interface State {
   broadcasts: Broadcast[];
   // FICHA RICA DE AUTOMOTORES (por movilId)
   fichasMovil: MovilFicha[];
+  // ACCIONES DE LA FEDERACIÓN sobre cuarteles (bitácora de control)
+  accionesFed: AccionFed[];
 }
 
 interface Actions {
@@ -147,6 +150,14 @@ interface Actions {
   setEstadoOperativoMovil: (movilId: string, estado: EstadoOperativoMovil) => void;
   registrarCargaCombustible: (movilId: string, combustiblePct: number) => void;
   registrarMantenimientoMovil: (movilId: string, mant: Omit<MantenimientoMovil, 'id'>) => void;
+  registrarAccionFed: (input: {
+    cuartelId: string;
+    region: string;
+    tipo: TipoAccionFed;
+    asunto: string;
+    detalle?: string;
+  }) => void;
+  resolverAccionFed: (id: string) => void;
   presentarRendicion: (rendicionId: string, mandoId: string) => void;
   marcarNotifLeida: (id: string) => void;
   marcarTodasLeidas: () => void;
@@ -255,6 +266,7 @@ const initialState: State = {
   hidrantes: hidrantesMock,
   broadcasts: broadcastsMock,
   fichasMovil: fichasMovilMock,
+  accionesFed: accionesFedMock,
 };
 
 function recalcularRendicion(state: State, cuartelId: string): State {
@@ -477,6 +489,49 @@ export const useFaroStore = create<FaroStore>()(
                   odometroKm: Math.max(f.odometroKm, mant.km),
                 }
               : f,
+          ),
+        });
+      },
+      registrarAccionFed(input) {
+        const s = get();
+        const p = s.personas.find((x) => x.id === s.sesion?.personaId);
+        const autor = p ? `${p.nombre} ${p.apellido} · Federación` : 'Federación';
+        const accion: AccionFed = {
+          ...input,
+          id: genId('af'),
+          fecha: demoToday().toISOString().slice(0, 10),
+          autor,
+          estado: input.tipo === 'comunicado' ? 'resuelta' : 'abierta',
+        };
+        let notificaciones = s.notificaciones;
+        if (input.tipo === 'comunicado') {
+          const mando = s.personas.find(
+            (x) =>
+              x.cuartelId === input.cuartelId &&
+              x.estado === 'activo' &&
+              x.perfiles.includes('mando'),
+          );
+          if (mando) {
+            const notif: Notificacion = {
+              id: genId('notif'),
+              cuartelId: input.cuartelId,
+              destinatarioId: mando.id,
+              tipo: 'comunicado',
+              titulo: 'Comunicado de la Federación',
+              descripcion: input.asunto,
+              leida: false,
+              fecha: demoToday().toISOString(),
+              linkPagina: '/notificaciones',
+            };
+            notificaciones = [notif, ...notificaciones];
+          }
+        }
+        set({ accionesFed: [accion, ...s.accionesFed], notificaciones });
+      },
+      resolverAccionFed(id) {
+        set({
+          accionesFed: get().accionesFed.map((a) =>
+            a.id === id ? { ...a, estado: 'resuelta' as const } : a,
           ),
         });
       },

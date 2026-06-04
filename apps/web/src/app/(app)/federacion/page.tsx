@@ -183,7 +183,7 @@ export default function TableroFederacion() {
                 return (
                   <Link
                     key={c.id}
-                    href="/federacion/cumplimiento"
+                    href={`/federacion/cuartel/${c.id}` as never}
                     className="focus:ring-brand-400 flex flex-col items-center rounded-xl border border-slate-200 p-4 text-center transition-all hover:-translate-y-0.5 hover:shadow-md focus:outline-none focus:ring-2"
                   >
                     <div
@@ -231,22 +231,24 @@ export default function TableroFederacion() {
           <CardContent>
             <ul className="space-y-2">
               {[...enRiesgo, ...atencion].map((c) => (
-                <li
-                  key={c.id}
-                  className={cn(
-                    'flex items-start gap-2 rounded-lg p-3',
-                    c.cumplimiento === 'risk' ? 'bg-status-risk-bg/40' : 'bg-status-warn-bg/40',
-                  )}
-                >
-                  <StatusPill
-                    status={c.cumplimiento}
-                    label={`${c.porcentajeRendicion}%`}
-                    size="sm"
-                  />
-                  <div className="min-w-0 flex-1">
-                    <div className="font-medium text-slate-900">{c.nombre}</div>
-                    <div className="text-xs text-slate-600">Cumplimiento del mes</div>
-                  </div>
+                <li key={c.id}>
+                  <Link
+                    href={`/federacion/cuartel/${c.id}` as never}
+                    className={cn(
+                      'flex items-start gap-2 rounded-lg p-3 transition hover:brightness-95',
+                      c.cumplimiento === 'risk' ? 'bg-status-risk-bg/40' : 'bg-status-warn-bg/40',
+                    )}
+                  >
+                    <StatusPill
+                      status={c.cumplimiento}
+                      label={`${c.porcentajeRendicion}%`}
+                      size="sm"
+                    />
+                    <div className="min-w-0 flex-1">
+                      <div className="font-medium text-slate-900">{c.nombre}</div>
+                      <div className="text-xs text-slate-600">Tocá para consolidar y decidir</div>
+                    </div>
+                  </Link>
                 </li>
               ))}
             </ul>
@@ -273,7 +275,14 @@ export default function TableroFederacion() {
                   {ranking.map((c, idx) => (
                     <tr key={c.id} className="hover:bg-slate-50">
                       <td className="px-4 py-3 font-medium text-slate-500">{idx + 1}</td>
-                      <td className="px-4 py-3 font-semibold text-slate-900">{c.nombre}</td>
+                      <td className="px-4 py-3 font-semibold">
+                        <Link
+                          href={`/federacion/cuartel/${c.id}` as never}
+                          className="hover:text-brand-700 text-slate-900 hover:underline"
+                        >
+                          {c.nombre}
+                        </Link>
+                      </td>
                       <td className="px-4 py-3 text-slate-600">{c.ciudad}</td>
                       <td className="px-4 py-3 text-right tabular-nums">
                         {c.porcentajeRendicion}%
