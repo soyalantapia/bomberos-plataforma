@@ -11,6 +11,7 @@ import {
   ShieldCheck,
   Sparkles,
 } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
 import { Badge, Button, Card, CardContent, Kpi, cn, useToast } from '@faro/ui';
@@ -102,6 +103,7 @@ const RECIENTES = [
 
 export default function ReportesPage() {
   const toast = useToast();
+  const router = useRouter();
   const movimientos = useFaroStore((s) => s.movimientos);
   const cajas = useFaroStore((s) => s.cajas);
   const personas = useFaroStore((s) => s.personas);
@@ -200,6 +202,32 @@ export default function ReportesPage() {
           </div>
         }
       />
+
+      {/* Informe institucional — documento real, listo para imprimir/PDF */}
+      <Card className="border-brand-200 from-brand-50 border-2 bg-gradient-to-br to-white">
+        <CardContent className="flex flex-col gap-3 p-5 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex items-start gap-3">
+            <div className="bg-brand-900 grid h-11 w-11 shrink-0 place-items-center rounded-xl text-white">
+              <FileBarChart size={20} />
+            </div>
+            <div>
+              <h3 className="font-bold text-slate-900">Informe mensual al Consejo Directivo</h3>
+              <p className="text-sm text-slate-600">
+                Documento institucional con los números reales del cuartel — listo para imprimir o
+                guardar como PDF y presentar.
+              </p>
+            </div>
+          </div>
+          <Button
+            intent="primary"
+            size="lg"
+            onClick={() => router.push('/informe')}
+            className="shrink-0"
+          >
+            <FileText size={16} /> Ver informe
+          </Button>
+        </CardContent>
+      </Card>
 
       {/* F24: Leyenda de categorías */}
       <div className="flex flex-wrap items-center gap-4 rounded-lg bg-slate-50 px-4 py-2.5">

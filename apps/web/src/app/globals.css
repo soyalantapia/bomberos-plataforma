@@ -53,3 +53,34 @@
     border-radius: 4px;
   }
 }
+
+/* ── Impresión: documentos institucionales (Informe del cuartel) ── */
+@media print {
+  @page {
+    size: A4;
+    margin: 14mm;
+  }
+  html,
+  body {
+    background: #ffffff !important;
+  }
+  .no-print {
+    display: none !important;
+  }
+  .informe-doc {
+    box-shadow: none !important;
+    border: none !important;
+    margin: 0 !important;
+    width: 100% !important;
+    max-width: none !important;
+    border-radius: 0 !important;
+  }
+  .informe-section {
+    break-inside: avoid;
+  }
+  /* Que los fondos de color (cabecera, KPIs, sellos) salgan en el PDF */
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+}
