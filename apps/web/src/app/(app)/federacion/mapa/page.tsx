@@ -8,15 +8,15 @@ import { Badge, Button, Card, CardContent, Kpi, cn, useToast } from '@faro/ui';
 
 import { PageHero } from '../../../../components/shared/page-hero';
 import { MapView } from '../../../../components/shared/map-view';
+import { REGIONES_FEDERACION } from '../../../../data/cuarteles';
 import { useFaroStore } from '../../../../store/use-faro-store';
-import { mesActual } from '../../../../lib/utils/date';
-
-type Region = 'norte' | 'sur' | 'este' | 'oeste';
+import { mesKey } from '../../../../lib/utils/date';
+import { demoToday } from '../../../../lib/utils/demo-today';
 
 interface CuartelProvincial {
   id: string;
   nombre: string;
-  region: Region;
+  region: string;
   lat: number;
   lng: number;
   voluntarios: number;
@@ -26,21 +26,13 @@ interface CuartelProvincial {
   alertas: number;
 }
 
-function inferirRegion(region: string): Region {
-  const r = region.toLowerCase();
-  if (r.includes('norte')) return 'norte';
-  if (r.includes('sur')) return 'sur';
-  if (r.includes('este')) return 'este';
-  if (r.includes('oeste')) return 'oeste';
-  return 'norte';
-}
-
 export default function MapaFederacionPage() {
   const toast = useToast();
   const cuarteles = useFaroStore((s) => s.cuarteles);
   const personas = useFaroStore((s) => s.personas);
   const servicios = useFaroStore((s) => s.servicios);
-  const [filtroRegion, setFiltroRegion] = useState<'todas' | Region>('todas');
+  const [filtroRegion, setFiltroRegion] = useState<'todas' | string>('todas');
+  const periodo = mesKey(demoToday());
 
   const CUARTELES = useMemo<CuartelProvincial[]>(
     () =>
@@ -49,7 +41,7 @@ export default function MapaFederacionPage() {
           (p) => p.cuartelId === c.id && p.estado === 'activo',
         ).length;
         const serviciosMes = servicios.filter(
-          (s) => s.cuartelId === c.id && s.horaSalida.startsWith(mesActual()),
+          (s) => s.cuartelId === c.id && s.horaSalida.startsWith(periodo),
         ).length;
         const estado: CuartelProvincial['estado'] =
           c.cumplimiento === 'ok' ? 'ok' : c.cumplimiento === 'warn' ? 'warn' : 'risk';
@@ -62,7 +54,7 @@ export default function MapaFederacionPage() {
         return {
           id: c.id,
           nombre: c.nombre,
-          region: inferirRegion(c.region),
+          region: c.region,
           lat: c.lat,
           lng: c.lng,
           voluntarios,
@@ -72,7 +64,7 @@ export default function MapaFederacionPage() {
           alertas,
         };
       }),
-    [cuarteles, personas, servicios],
+    [cuarteles, personas, servicios, periodo],
   );
 
   const filtrados =
@@ -91,9 +83,9 @@ export default function MapaFederacionPage() {
   return (
     <div className="mx-auto max-w-7xl space-y-5">
       <PageHero
-        objetivo="Federación · Consolidados regionales"
-        titulo={`${total} cuarteles · ${voluntariosTotal} voluntarios`}
-        descripcion="Federación Bonaerense Conurbano Norte · datos en vivo. Sin pedir Excel a cada cuartel."
+        objetivo="Federación Bonaerense · Mapa provincial"
+        titulo={`${total} cuarteles en la provincia`}
+        descripcion="Toda la red de bomberos voluntarios de la Provincia de Buenos Aires en el mapa. Tocá una región para filtrar."
         icono={<MapIcon size={26} />}
         meta={
           <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
@@ -136,6 +128,7 @@ export default function MapaFederacionPage() {
         <MapView
           center={{ lat: -36.7, lng: -60 }}
           zoom={6}
+          fitToPins
           pins={filtrados.map((c) => ({
             id: c.id,
             lat: c.lat,
@@ -161,24 +154,28 @@ export default function MapaFederacionPage() {
 
       {/* Filtros región */}
       <Card>
-        <CardContent className="flex flex-wrap items-center gap-2 p-3">
-          <span className="text-xs font-semibold uppercase text-slate-500">Región:</span>
-          {(['todas', 'norte', 'oeste', 'sur', 'este'] as const).map((r) => (
-            <button
-              key={r}
-              type="button"
-              onClick={() => setFiltroRegion(r)}
-              className={cn(
-                'rounded-full px-3 py-1 text-xs font-medium transition-colors',
-                filtroRegion === r
-                  ? 'bg-brand-600 text-white'
-                  : 'bg-white text-slate-700 ring-1 ring-slate-200',
-              )}
-            >
-              {r === 'todas' ? 'Todas' : r.charAt(0).toUpperCase() + r.slice(1)}
-            </button>
-          ))}
-          <span className="ml-auto text-xs text-slate-500">{filtrados.length} cuarteles</span>
+        <CardContent className="p-3">
+          <div className="flex items-center justify-between gap-2">
+            <span className="text-xs font-semibold uppercase text-slate-500">Región</span>
+            <span className="text-xs text-slate-500">{filtrados.length} cuarteles</span>
+          </div>
+          <div className="-mx-1 mt-2 flex gap-1.5 overflow-x-auto px-1">
+            {(['todas', ...REGIONES_FEDERACION] as const).map((r) => (
+              <button
+                key={r}
+                type="button"
+                onClick={() => setFiltroRegion(r)}
+                className={cn(
+                  'shrink-0 whitespace-nowrap rounded-full px-3 py-1 text-xs font-medium transition-colors',
+                  filtroRegion === r
+                    ? 'bg-brand-600 text-white'
+                    : 'bg-white text-slate-700 ring-1 ring-slate-200',
+                )}
+              >
+                {r === 'todas' ? 'Todas' : r}
+              </button>
+            ))}
+          </div>
         </CardContent>
       </Card>
 
@@ -228,9 +225,7 @@ export default function MapaFederacionPage() {
                           <span className="font-medium text-slate-900">{c.nombre}</span>
                         </div>
                       </td>
-                      <td className="px-3 py-2.5 text-center text-xs capitalize text-slate-600">
-                        {c.region}
-                      </td>
+                      <td className="px-3 py-2.5 text-center text-xs text-slate-600">{c.region}</td>
                       <td className="px-3 py-2.5 text-center font-mono">
                         <span className="text-slate-900">{c.voluntarios}</span>
                       </td>

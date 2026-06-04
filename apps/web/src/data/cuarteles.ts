@@ -477,15 +477,135 @@ const REGIONES_DATOS: Array<{ region: string; cuarteles: CuartelMin[] }> = [
   },
 ];
 
+/**
+ * Resto de la red bonaerense: localidades reales de la Provincia de Buenos
+ * Aires con bomberos voluntarios, distribuidas en las 7 regiones, para que el
+ * mapa provincial muestre la red completa (~180 cuarteles). Coordenadas
+ * aproximadas de cada localidad. provincia = 'Buenos Aires' por defecto en mk().
+ */
+const CUARTELES_EXTRA: CuartelMin[] = [
+  // ── Norte GBA ──
+  {
+    nombre: 'Malvinas Argentinas',
+    ciudad: 'Los Polvorines',
+    region: 'Norte GBA',
+    lat: -34.503,
+    lng: -58.708,
+  },
+  { nombre: 'San Miguel', region: 'Norte GBA', lat: -34.543, lng: -58.712 },
+  { nombre: 'Bella Vista', region: 'Norte GBA', lat: -34.573, lng: -58.685 },
+  { nombre: 'Grand Bourg', region: 'Norte GBA', lat: -34.488, lng: -58.728 },
+  { nombre: 'Tortuguitas', region: 'Norte GBA', lat: -34.471, lng: -58.766 },
+  { nombre: 'Del Viso', region: 'Norte GBA', lat: -34.451, lng: -58.793 },
+  { nombre: 'Beccar', region: 'Norte GBA', lat: -34.461, lng: -58.531 },
+  { nombre: 'Martínez', region: 'Norte GBA', lat: -34.49, lng: -58.504 },
+  { nombre: 'Carapachay', region: 'Norte GBA', lat: -34.518, lng: -58.539 },
+  { nombre: 'Villa Adelina', region: 'Norte GBA', lat: -34.523, lng: -58.546 },
+  // ── Oeste GBA ──
+  { nombre: 'Moreno', region: 'Oeste GBA', lat: -34.65, lng: -58.79 },
+  { nombre: 'Francisco Álvarez', region: 'Oeste GBA', lat: -34.627, lng: -58.843 },
+  { nombre: 'Paso del Rey', region: 'Oeste GBA', lat: -34.661, lng: -58.762 },
+  { nombre: 'El Palomar', region: 'Oeste GBA', lat: -34.611, lng: -58.591 },
+  { nombre: 'Caseros', region: 'Oeste GBA', lat: -34.611, lng: -58.562 },
+  { nombre: 'Isidro Casanova', region: 'Oeste GBA', lat: -34.703, lng: -58.588 },
+  { nombre: 'Rafael Castillo', region: 'Oeste GBA', lat: -34.704, lng: -58.621 },
+  { nombre: 'Virrey del Pino', region: 'Oeste GBA', lat: -34.783, lng: -58.654 },
+  { nombre: 'Villa Tesei', region: 'Oeste GBA', lat: -34.621, lng: -58.622 },
+  { nombre: 'Pontevedra', region: 'Oeste GBA', lat: -34.752, lng: -58.704 },
+  // ── Sur GBA ──
+  { nombre: 'Dock Sud', region: 'Sur GBA', lat: -34.66, lng: -58.339 },
+  { nombre: 'Gerli', region: 'Sur GBA', lat: -34.681, lng: -58.383 },
+  { nombre: 'Villa Domínico', region: 'Sur GBA', lat: -34.692, lng: -58.339 },
+  { nombre: 'Banfield', region: 'Sur GBA', lat: -34.744, lng: -58.393 },
+  { nombre: 'Temperley', region: 'Sur GBA', lat: -34.771, lng: -58.4 },
+  { nombre: 'Adrogué', region: 'Sur GBA', lat: -34.8, lng: -58.39 },
+  { nombre: 'Monte Grande', region: 'Sur GBA', lat: -34.815, lng: -58.468 },
+  { nombre: 'Rafael Calzada', region: 'Sur GBA', lat: -34.789, lng: -58.352 },
+  { nombre: 'Hudson', ciudad: 'Berazategui', region: 'Sur GBA', lat: -34.8, lng: -58.16 },
+  { nombre: 'Claypole', region: 'Sur GBA', lat: -34.799, lng: -58.331 },
+  { nombre: 'Remedios de Escalada', region: 'Sur GBA', lat: -34.722, lng: -58.402 },
+  // ── La Plata y Sudeste ──
+  { nombre: 'City Bell', region: 'La Plata y Sudeste', lat: -34.871, lng: -58.05 },
+  { nombre: 'Villa Elisa', region: 'La Plata y Sudeste', lat: -34.857, lng: -58.08 },
+  { nombre: 'Los Hornos', region: 'La Plata y Sudeste', lat: -34.95, lng: -57.97 },
+  { nombre: 'Lezama', region: 'La Plata y Sudeste', lat: -35.77, lng: -57.9 },
+  {
+    nombre: 'General Paz',
+    ciudad: 'Ranchos',
+    region: 'La Plata y Sudeste',
+    lat: -35.512,
+    lng: -58.312,
+  },
+  { nombre: 'Castelli', region: 'La Plata y Sudeste', lat: -36.092, lng: -57.802 },
+  { nombre: 'Pila', region: 'La Plata y Sudeste', lat: -36.01, lng: -58.15 },
+  { nombre: 'Verónica', region: 'La Plata y Sudeste', lat: -35.388, lng: -57.337 },
+  { nombre: 'Bartolomé Bavio', region: 'La Plata y Sudeste', lat: -35.2, lng: -57.78 },
+  // ── Costa Atlántica ──
+  { nombre: 'Sierra de los Padres', region: 'Costa Atlántica', lat: -37.95, lng: -57.77 },
+  { nombre: 'Santa Clara del Mar', region: 'Costa Atlántica', lat: -37.833, lng: -57.512 },
+  { nombre: 'Mar del Tuyú', region: 'Costa Atlántica', lat: -36.551, lng: -56.69 },
+  { nombre: 'Las Toninas', region: 'Costa Atlántica', lat: -36.512, lng: -56.7 },
+  { nombre: 'General Pirán', region: 'Costa Atlántica', lat: -37.3, lng: -57.78 },
+  { nombre: 'Ayacucho', region: 'Costa Atlántica', lat: -37.15, lng: -58.483 },
+  { nombre: 'Rauch', region: 'Costa Atlántica', lat: -36.77, lng: -59.09 },
+  { nombre: 'Coronel Vidal', region: 'Costa Atlántica', lat: -37.45, lng: -57.73 },
+  { nombre: 'General Lavalle', region: 'Costa Atlántica', lat: -36.404, lng: -56.954 },
+  { nombre: 'Mar Chiquita', region: 'Costa Atlántica', lat: -37.74, lng: -57.43 },
+  {
+    nombre: 'Otamendi',
+    ciudad: 'Comandante Nicanor Otamendi',
+    region: 'Costa Atlántica',
+    lat: -38.13,
+    lng: -57.85,
+  },
+  { nombre: 'Orense', region: 'Costa Atlántica', lat: -38.7, lng: -59.78 },
+  // ── Interior PBA Norte ──
+  { nombre: 'Arrecifes', region: 'Interior PBA Norte', lat: -34.063, lng: -60.105 },
+  { nombre: 'Capitán Sarmiento', region: 'Interior PBA Norte', lat: -34.17, lng: -59.79 },
+  { nombre: 'San Andrés de Giles', region: 'Interior PBA Norte', lat: -34.445, lng: -59.444 },
+  { nombre: 'Suipacha', region: 'Interior PBA Norte', lat: -34.77, lng: -59.69 },
+  { nombre: 'Lincoln', region: 'Interior PBA Norte', lat: -34.866, lng: -61.531 },
+  { nombre: 'General Pinto', region: 'Interior PBA Norte', lat: -34.762, lng: -61.89 },
+  { nombre: 'Colón', region: 'Interior PBA Norte', lat: -33.89, lng: -61.1 },
+  { nombre: 'Bragado', region: 'Interior PBA Norte', lat: -35.12, lng: -60.49 },
+  { nombre: 'Alberti', region: 'Interior PBA Norte', lat: -35.03, lng: -60.281 },
+  { nombre: 'Lobos', region: 'Interior PBA Norte', lat: -35.183, lng: -59.097 },
+  { nombre: '9 de Julio', region: 'Interior PBA Norte', lat: -35.444, lng: -60.883 },
+  { nombre: 'Veinticinco de Mayo', region: 'Interior PBA Norte', lat: -35.432, lng: -60.172 },
+  { nombre: 'Carlos Tejedor', region: 'Interior PBA Norte', lat: -35.388, lng: -62.423 },
+  // ── Interior PBA Sur ──
+  { nombre: 'Coronel Dorrego', region: 'Interior PBA Sur', lat: -38.72, lng: -61.29 },
+  { nombre: 'Coronel Pringles', region: 'Interior PBA Sur', lat: -37.98, lng: -61.352 },
+  { nombre: 'Benito Juárez', region: 'Interior PBA Sur', lat: -37.672, lng: -59.803 },
+  { nombre: 'Pehuajó', region: 'Interior PBA Sur', lat: -35.812, lng: -61.9 },
+  { nombre: 'Carlos Casares', region: 'Interior PBA Sur', lat: -35.622, lng: -61.362 },
+  { nombre: 'Trenque Lauquen', region: 'Interior PBA Sur', lat: -35.973, lng: -62.733 },
+  { nombre: 'General Villegas', region: 'Interior PBA Sur', lat: -35.03, lng: -63.012 },
+  { nombre: 'Monte Hermoso', region: 'Interior PBA Sur', lat: -38.983, lng: -61.3 },
+  {
+    nombre: 'Carhué',
+    ciudad: 'Adolfo Alsina',
+    region: 'Interior PBA Sur',
+    lat: -37.178,
+    lng: -62.759,
+  },
+  { nombre: 'General Lamadrid', region: 'Interior PBA Sur', lat: -37.25, lng: -61.23 },
+  { nombre: 'Guaminí', region: 'Interior PBA Sur', lat: -37.011, lng: -62.417 },
+  { nombre: 'Salliqueló', region: 'Interior PBA Sur', lat: -36.752, lng: -62.95 },
+  { nombre: 'Adolfo Gonzales Chaves', region: 'Interior PBA Sur', lat: -38.03, lng: -60.097 },
+  { nombre: 'Tres Lomas', region: 'Interior PBA Sur', lat: -36.453, lng: -62.863 },
+];
+
 let _idx = 0;
 let _mat = 100;
-export const cuartelesMock: Cuartel[] = REGIONES_DATOS.flatMap((reg) =>
-  reg.cuarteles.map((c) => {
-    _idx++;
-    _mat++;
-    return mk(c, _idx, _mat);
-  }),
-);
+export const cuartelesMock: Cuartel[] = [
+  ...REGIONES_DATOS.flatMap((reg) => reg.cuarteles),
+  ...CUARTELES_EXTRA,
+].map((c) => {
+  _idx++;
+  _mat++;
+  return mk(c, _idx, _mat);
+});
 
 export const CUARTEL_PRINCIPAL_ID = 'cuartel-villa-ballester';
 

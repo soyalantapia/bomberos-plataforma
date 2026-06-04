@@ -45,6 +45,8 @@ interface Props {
   polyline?: MapPolyline | null;
   className?: string;
   attribution?: boolean;
+  /** Si es true, encuadra el mapa para que entren todos los pins (ignora center/zoom). */
+  fitToPins?: boolean;
 }
 
 const STYLE: maplibregl.StyleSpecification = {
@@ -107,6 +109,7 @@ export function MapView({
   polyline = null,
   className,
   attribution = true,
+  fitToPins = false,
 }: Props) {
   const ref = useRef<HTMLDivElement>(null);
   const mapRef = useRef<maplibregl.Map | null>(null);
@@ -154,10 +157,30 @@ export function MapView({
 
   useEffect(() => {
     const map = mapRef.current;
-    if (!map) return;
+    if (!map || fitToPins) return;
     map.setCenter([center.lng, center.lat]);
     map.setZoom(zoom);
-  }, [center.lat, center.lng, zoom]);
+  }, [center.lat, center.lng, zoom, fitToPins]);
+
+  // Encuadre automático a todos los pins (vista provincial completa). Solo
+  // reencuadra cuando cambian los límites reales, para no pisar el pan del usuario.
+  const lastFitRef = useRef('');
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !fitToPins || pins.length === 0) return;
+    const lats = pins.map((p) => p.lat);
+    const lngs = pins.map((p) => p.lng);
+    const bounds: [[number, number], [number, number]] = [
+      [Math.min(...lngs), Math.min(...lats)],
+      [Math.max(...lngs), Math.max(...lats)],
+    ];
+    const sig = bounds.flat().join(',');
+    if (sig === lastFitRef.current) return;
+    lastFitRef.current = sig;
+    const apply = () => map.fitBounds(bounds, { padding: 36, animate: false, maxZoom: 11 });
+    if (loadedRef.current) apply();
+    else map.once('load', apply);
+  }, [fitToPins, pins]);
 
   // Pins
   useEffect(() => {
