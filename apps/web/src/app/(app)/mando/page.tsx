@@ -5,11 +5,18 @@ import {
   Activity,
   AlertTriangle,
   ArrowRight,
+  Briefcase,
   CheckCircle2,
+  Flame,
+  GraduationCap,
   Moon,
+  Shield,
   ShieldAlert,
   Sun,
   Sunset,
+  Truck,
+  Users,
+  Wrench,
   Calendar,
 } from 'lucide-react';
 import Link from 'next/link';
@@ -146,6 +153,7 @@ export default function MandoDashboard() {
   const allServicios = useFaroStore((s) => s.servicios);
   const allAsistencias = useFaroStore((s) => s.asistencias);
   const personas = useFaroStore((s) => s.personas);
+  const moviles = useFaroStore((s) => s.moviles);
   const [tab, setTab] = useState('resumen');
   const [sevFiltro, setSevFiltro] = useState<'todas' | 'risk' | 'warn' | 'ok'>('todas');
 
@@ -170,6 +178,31 @@ export default function MandoDashboard() {
   const personasActivas = personas.filter(
     (p) => p.cuartelId === cuartel?.id && p.estado === 'activo',
   ).length;
+
+  // Cuadro de revista: composición del personal activo del cuartel por escalafón.
+  const composicion = useMemo(() => {
+    const activos = personas.filter((p) => p.cuartelId === cuartel?.id && p.estado === 'activo');
+    const sexoDe = (p: (typeof activos)[number]) => p.sexo ?? p.legajoExtra?.sexo;
+    const esc = (p: (typeof activos)[number]) => p.legajoExtra?.escalafon ?? '';
+    const cadetes = activos.filter((p) => p.jerarquia === 'cadete');
+    const cadeteIds = new Set(cadetes.map((p) => p.id));
+    const cuerpoActivo = activos.filter(
+      (p) => !cadeteIds.has(p.id) && (esc(p).includes('Activo') || !p.legajoExtra),
+    );
+    return {
+      bomberos: cuerpoActivo.filter((p) => sexoDe(p) === 'Masculino').length,
+      bomberas: cuerpoActivo.filter((p) => sexoDe(p) === 'Femenino').length,
+      cadetes: cadetes.length,
+      reservistas: activos.filter((p) => esc(p).includes('Reserva')).length,
+      directiva: activos.filter((p) => esc(p).includes('Directiva')).length,
+      auxiliar: activos.filter(
+        (p) =>
+          esc(p).includes('Auxiliar') ||
+          (p.cuerpo === 'administrativo' && !esc(p).includes('Directiva')),
+      ).length,
+      moviles: moviles.filter((m) => m.cuartelId === cuartel?.id).length,
+    };
+  }, [personas, moviles, cuartel?.id]);
   const horasMes = computo.reduce((acc, c) => acc + c.total, 0);
   const serviciosMes = servicios.length;
   const pendientes = servicios.filter((s) => s.estado === 'pendiente_validacion').length;
@@ -292,10 +325,90 @@ export default function MandoDashboard() {
               <div className="text-lg font-bold text-slate-900">{horasMes} hs</div>
             </div>
             <div className="rounded-xl bg-white/70 px-3 py-2.5 ring-1 ring-slate-200/70">
-              <div className="text-[11px] font-medium text-slate-500">Bomberos activos</div>
+              <div className="text-[11px] font-medium text-slate-500">Personal activo</div>
               <div className="text-lg font-bold text-slate-900">{personasActivas}</div>
             </div>
           </div>
+        </CardContent>
+      </Card>
+
+      {/* Cuadro de revista: composición del personal activo del cuartel */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Users size={18} className="text-brand-600" /> Cuadro de revista
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-4 lg:grid-cols-7">
+            {[
+              {
+                label: 'Bomberos',
+                value: composicion.bomberos,
+                Icon: Flame,
+                fg: 'text-status-risk',
+                bg: 'bg-status-risk-bg/50',
+              },
+              {
+                label: 'Bomberas',
+                value: composicion.bomberas,
+                Icon: Flame,
+                fg: 'text-rose-600',
+                bg: 'bg-rose-50',
+              },
+              {
+                label: 'Cadetes',
+                value: composicion.cadetes,
+                Icon: GraduationCap,
+                fg: 'text-amber-600',
+                bg: 'bg-amber-50',
+              },
+              {
+                label: 'Reservistas',
+                value: composicion.reservistas,
+                Icon: Shield,
+                fg: 'text-slate-600',
+                bg: 'bg-slate-100',
+              },
+              {
+                label: 'Comisión Directiva',
+                value: composicion.directiva,
+                Icon: Briefcase,
+                fg: 'text-violet-600',
+                bg: 'bg-violet-50',
+              },
+              {
+                label: 'Personal Auxiliar',
+                value: composicion.auxiliar,
+                Icon: Wrench,
+                fg: 'text-cyan-600',
+                bg: 'bg-cyan-50',
+              },
+              {
+                label: 'Móviles',
+                value: composicion.moviles,
+                Icon: Truck,
+                fg: 'text-brand-600',
+                bg: 'bg-brand-50',
+              },
+            ].map((t) => (
+              <div
+                key={t.label}
+                className="flex flex-col items-center gap-1.5 rounded-xl border border-slate-200 p-3 text-center"
+              >
+                <span className={cn('grid h-9 w-9 place-items-center rounded-lg', t.bg, t.fg)}>
+                  <t.Icon size={18} />
+                </span>
+                <span className="text-2xl font-black tabular-nums text-slate-900">{t.value}</span>
+                <span className="text-[11px] font-medium leading-tight text-slate-500">
+                  {t.label}
+                </span>
+              </div>
+            ))}
+          </div>
+          <p className="mt-3 text-[11px] text-slate-400">
+            Personal activo del cuartel por escalafón · padrón en vivo.
+          </p>
         </CardContent>
       </Card>
 

@@ -1,5 +1,6 @@
 import type { Persona } from '@faro/types';
 
+import { cadetesVillaBallester } from './cadetes-vb';
 import { CUARTEL_PRINCIPAL_ID } from './cuarteles';
 import { personasVillaBallesterPadron } from './personas-vb-padron';
 
@@ -469,7 +470,11 @@ const personasDemoBase: Persona[] = [
 // 18 personas demo + persona-fed (anchors del flujo demo — login, comisión,
 // roles específicos). Las 150 del padrón se agregan al final para que Villa
 // Ballester refleje el padrón real completo.
-export const personasMock: Persona[] = [...personasDemoBase, ...personasVillaBallesterPadron];
+export const personasMock: Persona[] = [
+  ...personasDemoBase,
+  ...personasVillaBallesterPadron,
+  ...cadetesVillaBallester,
+];
 
 export const PERSONA_DEMO_ID = 'persona-002';
 export const PERSONA_FEDERACION_ID = 'persona-fed';
