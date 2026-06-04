@@ -1,78 +1,112 @@
 'use client';
 
-import { Activity, Award, BarChart3, Flame, GraduationCap, TrendingUp, Users } from 'lucide-react';
-import { useState } from 'react';
+import { Activity, BarChart3, Flag, Flame, TrendingUp, Users } from 'lucide-react';
+import { useMemo, useState } from 'react';
+
+import type { TipoServicio } from '@faro/types';
 
 import { Badge, Card, CardContent, Kpi, cn } from '@faro/ui';
 
 import { PageHero } from '../../../../components/shared/page-hero';
+import { mesKey } from '../../../../lib/utils/date';
+import { demoToday } from '../../../../lib/utils/demo-today';
+import { tipoServicioLabel } from '../../../../lib/utils/tipo-servicio';
 import { useFaroStore } from '../../../../store/use-faro-store';
 
-const personalPorCuartel = [
-  { cuartel: 'Villa Ballester', activos: 18, cadetes: 4, lic: 1 },
-  { cuartel: 'San Martín', activos: 64, cadetes: 8, lic: 3 },
-  { cuartel: 'San Isidro', activos: 52, cadetes: 7, lic: 2 },
-  { cuartel: 'Tigre', activos: 102, cadetes: 9, lic: 4 },
-];
-
-const serviciosPorTipo = [
-  { tipo: 'Incendio estructural', cantidad: 14, color: 'bg-status-risk' },
-  { tipo: 'Rescate', cantidad: 11, color: 'bg-status-warn' },
-  { tipo: 'Accidente', cantidad: 9, color: 'bg-slate-500' },
-  { tipo: 'Forestal', cantidad: 5, color: 'bg-status-ok' },
-  { tipo: 'Otros', cantidad: 3, color: 'bg-slate-300' },
-];
-
-const tendencia = [32, 28, 35, 30, 38, 42];
-const tendenciaLabels = ['Dic', 'Ene', 'Feb', 'Mar', 'Abr', 'May'];
-
-const capacitacion = [
-  { curso: 'Rescate vehicular avanzado', inscriptos: 38, cupos: 48 },
-  { curso: 'Manejo víctimas múltiples', inscriptos: 42, cupos: 60 },
-  { curso: 'Incendios estructurales II', inscriptos: 22, cupos: 36 },
-  { curso: 'Primeros auxilios', inscriptos: 22, cupos: 30 },
-];
+const TIPOS: TipoServicio[] = ['incendio', 'rescate', 'accidente', 'forestal', 'otro'];
+const TIPO_COLOR: Record<TipoServicio, string> = {
+  incendio: 'bg-status-risk',
+  rescate: 'bg-brand-600',
+  accidente: 'bg-status-warn',
+  forestal: 'bg-status-ok',
+  otro: 'bg-slate-400',
+};
 
 export default function ConsolidadosFed() {
   const cuarteles = useFaroStore((s) => s.cuarteles);
-  const [vista, setVista] = useState<'personal' | 'serv' | 'cap'>('personal');
+  const personas = useFaroStore((s) => s.personas);
+  const servicios = useFaroStore((s) => s.servicios);
+  const [vista, setVista] = useState<'cumplimiento' | 'serv' | 'personal'>('cumplimiento');
 
-  const totalPersonal = personalPorCuartel.reduce((a, c) => a + c.activos, 0);
-  const totalCadetes = personalPorCuartel.reduce((a, c) => a + c.cadetes, 0);
-  const totalServicios = serviciosPorTipo.reduce((a, t) => a + t.cantidad, 0);
-  const maxServicios = Math.max(...serviciosPorTipo.map((t) => t.cantidad));
-  const maxPersonal = Math.max(...personalPorCuartel.map((c) => c.activos + c.cadetes + c.lic));
-  const maxTend = Math.max(...tendencia);
+  const periodo = mesKey(demoToday());
+  const d = useMemo(() => {
+    const enRegla = cuarteles.filter((c) => c.cumplimiento === 'ok').length;
+    const atencion = cuarteles.filter((c) => c.cumplimiento === 'warn').length;
+    const enRiesgo = cuarteles.filter((c) => c.cumplimiento === 'risk').length;
+    const promedio = cuarteles.length
+      ? Math.round(cuarteles.reduce((a, c) => a + c.porcentajeRendicion, 0) / cuarteles.length)
+      : 0;
+
+    const byReg: Record<string, { n: number; suma: number; riesgo: number }> = {};
+    cuarteles.forEach((c) => {
+      const r = (byReg[c.region] ??= { n: 0, suma: 0, riesgo: 0 });
+      r.n++;
+      r.suma += c.porcentajeRendicion;
+      if (c.cumplimiento === 'risk') r.riesgo++;
+    });
+    const regiones = Object.entries(byReg)
+      .map(([region, r]) => ({ region, n: r.n, prom: Math.round(r.suma / r.n), riesgo: r.riesgo }))
+      .sort((a, b) => b.prom - a.prom);
+
+    const servsMes = servicios.filter((s) => s.horaSalida.slice(0, 7) === periodo);
+    const porTipo = TIPOS.map((t) => ({
+      t,
+      n: servsMes.filter((s) => s.tipo === t).length,
+    })).filter((x) => x.n > 0);
+
+    const activos = personas.filter((p) => p.estado === 'activo');
+    const operativo = activos.filter((p) => p.cuerpo !== 'administrativo').length;
+    const admin = activos.length - operativo;
+    const conPadron = new Set(activos.map((p) => p.cuartelId)).size;
+
+    return {
+      enRegla,
+      atencion,
+      enRiesgo,
+      promedio,
+      regiones,
+      servsMes,
+      porTipo,
+      personalActivo: activos.length,
+      operativo,
+      admin,
+      conPadron,
+    };
+  }, [cuarteles, personas, servicios, periodo]);
+
+  const maxReg = Math.max(1, ...d.regiones.map((r) => r.prom));
+  const maxTipo = Math.max(1, ...d.porTipo.map((x) => x.n));
+  const totalSemaforo = d.enRegla + d.atencion + d.enRiesgo || 1;
 
   return (
     <div className="mx-auto max-w-6xl space-y-5">
       <PageHero
         objetivo="Federación · Consolidados"
-        titulo="Norte GBA en números"
-        descripcion="Lo que antes había que armar manualmente cuartel por cuartel, acá ya está sumado en gráficos comparativos."
+        titulo="La red en números"
+        descripcion="Lo que antes había que pedir cuartel por cuartel, sumado en vivo desde el sistema. Todo calculado de los datos cargados — sin números inventados."
         icono={<BarChart3 size={26} />}
         meta={
           <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
-            <Kpi label="Cuarteles" value={cuarteles.length} hint="región" intent="brand" />
+            <Kpi label="Cuarteles" value={cuarteles.length} hint="en la red" intent="brand" />
+            <Kpi
+              label="Cumplimiento"
+              value={`${d.promedio}%`}
+              hint="promedio"
+              intent={d.promedio >= 90 ? 'ok' : d.promedio >= 70 ? 'warn' : 'risk'}
+            />
+            <Kpi
+              label="En riesgo"
+              value={d.enRiesgo}
+              hint="cuarteles"
+              intent={d.enRiesgo > 0 ? 'risk' : 'ok'}
+              icon={<Flag size={16} />}
+            />
             <Kpi
               label="Personal"
-              value={totalPersonal}
+              value={d.personalActivo}
               hint="activos"
-              intent="ok"
+              intent="neutral"
               icon={<Users size={16} />}
-            />
-            <Kpi
-              label="Servicios mes"
-              value={totalServicios}
-              hint="mayo 2026"
-              icon={<Activity size={16} />}
-            />
-            <Kpi
-              label="Capacitaciones"
-              value={capacitacion.length}
-              hint="en marcha"
-              intent="brand"
-              icon={<GraduationCap size={16} />}
             />
           </div>
         }
@@ -80,250 +114,196 @@ export default function ConsolidadosFed() {
 
       <div className="-mx-1 flex gap-1.5 overflow-x-auto px-1">
         {[
-          { v: 'personal' as const, l: 'Personal por cuartel', icon: <Users size={14} /> },
-          { v: 'serv' as const, l: 'Servicios por tipo', icon: <Flame size={14} /> },
-          { v: 'cap' as const, l: 'Capacitación', icon: <Award size={14} /> },
-        ].map((t) => {
-          const active = vista === t.v;
-          return (
-            <button
-              key={t.v}
-              type="button"
-              onClick={() => setVista(t.v)}
-              className={cn(
-                'inline-flex shrink-0 items-center gap-2 rounded-full px-3.5 py-2 text-sm font-medium transition-colors',
-                active
-                  ? 'bg-brand-600 text-white'
-                  : 'bg-white text-slate-700 ring-1 ring-slate-200 hover:bg-slate-50',
-              )}
-            >
-              {t.icon} {t.l}
-            </button>
-          );
-        })}
+          { v: 'cumplimiento' as const, l: 'Cumplimiento', icon: <Flag size={14} /> },
+          { v: 'serv' as const, l: 'Servicios', icon: <Flame size={14} /> },
+          { v: 'personal' as const, l: 'Personal', icon: <Users size={14} /> },
+        ].map((t) => (
+          <button
+            key={t.v}
+            type="button"
+            onClick={() => setVista(t.v)}
+            className={cn(
+              'inline-flex shrink-0 items-center gap-2 rounded-full px-3.5 py-2 text-sm font-medium transition-colors',
+              vista === t.v
+                ? 'bg-brand-600 text-white'
+                : 'bg-white text-slate-700 ring-1 ring-slate-200 hover:bg-slate-50',
+            )}
+          >
+            {t.icon} {t.l}
+          </button>
+        ))}
       </div>
 
-      {vista === 'personal' && (
+      {vista === 'cumplimiento' && (
         <div className="grid gap-5 lg:grid-cols-2">
           <Card>
             <CardContent className="p-5">
-              <div className="mb-3 flex items-center justify-between">
-                <h3 className="font-bold text-slate-900">Personal por cuartel</h3>
-                <Badge intent="brand">{totalPersonal + totalCadetes} personas</Badge>
+              <h3 className="mb-3 font-bold text-slate-900">Distribución de la red</h3>
+              <div className="flex h-7 overflow-hidden rounded-lg">
+                <div
+                  className="bg-status-ok grid place-items-center text-xs font-bold text-white"
+                  style={{ width: `${(d.enRegla / totalSemaforo) * 100}%` }}
+                >
+                  {d.enRegla}
+                </div>
+                <div
+                  className="bg-status-warn grid place-items-center text-xs font-bold text-white"
+                  style={{ width: `${(d.atencion / totalSemaforo) * 100}%` }}
+                >
+                  {d.atencion}
+                </div>
+                <div
+                  className="bg-status-risk grid place-items-center text-xs font-bold text-white"
+                  style={{ width: `${(d.enRiesgo / totalSemaforo) * 100}%` }}
+                >
+                  {d.enRiesgo}
+                </div>
               </div>
-              <div className="space-y-3">
-                {personalPorCuartel.map((c) => {
-                  const total = c.activos + c.cadetes + c.lic;
-                  const pct = (total / maxPersonal) * 100;
-                  return (
-                    <div key={c.cuartel}>
-                      <div className="mb-1 flex items-baseline justify-between text-sm">
-                        <span className="font-medium text-slate-900">{c.cuartel}</span>
-                        <span className="tabular-nums text-slate-600">{total}</span>
-                      </div>
-                      <div
-                        className="flex h-7 overflow-hidden rounded-md bg-slate-100"
-                        style={{ width: `${pct}%` }}
-                      >
-                        <div
-                          className="bg-status-ok"
-                          style={{ width: `${(c.activos / total) * 100}%` }}
-                          title={`${c.activos} activos`}
-                        />
-                        <div
-                          className="bg-brand-600"
-                          style={{ width: `${(c.cadetes / total) * 100}%` }}
-                          title={`${c.cadetes} cadetes`}
-                        />
-                        <div
-                          className="bg-status-warn"
-                          style={{ width: `${(c.lic / total) * 100}%` }}
-                          title={`${c.lic} en licencia`}
-                        />
-                      </div>
-                      <div className="mt-1 flex gap-3 text-[11px] text-slate-500">
-                        <span>● Activos {c.activos}</span>
-                        <span>● Cadetes {c.cadetes}</span>
-                        <span>● Licencia {c.lic}</span>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-              <div className="mt-4 flex items-center gap-3 border-t border-slate-100 pt-3 text-[11px]">
-                <span className="inline-flex items-center gap-1">
-                  <span className="bg-status-ok h-2 w-2 rounded-sm" /> Activos
+              <div className="mt-3 flex flex-wrap gap-3 text-xs">
+                <span className="inline-flex items-center gap-1.5">
+                  <span className="bg-status-ok h-2.5 w-2.5 rounded-sm" /> En regla ({d.enRegla})
                 </span>
-                <span className="inline-flex items-center gap-1">
-                  <span className="bg-brand-600 h-2 w-2 rounded-sm" /> Cadetes
+                <span className="inline-flex items-center gap-1.5">
+                  <span className="bg-status-warn h-2.5 w-2.5 rounded-sm" /> Atención ({d.atencion})
                 </span>
-                <span className="inline-flex items-center gap-1">
-                  <span className="bg-status-warn h-2 w-2 rounded-sm" /> Licencia
+                <span className="inline-flex items-center gap-1.5">
+                  <span className="bg-status-risk h-2.5 w-2.5 rounded-sm" /> En riesgo ({d.enRiesgo}
+                  )
                 </span>
               </div>
+              <p className="mt-4 text-sm text-slate-600">
+                {d.enRiesgo > 0 ? (
+                  <>
+                    <strong>{d.enRiesgo}</strong> cuarteles en riesgo de no llegar a la rendición.
+                    Priorizar acompañamiento antes del cierre del Fondo.
+                  </>
+                ) : (
+                  'Toda la red en regla este mes.'
+                )}
+              </p>
             </CardContent>
           </Card>
 
           <Card>
             <CardContent className="p-5">
-              <h3 className="mb-3 font-bold text-slate-900">Composición regional</h3>
-              <div className="grid grid-cols-2 gap-3">
-                <div className="bg-status-ok-bg/40 rounded-xl p-4">
-                  <Users size={20} className="text-status-ok" />
-                  <div className="mt-2 text-3xl font-bold tabular-nums text-slate-900">
-                    {totalPersonal}
+              <h3 className="mb-3 font-bold text-slate-900">Regiones por cumplimiento</h3>
+              <div className="space-y-2.5">
+                {d.regiones.map((r) => (
+                  <div key={r.region}>
+                    <div className="mb-1 flex items-baseline justify-between text-sm">
+                      <span className="font-medium text-slate-900">{r.region}</span>
+                      <span className="tabular-nums text-slate-600">
+                        {r.prom}% · {r.n}
+                        {r.riesgo > 0 && (
+                          <span className="text-status-risk-fg ml-1">· {r.riesgo} riesgo</span>
+                        )}
+                      </span>
+                    </div>
+                    <div className="h-2.5 overflow-hidden rounded-full bg-slate-100">
+                      <div
+                        className={cn(
+                          'h-full rounded-full',
+                          r.prom >= 90
+                            ? 'bg-status-ok'
+                            : r.prom >= 70
+                              ? 'bg-status-warn'
+                              : 'bg-status-risk',
+                        )}
+                        style={{ width: `${(r.prom / maxReg) * 100}%` }}
+                      />
+                    </div>
                   </div>
-                  <div className="text-xs text-slate-600">activos</div>
-                </div>
-                <div className="bg-brand-50 rounded-xl p-4">
-                  <GraduationCap size={20} className="text-brand-600" />
-                  <div className="mt-2 text-3xl font-bold tabular-nums text-slate-900">
-                    {totalCadetes}
-                  </div>
-                  <div className="text-xs text-slate-600">cadetes</div>
-                </div>
-                <div className="bg-status-warn-bg/40 rounded-xl p-4">
-                  <div className="text-status-warn-fg text-xl">⚕</div>
-                  <div className="mt-2 text-3xl font-bold tabular-nums text-slate-900">10</div>
-                  <div className="text-xs text-slate-600">en licencia</div>
-                </div>
-                <div className="rounded-xl bg-slate-50 p-4">
-                  <Award size={20} className="text-slate-700" />
-                  <div className="mt-2 text-3xl font-bold tabular-nums text-slate-900">38%</div>
-                  <div className="text-xs text-slate-600">mujeres en mando</div>
-                </div>
+                ))}
               </div>
-              <p className="mt-3 text-xs text-slate-600">
-                Datos al cierre de mayo. <strong>Tigre</strong> concentra el mayor cuerpo activo;{' '}
-                <strong>Villa Ballester</strong> tiene la tasa más alta de cadetes.
-              </p>
             </CardContent>
           </Card>
         </div>
       )}
 
       {vista === 'serv' && (
-        <div className="grid gap-5 lg:grid-cols-2">
-          <Card>
-            <CardContent className="p-5">
-              <div className="mb-3 flex items-center justify-between">
-                <h3 className="font-bold text-slate-900">Servicios mes por tipo</h3>
-                <Badge intent="brand">+18% vs 2025</Badge>
-              </div>
+        <Card>
+          <CardContent className="p-5">
+            <div className="mb-3 flex items-center justify-between">
+              <h3 className="font-bold text-slate-900">Servicios de la red · {periodo}</h3>
+              <Badge intent="brand">{d.servsMes.length} servicios</Badge>
+            </div>
+            {d.porTipo.length === 0 ? (
+              <p className="text-sm text-slate-500">Sin servicios registrados en el período.</p>
+            ) : (
               <div className="space-y-2.5">
-                {serviciosPorTipo.map((t) => {
-                  const pct = (t.cantidad / maxServicios) * 100;
-                  return (
-                    <div key={t.tipo}>
+                {d.porTipo
+                  .sort((a, b) => b.n - a.n)
+                  .map(({ t, n }) => (
+                    <div key={t}>
                       <div className="mb-1 flex items-baseline justify-between text-sm">
-                        <span className="font-medium text-slate-900">{t.tipo}</span>
-                        <span className="tabular-nums text-slate-700">{t.cantidad}</span>
+                        <span className="font-medium text-slate-900">{tipoServicioLabel[t]}</span>
+                        <span className="tabular-nums text-slate-700">
+                          {n} · {Math.round((n / d.servsMes.length) * 100)}%
+                        </span>
                       </div>
                       <div className="h-2.5 overflow-hidden rounded-full bg-slate-100">
                         <div
-                          className={cn('h-full transition-all', t.color)}
-                          style={{ width: `${pct}%` }}
+                          className={cn('h-full rounded-full', TIPO_COLOR[t])}
+                          style={{ width: `${(n / maxTipo) * 100}%` }}
                         />
                       </div>
                     </div>
-                  );
-                })}
+                  ))}
+              </div>
+            )}
+            <p className="mt-4 flex items-center gap-1.5 text-xs text-slate-500">
+              <Activity size={12} /> Agregado de los partes cargados por los cuarteles de la red.
+            </p>
+          </CardContent>
+        </Card>
+      )}
+
+      {vista === 'personal' && (
+        <div className="grid gap-5 lg:grid-cols-2">
+          <Card>
+            <CardContent className="p-5">
+              <h3 className="mb-3 font-bold text-slate-900">Personal de la red</h3>
+              <div className="grid grid-cols-2 gap-3">
+                <div className="bg-status-ok-bg/40 rounded-xl p-4">
+                  <Users size={20} className="text-status-ok" />
+                  <div className="mt-2 text-3xl font-bold tabular-nums text-slate-900">
+                    {d.personalActivo}
+                  </div>
+                  <div className="text-xs text-slate-600">activos</div>
+                </div>
+                <div className="bg-brand-50 rounded-xl p-4">
+                  <TrendingUp size={20} className="text-brand-600" />
+                  <div className="mt-2 text-3xl font-bold tabular-nums text-slate-900">
+                    {d.operativo}
+                  </div>
+                  <div className="text-xs text-slate-600">cuerpo operativo</div>
+                </div>
+                <div className="bg-status-warn-bg/40 rounded-xl p-4">
+                  <BarChart3 size={20} className="text-status-warn-fg" />
+                  <div className="mt-2 text-3xl font-bold tabular-nums text-slate-900">
+                    {d.admin}
+                  </div>
+                  <div className="text-xs text-slate-600">administrativo</div>
+                </div>
+                <div className="rounded-xl bg-slate-50 p-4">
+                  <Flag size={20} className="text-slate-700" />
+                  <div className="mt-2 text-3xl font-bold tabular-nums text-slate-900">
+                    {d.conPadron}
+                  </div>
+                  <div className="text-xs text-slate-600">cuarteles con padrón cargado</div>
+                </div>
               </div>
             </CardContent>
           </Card>
 
           <Card>
-            <CardContent className="p-5">
-              <div className="mb-3 flex items-center justify-between">
-                <h3 className="font-bold text-slate-900">Tendencia · últimos 6 meses</h3>
-                <TrendingUp size={16} className="text-status-ok" />
-              </div>
-              <div className="flex h-32 items-end justify-between gap-2">
-                {tendencia.map((v, idx) => {
-                  const h = (v / maxTend) * 100;
-                  const isCurrent = idx === tendencia.length - 1;
-                  return (
-                    <div key={idx} className="flex flex-1 flex-col items-center justify-end gap-2">
-                      <div className="relative w-full">
-                        <div className="absolute -top-5 left-1/2 -translate-x-1/2 text-[11px] font-bold tabular-nums text-slate-700">
-                          {v}
-                        </div>
-                        <div
-                          className={cn(
-                            'w-full rounded-t-md transition-all',
-                            isCurrent ? 'bg-brand-600' : 'bg-slate-300',
-                          )}
-                          style={{ height: `${h}%`, minHeight: '8px' }}
-                        />
-                      </div>
-                      <span
-                        className={cn(
-                          'text-[11px]',
-                          isCurrent ? 'text-brand-700 font-bold' : 'text-slate-500',
-                        )}
-                      >
-                        {tendenciaLabels[idx]}
-                      </span>
-                    </div>
-                  );
-                })}
-              </div>
-              <p className="mt-4 text-xs text-slate-600">
-                Pico de mayo: 42 servicios. Tendencia ascendente desde febrero — coordinar refuerzo
-                operativo regional para junio.
+            <CardContent className="flex flex-col justify-center p-5 text-sm text-slate-600">
+              <p>
+                El padrón consolidado suma {d.personalActivo} bomberos activos de los {d.conPadron}{' '}
+                cuartel{d.conPadron === 1 ? '' : 'es'} con padrón ya cargado en el sistema. A medida
+                que cada cuartel sube su padrón, este consolidado se actualiza solo — sin pedirlo
+                por mail ni armar planillas.
               </p>
-            </CardContent>
-          </Card>
-        </div>
-      )}
-
-      {vista === 'cap' && (
-        <div className="grid gap-5 lg:grid-cols-2">
-          <Card className="lg:col-span-2">
-            <CardContent className="p-5">
-              <h3 className="mb-3 font-bold text-slate-900">
-                Cursos en marcha · ocupación de cupos
-              </h3>
-              <div className="space-y-4">
-                {capacitacion.map((c) => {
-                  const pct = (c.inscriptos / c.cupos) * 100;
-                  const intent = pct >= 80 ? 'status-warn' : pct >= 50 ? 'status-ok' : 'brand-600';
-                  return (
-                    <div key={c.curso}>
-                      <div className="mb-1 flex items-baseline justify-between text-sm">
-                        <span className="font-medium text-slate-900">{c.curso}</span>
-                        <span className="tabular-nums text-slate-700">
-                          {c.inscriptos} / {c.cupos}{' '}
-                          <Badge intent={pct >= 80 ? 'warn' : 'brand'}>{Math.round(pct)}%</Badge>
-                        </span>
-                      </div>
-                      <div className="h-3 overflow-hidden rounded-full bg-slate-100">
-                        <div className={cn('bg- h-full' + intent)} style={{ width: `${pct}%` }} />
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-              <div className="mt-5 grid grid-cols-3 gap-3">
-                <div className="bg-brand-50 rounded-xl p-3 text-center">
-                  <div className="text-brand-700 text-2xl font-bold">8</div>
-                  <div className="text-[11px] uppercase tracking-wide text-slate-600">
-                    cursos activos
-                  </div>
-                </div>
-                <div className="bg-status-ok-bg/40 rounded-xl p-3 text-center">
-                  <div className="text-status-ok-fg text-2xl font-bold">124</div>
-                  <div className="text-[11px] uppercase tracking-wide text-slate-600">
-                    inscriptos
-                  </div>
-                </div>
-                <div className="bg-status-warn-bg/40 rounded-xl p-3 text-center">
-                  <div className="text-status-warn-fg text-2xl font-bold">32</div>
-                  <div className="text-[11px] uppercase tracking-wide text-slate-600">
-                    certificados mes
-                  </div>
-                </div>
-              </div>
             </CardContent>
           </Card>
         </div>
