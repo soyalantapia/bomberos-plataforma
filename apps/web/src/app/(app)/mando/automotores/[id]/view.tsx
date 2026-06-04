@@ -31,7 +31,11 @@ import {
   useToast,
 } from '@faro/ui';
 
-import { TruckIllustration } from '../../../../../components/automotores/truck-illustration';
+import {
+  TruckIllustration,
+  esFotoReferencia,
+  fotoMovilSrc,
+} from '../../../../../components/automotores/truck-illustration';
 import { EmptyState } from '../../../../../components/shared/empty-state';
 import type { EstadoOperativoMovil, TipoMantenimiento } from '../../../../../data/automotores';
 import { ars } from '../../../../../components/finanzas/utils';
@@ -117,6 +121,8 @@ export default function FichaMovilView() {
   }
 
   const estadoOp = ficha?.estadoOperativo ?? (movil.enServicio ? 'en_servicio' : 'fuera_servicio');
+  const fotoSrc = fotoMovilSrc(movil.tipo, ficha?.fotoUrl);
+  const esRef = esFotoReferencia(movil.tipo, ficha?.fotoUrl);
   const nombrePersona = (id: string) => {
     const p = personas.find((x) => x.id === id);
     return p ? `${p.nombre} ${p.apellido}` : id;
@@ -185,10 +191,10 @@ export default function FichaMovilView() {
         <div className="grid lg:grid-cols-[1.15fr_1fr]">
           {/* Foto */}
           <div className="relative aspect-video bg-slate-100 lg:aspect-auto">
-            {ficha?.fotoUrl ? (
+            {fotoSrc ? (
               // eslint-disable-next-line @next/next/no-img-element
               <img
-                src={ficha.fotoUrl}
+                src={fotoSrc}
                 alt={`Móvil ${movil.codigo}`}
                 className="h-full w-full object-cover"
               />
@@ -198,6 +204,11 @@ export default function FichaMovilView() {
                 tipo={movil.tipo}
                 className="h-full w-full"
               />
+            )}
+            {esRef && (
+              <span className="absolute left-3 top-3 inline-flex items-center gap-1 rounded-full bg-black/50 px-2 py-0.5 text-[11px] font-medium text-white backdrop-blur-sm">
+                Foto de referencia
+              </span>
             )}
             <input
               ref={fotoInput}

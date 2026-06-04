@@ -4,7 +4,32 @@ import { useId } from 'react';
 
 import type { Movil } from '@faro/types';
 
+import { withBasePath } from '../../lib/asset-path';
+
 type TipoMovil = Movil['tipo'];
+
+/** Fotos de referencia (royalty-free, Pexels) por tipo de móvil, bundleadas en /public. */
+const FOTO_POR_TIPO: Partial<Record<TipoMovil, string>> = {
+  autobomba: '/automotores/autobomba.webp',
+  rescate: '/automotores/rescate.webp',
+  forestal: '/automotores/forestal.webp',
+};
+
+/**
+ * URL de foto a mostrar para un móvil: la subida real (base64/url) tiene
+ * prioridad; si no, una foto de referencia por tipo; si tampoco, null → se usa
+ * la ilustración.
+ */
+export function fotoMovilSrc(tipo: TipoMovil, fotoUrl?: string): string | null {
+  if (fotoUrl) return fotoUrl;
+  const p = FOTO_POR_TIPO[tipo];
+  return p ? (withBasePath(p) ?? null) : null;
+}
+
+/** True cuando lo que se muestra es la foto de referencia (no la subida por el cuartel). */
+export function esFotoReferencia(tipo: TipoMovil, fotoUrl?: string): boolean {
+  return !fotoUrl && tipo in FOTO_POR_TIPO;
+}
 
 const ACCENT: Record<TipoMovil, { beacon: string; body: string; bodyDark: string }> = {
   autobomba: { beacon: '#2563eb', body: '#e11d2e', bodyDark: '#b3111f' },

@@ -10,7 +10,11 @@ import type { Movil } from '@faro/types';
 import { Card, CardContent, Kpi, StatusPill, cn } from '@faro/ui';
 
 import { NuevoMovilDialog } from '../../../../components/automotores/nuevo-movil-dialog';
-import { TruckIllustration } from '../../../../components/automotores/truck-illustration';
+import {
+  TruckIllustration,
+  esFotoReferencia,
+  fotoMovilSrc,
+} from '../../../../components/automotores/truck-illustration';
 import { PageHero } from '../../../../components/shared/page-hero';
 import type { EstadoOperativoMovil } from '../../../../data/automotores';
 import { fmtFechaCorta } from '../../../../lib/utils/date';
@@ -133,16 +137,19 @@ export default function AutomotoresPage() {
           const dias = diasHasta(m.vtvVencimiento);
           const vtvEstado = dias < 0 ? 'risk' : dias < 30 ? 'warn' : 'ok';
           const eo = ESTADO_OP[estadoOp];
+          const src = fotoMovilSrc(m.tipo, ficha?.fotoUrl);
+          const esRef = esFotoReferencia(m.tipo, ficha?.fotoUrl);
           return (
             <Link key={m.id} href={`/mando/automotores/${m.id}` as never} className="group block">
               <Card className="overflow-hidden transition-shadow hover:shadow-lg">
-                {/* Hero: foto real o ilustración por tipo */}
+                {/* Hero: foto subida → foto de referencia por tipo → ilustración */}
                 <div className="relative aspect-video bg-slate-100">
-                  {ficha?.fotoUrl ? (
+                  {src ? (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img
-                      src={ficha.fotoUrl}
+                      src={src}
                       alt={`Móvil ${m.codigo}`}
+                      loading="lazy"
                       className="h-full w-full object-cover"
                     />
                   ) : (
@@ -156,10 +163,16 @@ export default function AutomotoresPage() {
                   >
                     {eo.label}
                   </span>
-                  {!ficha?.fotoUrl && (
-                    <span className="absolute bottom-2 right-2 inline-flex items-center gap-1 rounded-full bg-black/45 px-2 py-0.5 text-[11px] font-medium text-white backdrop-blur-sm">
-                      <Camera size={11} /> Sin foto
+                  {esRef ? (
+                    <span className="absolute bottom-2 right-2 inline-flex items-center gap-1 rounded-full bg-black/50 px-2 py-0.5 text-[11px] font-medium text-white backdrop-blur-sm">
+                      <Camera size={11} /> Referencia
                     </span>
+                  ) : (
+                    !ficha?.fotoUrl && (
+                      <span className="absolute bottom-2 right-2 inline-flex items-center gap-1 rounded-full bg-black/50 px-2 py-0.5 text-[11px] font-medium text-white backdrop-blur-sm">
+                        <Camera size={11} /> Sin foto
+                      </span>
+                    )
                   )}
                 </div>
 
