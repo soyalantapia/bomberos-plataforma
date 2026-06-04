@@ -17,158 +17,20 @@ import { Badge, Button, Card, CardContent, Kpi, cn, useToast } from '@faro/ui';
 import { NuevoHidranteDialog } from '../../../../components/hidrantes/nuevo-hidrante-dialog';
 import { PageHero } from '../../../../components/shared/page-hero';
 import { MapView } from '../../../../components/shared/map-view';
+import type { EstadoHidrante, Hidrante } from '../../../../data/hidrantes';
 import { selectCuartelActivo, useFaroStore } from '../../../../store/use-faro-store';
 import { fmtFechaCorta } from '../../../../lib/utils/date';
 import { demoToday } from '../../../../lib/utils/demo-today';
 
-type EstadoHidrante = 'operativo' | 'mantenimiento' | 'fuera_servicio' | 'caudal_bajo';
-
-interface Hidrante {
-  id: string;
-  codigo: string;
-  direccion: string;
-  lat: number;
-  lng: number;
-  tipo: 'rojo_70mm' | 'amarillo_100mm' | 'azul_150mm' | 'verde_200mm';
-  caudal: number; // litros/min
-  presion: number; // bar
-  estado: EstadoHidrante;
-  ultimoTest: string;
-  proximoTest: string;
-  proveedor: 'ABSA' | 'AySA' | 'Municipal';
-  notas?: string;
-}
-
-const HIDRANTES_MOCK: Hidrante[] = [
-  {
-    id: 'h-001',
-    codigo: 'H-VB-0001',
-    direccion: 'Av. Alvear y Vélez Sarsfield',
-    lat: -34.546,
-    lng: -58.557,
-    tipo: 'azul_150mm',
-    caudal: 1500,
-    presion: 5.5,
-    estado: 'operativo',
-    ultimoTest: '2026-03-15',
-    proximoTest: '2026-09-15',
-    proveedor: 'ABSA',
-  },
-  {
-    id: 'h-002',
-    codigo: 'H-VB-0002',
-    direccion: 'Pueyrredón 4200',
-    lat: -34.5483,
-    lng: -58.5591,
-    tipo: 'rojo_70mm',
-    caudal: 950,
-    presion: 4.2,
-    estado: 'operativo',
-    ultimoTest: '2026-04-01',
-    proximoTest: '2026-10-01',
-    proveedor: 'ABSA',
-  },
-  {
-    id: 'h-003',
-    codigo: 'H-VB-0003',
-    direccion: 'Constituyentes 5600',
-    lat: -34.541,
-    lng: -58.563,
-    tipo: 'amarillo_100mm',
-    caudal: 1200,
-    presion: 5.0,
-    estado: 'caudal_bajo',
-    ultimoTest: '2026-05-10',
-    proximoTest: '2026-11-10',
-    proveedor: 'ABSA',
-    notas: 'Caudal reducido 30%, posible obstrucción.',
-  },
-  {
-    id: 'h-004',
-    codigo: 'H-VB-0004',
-    direccion: 'Cerrito 4540',
-    lat: -34.549,
-    lng: -58.555,
-    tipo: 'rojo_70mm',
-    caudal: 0,
-    presion: 0,
-    estado: 'fuera_servicio',
-    ultimoTest: '2025-12-20',
-    proximoTest: '2026-06-20',
-    proveedor: 'Municipal',
-    notas: 'Roto por choque vehicular. Reclamo municipal en curso.',
-  },
-  {
-    id: 'h-005',
-    codigo: 'H-VB-0005',
-    direccion: 'Yatay 880',
-    lat: -34.5495,
-    lng: -58.5538,
-    tipo: 'azul_150mm',
-    caudal: 1450,
-    presion: 5.3,
-    estado: 'operativo',
-    ultimoTest: '2026-02-28',
-    proximoTest: '2026-08-28',
-    proveedor: 'ABSA',
-  },
-  {
-    id: 'h-006',
-    codigo: 'H-VB-0006',
-    direccion: 'Belgrano 1234',
-    lat: -34.5478,
-    lng: -58.5566,
-    tipo: 'rojo_70mm',
-    caudal: 900,
-    presion: 4.0,
-    estado: 'mantenimiento',
-    ultimoTest: '2026-05-20',
-    proximoTest: '2026-11-20',
-    proveedor: 'ABSA',
-    notas: 'Mantenimiento programado en curso.',
-  },
-  {
-    id: 'h-007',
-    codigo: 'H-VB-0007',
-    direccion: 'Tronador 2380',
-    lat: -34.5455,
-    lng: -58.563,
-    tipo: 'verde_200mm',
-    caudal: 2400,
-    presion: 6.2,
-    estado: 'operativo',
-    ultimoTest: '2026-04-15',
-    proximoTest: '2026-10-15',
-    proveedor: 'AySA',
-  },
-  {
-    id: 'h-008',
-    codigo: 'H-VB-0008',
-    direccion: 'Av. Eva Perón y Yrigoyen',
-    lat: -34.5478,
-    lng: -58.5482,
-    tipo: 'azul_150mm',
-    caudal: 1380,
-    presion: 5.1,
-    estado: 'operativo',
-    ultimoTest: '2026-03-01',
-    proximoTest: '2026-09-01',
-    proveedor: 'ABSA',
-  },
-];
+type HidranteAlta = Pick<
+  Hidrante,
+  'codigo' | 'direccion' | 'lat' | 'lng' | 'tipo' | 'caudal' | 'presion' | 'proveedor'
+>;
 
 const ESTADO_CONFIG: Record<EstadoHidrante, { color: string; bg: string; label: string }> = {
   operativo: { color: 'bg-status-ok', bg: 'bg-status-ok-bg/30', label: 'Operativo' },
-  caudal_bajo: {
-    color: 'bg-status-warn',
-    bg: 'bg-status-warn-bg/30',
-    label: 'Caudal bajo',
-  },
-  mantenimiento: {
-    color: 'bg-brand-600',
-    bg: 'bg-brand-50',
-    label: 'En mantenimiento',
-  },
+  caudal_bajo: { color: 'bg-status-warn', bg: 'bg-status-warn-bg/30', label: 'Caudal bajo' },
+  mantenimiento: { color: 'bg-brand-600', bg: 'bg-brand-50', label: 'En mantenimiento' },
   fuera_servicio: {
     color: 'bg-status-risk',
     bg: 'bg-status-risk-bg/30',
@@ -183,14 +45,23 @@ const TIPO_DOT: Record<Hidrante['tipo'], { color: string; size: string }> = {
   verde_200mm: { color: 'bg-green-600', size: '200mm' },
 };
 
+const ESTADOS_MANUALES: EstadoHidrante[] = ['operativo', 'mantenimiento', 'fuera_servicio'];
+
 export default function HidrantesPage() {
   const toast = useToast();
   const cuartel = useFaroStore(selectCuartelActivo);
-  const [hidrantes, setHidrantes] = useState<Hidrante[]>(HIDRANTES_MOCK);
+  const hidrantesAll = useFaroStore((s) => s.hidrantes);
+  const agregarHidrante = useFaroStore((s) => s.agregarHidrante);
+  const actualizarHidrante = useFaroStore((s) => s.actualizarHidrante);
   const [filtro, setFiltro] = useState<'todos' | EstadoHidrante>('todos');
   const [search, setSearch] = useState('');
   const [seleccionado, setSeleccionado] = useState<string | null>(null);
   const [nuevoOpen, setNuevoOpen] = useState(false);
+
+  const hidrantes = useMemo(
+    () => hidrantesAll.filter((h) => h.cuartelId === cuartel?.id),
+    [hidrantesAll, cuartel?.id],
+  );
 
   const filtrados = useMemo(() => {
     return hidrantes.filter((h) => {
@@ -210,6 +81,44 @@ export default function HidrantesPage() {
     fuera_servicio: hidrantes.filter((h) => h.estado === 'fuera_servicio').length,
   };
 
+  function agregar(h: HidranteAlta) {
+    if (!cuartel) return;
+    const hoy = demoToday();
+    const prox = new Date(hoy);
+    prox.setMonth(prox.getMonth() + 6);
+    agregarHidrante({
+      ...h,
+      cuartelId: cuartel.id,
+      ultimoTest: hoy.toISOString().slice(0, 10),
+      proximoTest: prox.toISOString().slice(0, 10),
+    });
+  }
+
+  function probar(h: Hidrante) {
+    const hoy = demoToday();
+    const prox = new Date(hoy);
+    prox.setMonth(prox.getMonth() + 6);
+    actualizarHidrante(h.id, {
+      ultimoTest: hoy.toISOString().slice(0, 10),
+      proximoTest: prox.toISOString().slice(0, 10),
+    });
+    toast.push({
+      kind: 'success',
+      title: `${h.codigo} probado`,
+      description: `${h.caudal} L/m · ${h.presion} bar · ${hoy.toISOString().slice(0, 10)}`,
+    });
+  }
+
+  function cambiarEstado(h: Hidrante, estado: EstadoHidrante) {
+    if (h.estado === estado) return;
+    actualizarHidrante(h.id, { estado });
+    toast.push({
+      kind: estado === 'operativo' ? 'success' : 'info',
+      title: `${h.codigo} · ${ESTADO_CONFIG[estado].label}`,
+      description: 'Estado actualizado en el registro del cuartel.',
+    });
+  }
+
   function reportarMunicipio(h: Hidrante) {
     toast.push({
       kind: 'success',
@@ -223,7 +132,7 @@ export default function HidrantesPage() {
       <PageHero
         objetivo="Vista Mando · Hidrantes municipales"
         titulo={`${hidrantes.length} hidrantes en jurisdicción`}
-        descripcion="Mapeados con caudal, presión, mantenimiento. Cuando fallás un test, el reclamo se envía automáticamente a la prestadora."
+        descripcion="Mapeados con caudal, presión y estado. El registro es del cuartel: cargá nuevos, cambiá el estado y dejá constancia de cada prueba."
         icono={<Droplets size={26} />}
         meta={
           <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
@@ -410,6 +319,30 @@ export default function HidrantesPage() {
                           <span className="text-slate-500">Prestadora</span>
                           <span className="font-medium">{h.proveedor}</span>
                         </div>
+
+                        {/* Cambiar estado — persiste en el registro del cuartel */}
+                        <div className="flex flex-wrap items-center gap-1.5 pt-1">
+                          <span className="text-slate-500">Estado:</span>
+                          {ESTADOS_MANUALES.map((e) => (
+                            <button
+                              key={e}
+                              type="button"
+                              onClick={(ev) => {
+                                ev.stopPropagation();
+                                cambiarEstado(h, e);
+                              }}
+                              className={cn(
+                                'rounded-full px-2 py-0.5 text-[11px] font-medium transition-colors',
+                                h.estado === e
+                                  ? 'bg-brand-600 text-white'
+                                  : 'bg-white text-slate-600 ring-1 ring-slate-200 hover:bg-slate-50',
+                              )}
+                            >
+                              {ESTADO_CONFIG[e].label}
+                            </button>
+                          ))}
+                        </div>
+
                         <div className="flex flex-wrap gap-2 pt-2">
                           {h.estado !== 'operativo' && (
                             <Button
@@ -428,15 +361,7 @@ export default function HidrantesPage() {
                             size="sm"
                             onClick={(e) => {
                               e.stopPropagation();
-                              const hoy = demoToday().toISOString().slice(0, 10);
-                              setHidrantes((arr) =>
-                                arr.map((x) => (x.id === h.id ? { ...x, ultimoTest: hoy } : x)),
-                              );
-                              toast.push({
-                                kind: 'success',
-                                title: `${h.codigo} probado`,
-                                description: `${h.caudal} L/m · ${h.presion} bar · ${hoy}`,
-                              });
+                              probar(h);
                             }}
                           >
                             <CheckCircle2 size={12} /> Marcar como probado
@@ -481,7 +406,11 @@ export default function HidrantesPage() {
         </CardContent>
       </Card>
 
-      <NuevoHidranteDialog open={nuevoOpen} onClose={() => setNuevoOpen(false)} />
+      <NuevoHidranteDialog
+        open={nuevoOpen}
+        onClose={() => setNuevoOpen(false)}
+        onCreated={agregar}
+      />
     </div>
   );
 }

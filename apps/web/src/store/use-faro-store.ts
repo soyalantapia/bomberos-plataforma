@@ -63,6 +63,7 @@ import {
   tareasMock,
 } from '../data';
 import { equipoEPPMock, type EquipoEPP } from '../data/epp';
+import { hidrantesMock, type Hidrante } from '../data/hidrantes';
 import { calcularComputoMensual } from '../lib/utils/computo';
 
 interface State {
@@ -107,6 +108,8 @@ interface State {
   lesiones: Lesion[];
   // EQUIPO DE PROTECCIÓN PERSONAL (por bombero)
   equipoEPP: EquipoEPP[];
+  // HIDRANTES en jurisdicción
+  hidrantes: Hidrante[];
 }
 
 interface Actions {
@@ -119,6 +122,8 @@ interface Actions {
   rechazarServicio: (servicioId: string, mandoId: string, motivo?: string) => void;
   registrarExposicionEpp: (eppId: string) => void;
   marcarEppFueraDeServicio: (eppId: string, fuera: boolean) => void;
+  agregarHidrante: (input: Omit<Hidrante, 'id' | 'estado'>) => void;
+  actualizarHidrante: (id: string, cambios: Partial<Hidrante>) => void;
   presentarRendicion: (rendicionId: string, mandoId: string) => void;
   marcarNotifLeida: (id: string) => void;
   marcarTodasLeidas: () => void;
@@ -224,6 +229,7 @@ const initialState: State = {
   // SALUD Y SEGURIDAD
   lesiones: lesionesMock,
   equipoEPP: equipoEPPMock,
+  hidrantes: hidrantesMock,
 };
 
 function recalcularRendicion(state: State, cuartelId: string): State {
@@ -369,6 +375,15 @@ export const useFaroStore = create<FaroStore>()(
           equipoEPP: get().equipoEPP.map((e) =>
             e.id === eppId ? { ...e, fueraServicio: fuera } : e,
           ),
+        });
+      },
+      agregarHidrante(input) {
+        const hidrante: Hidrante = { ...input, id: genId('hidrante'), estado: 'operativo' };
+        set({ hidrantes: [hidrante, ...get().hidrantes] });
+      },
+      actualizarHidrante(id, cambios) {
+        set({
+          hidrantes: get().hidrantes.map((h) => (h.id === id ? { ...h, ...cambios } : h)),
         });
       },
       marcarNotifLeida(id) {
