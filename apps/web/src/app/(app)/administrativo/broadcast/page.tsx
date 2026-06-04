@@ -19,71 +19,41 @@ import { useMemo, useRef, useState } from 'react';
 import { Avatar, Badge, Button, Card, CardContent, Kpi, cn, useToast } from '@faro/ui';
 
 import { PageHero } from '../../../../components/shared/page-hero';
+import type { AudienciaBroadcast } from '../../../../data/broadcasts';
 import { broadcastSchema, validate } from '../../../../lib/validation/schemas';
+import { demoToday } from '../../../../lib/utils/demo-today';
+import { selectCuartelActivo, useFaroStore } from '../../../../store/use-faro-store';
 
-type Audiencia = 'todos' | 'operativo' | 'mando' | 'cadetes' | 'administrativo' | 'custom';
-
-const AUDIENCIAS: Array<{ id: Audiencia; label: string; count: number; color: string }> = [
-  { id: 'todos', label: 'Todo el cuartel', count: 38, color: 'bg-slate-600' },
-  { id: 'operativo', label: 'Sección operativa', count: 22, color: 'bg-fire-600' },
-  { id: 'mando', label: 'Mando', count: 5, color: 'bg-status-warn' },
-  { id: 'cadetes', label: 'Cadetes', count: 6, color: 'bg-status-ok' },
-  { id: 'administrativo', label: 'Administrativo', count: 4, color: 'bg-brand-600' },
-  { id: 'custom', label: 'Personalizado', count: 0, color: 'bg-slate-400' },
+const AUDIENCIAS: Array<{ id: AudienciaBroadcast; label: string; color: string }> = [
+  { id: 'todos', label: 'Todo el cuartel', color: 'bg-slate-600' },
+  { id: 'operativo', label: 'Sección operativa', color: 'bg-fire-600' },
+  { id: 'mando', label: 'Mando', color: 'bg-status-warn' },
+  { id: 'cadetes', label: 'Cadetes', color: 'bg-status-ok' },
+  { id: 'administrativo', label: 'Administrativo', color: 'bg-brand-600' },
+  { id: 'custom', label: 'Personalizado', color: 'bg-slate-400' },
 ];
 
-interface BroadcastRecent {
-  id: string;
-  titulo: string;
-  audiencia: Audiencia;
-  enviado: string;
-  destinatarios: number;
-  leidos: number;
-  respondieron: number;
+function relativo(iso: string): string {
+  const diff = demoToday().getTime() - new Date(iso).getTime();
+  const dias = Math.floor(diff / 86400000);
+  if (dias <= 0) {
+    const h = Math.floor(diff / 3600000);
+    return h <= 0 ? 'Recién' : `Hace ${h} h`;
+  }
+  if (dias === 1) return 'Ayer';
+  if (dias < 7) return `Hace ${dias} días`;
+  const sem = Math.floor(dias / 7);
+  return sem === 1 ? 'Hace 1 sem' : `Hace ${sem} sem`;
 }
-
-const RECIENTES: BroadcastRecent[] = [
-  {
-    id: 'b-1',
-    titulo: 'Curso rescate vehicular · inscripción abierta',
-    audiencia: 'operativo',
-    enviado: 'Hace 2 días',
-    destinatarios: 22,
-    leidos: 21,
-    respondieron: 12,
-  },
-  {
-    id: 'b-2',
-    titulo: 'Cambio en guardia del sábado',
-    audiencia: 'mando',
-    enviado: 'Hace 4 días',
-    destinatarios: 5,
-    leidos: 5,
-    respondieron: 5,
-  },
-  {
-    id: 'b-3',
-    titulo: 'Reunión informativa cadetes',
-    audiencia: 'cadetes',
-    enviado: 'Hace 1 sem',
-    destinatarios: 6,
-    leidos: 6,
-    respondieron: 4,
-  },
-  {
-    id: 'b-4',
-    titulo: 'Donación de sangre · Hospital Municipal',
-    audiencia: 'todos',
-    enviado: 'Hace 1 sem',
-    destinatarios: 38,
-    leidos: 34,
-    respondieron: 8,
-  },
-];
 
 export default function BroadcastPage() {
   const toast = useToast();
-  const [audiencia, setAudiencia] = useState<Audiencia>('operativo');
+  const cuartel = useFaroStore(selectCuartelActivo);
+  const personas = useFaroStore((s) => s.personas);
+  const broadcasts = useFaroStore((s) => s.broadcasts);
+  const enviarBroadcast = useFaroStore((s) => s.enviarBroadcast);
+
+  const [audiencia, setAudiencia] = useState<AudienciaBroadcast>('operativo');
   const [titulo, setTitulo] = useState('');
   const [cuerpo, setCuerpo] = useState('');
   const [programar, setProgramar] = useState(false);
@@ -91,14 +61,39 @@ export default function BroadcastPage() {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
-  const audienciaSel = AUDIENCIAS.find((a) => a.id === audiencia)!;
+  // Conteo de cada audiencia desde las personas reales del cuartel.
+  const counts = useMemo(() => {
+    const activas = personas.filter((p) => p.cuartelId === cuartel?.id && p.estado === 'activo');
+    return {
+      todos: activas.length,
+      operativo: activas.filter((p) => p.cuerpo !== 'administrativo').length,
+      administrativo: activas.filter((p) => p.cuerpo === 'administrativo').length,
+      mando: activas.filter((p) => p.perfiles.includes('mando')).length,
+      cadetes: activas.filter((p) => p.jerarquia === 'cadete').length,
+      custom: 0,
+    } as Record<AudienciaBroadcast, number>;
+  }, [personas, cuartel?.id]);
 
-  // KPIs derivados del histórico mock. TODO: pull from store cuando exista slice.
+  const recientes = useMemo(
+    () =>
+      broadcasts
+        .filter((b) => b.cuartelId === cuartel?.id)
+        .slice()
+        .sort((a, b) => b.fecha.localeCompare(a.fecha)),
+    [broadcasts, cuartel?.id],
+  );
+
   const kpis = useMemo(() => {
-    const enviadosHoy = RECIENTES.filter((b) => /^Hoy|Hace\s+\d+\s*h/i.test(b.enviado)).length;
-    const enviadosSemana = RECIENTES.filter((b) => !/\d+\s*sem|mes/i.test(b.enviado)).length;
-    return { hoy: enviadosHoy, semana: enviadosSemana };
-  }, []);
+    const hoyKey = demoToday().toISOString().slice(0, 10);
+    const haceSemana = demoToday().getTime() - 7 * 86400000;
+    return {
+      hoy: recientes.filter((b) => b.fecha.slice(0, 10) === hoyKey).length,
+      semana: recientes.filter((b) => new Date(b.fecha).getTime() >= haceSemana).length,
+    };
+  }, [recientes]);
+
+  const audienciaSel = AUDIENCIAS.find((a) => a.id === audiencia)!;
+  const destinatarios = counts[audiencia];
 
   function insertarFormato(prefijo: string, sufijo = prefijo) {
     const ta = textareaRef.current;
@@ -155,15 +150,22 @@ export default function BroadcastPage() {
       return;
     }
     setErrors({});
+    enviarBroadcast({
+      audiencia,
+      titulo,
+      cuerpo,
+      destinatarios,
+      programadaPara: programar ? fechaProg : undefined,
+    });
     toast.push({
       kind: 'success',
-      title: programar
-        ? `Programado para ${fechaProg}`
-        : `Enviado a ${audienciaSel.count} personas`,
+      title: programar ? `Programado para ${fechaProg}` : `Enviado a ${destinatarios} personas`,
       description: titulo,
     });
     setTitulo('');
     setCuerpo('');
+    setProgramar(false);
+    setFechaProg('');
   }
 
   return (
@@ -171,14 +173,14 @@ export default function BroadcastPage() {
       <PageHero
         objetivo="Administrativo · Avisos masivos"
         titulo="Enviar aviso al cuartel"
-        descripcion="Editor con formato, eligiendo a quién le llega. Podés programarlo. Ves quién lo leyó en tiempo real."
+        descripcion="Editor con formato, eligiendo a quién le llega. Podés programarlo. Cada envío queda registrado y le llega una notificación al destinatario."
         icono={<Megaphone size={26} />}
         meta={
           <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
             <Kpi label="Hoy" value={kpis.hoy} hint="enviados" intent="brand" />
             <Kpi label="Esta semana" value={kpis.semana} intent="neutral" />
-            <Kpi label="Apertura prom." value="92%" hint="leídos" intent="ok" />
-            <Kpi label="Tu sección" value="Operativa" hint="22 personas" intent="brand" />
+            <Kpi label="Enviados total" value={recientes.length} intent="neutral" />
+            <Kpi label="Tu sección" value={counts.operativo} hint="operativos" intent="brand" />
           </div>
         }
       />
@@ -212,7 +214,7 @@ export default function BroadcastPage() {
                         audiencia === a.id ? 'bg-white/20' : 'bg-slate-100',
                       )}
                     >
-                      {a.count}
+                      {counts[a.id]}
                     </span>
                   </button>
                 ))}
@@ -229,7 +231,7 @@ export default function BroadcastPage() {
                 value={titulo}
                 onChange={(e) => {
                   setTitulo(e.target.value);
-                  if (errors.titulo) setErrors((e) => ({ ...e, titulo: '' }));
+                  if (errors.titulo) setErrors((er) => ({ ...er, titulo: '' }));
                 }}
                 placeholder="Ej: Asamblea ordinaria del 15/6"
                 className={cn(
@@ -335,7 +337,7 @@ export default function BroadcastPage() {
                   </>
                 ) : (
                   <>
-                    <Send size={16} /> Enviar a {audienciaSel.count} personas
+                    <Send size={16} /> Enviar a {destinatarios} personas
                   </>
                 )}
               </Button>
@@ -359,7 +361,7 @@ export default function BroadcastPage() {
                 <p className="mt-1 whitespace-pre-wrap text-sm text-slate-700">
                   {cuerpo || 'El cuerpo del mensaje aparecerá aquí...'}
                 </p>
-                <div className="mt-3 text-[10px] text-slate-500">
+                <div className="mt-3 text-[11px] text-slate-500">
                   Mariana Pereyra · Comandante · Hoy
                 </div>
               </div>
@@ -369,10 +371,10 @@ export default function BroadcastPage() {
           <Card>
             <CardContent className="p-4">
               <div className="mb-2 text-xs font-bold uppercase text-slate-500">
-                Llegará a {audienciaSel.count} personas
+                Llegará a {destinatarios} personas
               </div>
               <div className="flex flex-wrap -space-x-2">
-                {Array.from({ length: Math.min(audienciaSel.count, 12) }).map((_, idx) => (
+                {Array.from({ length: Math.min(destinatarios, 12) }).map((_, idx) => (
                   <Avatar
                     key={idx}
                     name={`Persona ${idx}`}
@@ -380,9 +382,9 @@ export default function BroadcastPage() {
                     className="ring-2 ring-white"
                   />
                 ))}
-                {audienciaSel.count > 12 && (
-                  <div className="grid h-7 w-7 place-items-center rounded-full bg-slate-200 text-[10px] font-bold text-slate-700 ring-2 ring-white">
-                    +{audienciaSel.count - 12}
+                {destinatarios > 12 && (
+                  <div className="grid h-7 w-7 place-items-center rounded-full bg-slate-200 text-[11px] font-bold text-slate-700 ring-2 ring-white">
+                    +{destinatarios - 12}
                   </div>
                 )}
               </div>
@@ -397,52 +399,63 @@ export default function BroadcastPage() {
           <div className="border-b border-slate-100 px-5 py-3">
             <h3 className="font-bold text-slate-900">Avisos enviados recientes</h3>
           </div>
-          <ul className="divide-y divide-slate-100">
-            {RECIENTES.map((b, idx) => {
-              const pctLeidos = Math.round((b.leidos / b.destinatarios) * 100);
-              return (
-                <motion.li
-                  key={b.id}
-                  initial={{ opacity: 0, y: 8 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: idx * 0.05 }}
-                  className="flex items-center gap-3 p-4"
-                >
-                  <div className="bg-brand-100 text-brand-700 grid h-10 w-10 shrink-0 place-items-center rounded-xl">
-                    <Megaphone size={16} />
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <div className="flex items-center gap-2">
-                      <span className="font-medium text-slate-900">{b.titulo}</span>
-                      <Badge intent="neutral">
-                        {AUDIENCIAS.find((a) => a.id === b.audiencia)?.label}
-                      </Badge>
+          {recientes.length === 0 ? (
+            <div className="px-5 py-8 text-center text-sm text-slate-500">
+              Todavía no enviaste ningún aviso.
+            </div>
+          ) : (
+            <ul className="divide-y divide-slate-100">
+              {recientes.map((b, idx) => {
+                const pctLeidos =
+                  b.destinatarios > 0 ? Math.round((b.leidos / b.destinatarios) * 100) : 0;
+                return (
+                  <motion.li
+                    key={b.id}
+                    initial={{ opacity: 0, y: 8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: Math.min(idx, 6) * 0.05 }}
+                    className="flex items-center gap-3 p-4"
+                  >
+                    <div className="bg-brand-100 text-brand-700 grid h-10 w-10 shrink-0 place-items-center rounded-xl">
+                      <Megaphone size={16} />
                     </div>
-                    <div className="mt-0.5 flex items-center gap-2 text-xs text-slate-500">
-                      <Clock size={10} />
-                      <span>{b.enviado}</span>
-                      <span>·</span>
-                      <span>{b.destinatarios} destinatarios</span>
-                    </div>
-                  </div>
-                  <div className="hidden shrink-0 items-center gap-3 sm:flex">
-                    <div className="text-center">
-                      <div className="text-status-ok-fg flex items-center gap-1 text-xs">
-                        <Eye size={11} /> {pctLeidos}%
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-center gap-2">
+                        <span className="font-medium text-slate-900">{b.titulo}</span>
+                        <Badge intent="neutral">
+                          {AUDIENCIAS.find((a) => a.id === b.audiencia)?.label ?? b.audiencia}
+                        </Badge>
                       </div>
-                      <div className="text-[10px] text-slate-500">leídos</div>
-                    </div>
-                    <div className="text-center">
-                      <div className="text-brand-700 flex items-center gap-1 text-xs">
-                        <CheckCheck size={11} /> {b.respondieron}
+                      <div className="mt-0.5 flex items-center gap-2 text-xs text-slate-500">
+                        <Clock size={10} />
+                        <span>
+                          {b.programadaPara
+                            ? `Programado · ${relativo(b.fecha)}`
+                            : relativo(b.fecha)}
+                        </span>
+                        <span>·</span>
+                        <span>{b.destinatarios} destinatarios</span>
                       </div>
-                      <div className="text-[10px] text-slate-500">respondieron</div>
                     </div>
-                  </div>
-                </motion.li>
-              );
-            })}
-          </ul>
+                    <div className="hidden shrink-0 items-center gap-3 sm:flex">
+                      <div className="text-center">
+                        <div className="text-status-ok-fg flex items-center gap-1 text-xs">
+                          <Eye size={11} /> {pctLeidos}%
+                        </div>
+                        <div className="text-[11px] text-slate-500">leídos</div>
+                      </div>
+                      <div className="text-center">
+                        <div className="text-brand-700 flex items-center gap-1 text-xs">
+                          <CheckCheck size={11} /> {b.respondieron}
+                        </div>
+                        <div className="text-[11px] text-slate-500">respondieron</div>
+                      </div>
+                    </div>
+                  </motion.li>
+                );
+              })}
+            </ul>
+          )}
         </CardContent>
       </Card>
     </div>

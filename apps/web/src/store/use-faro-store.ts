@@ -64,7 +64,9 @@ import {
 } from '../data';
 import { equipoEPPMock, type EquipoEPP } from '../data/epp';
 import { hidrantesMock, type Hidrante } from '../data/hidrantes';
+import { broadcastsMock, type AudienciaBroadcast, type Broadcast } from '../data/broadcasts';
 import { calcularComputoMensual } from '../lib/utils/computo';
+import { demoToday } from '../lib/utils/demo-today';
 
 interface State {
   hidratado: boolean;
@@ -110,6 +112,8 @@ interface State {
   equipoEPP: EquipoEPP[];
   // HIDRANTES en jurisdicción
   hidrantes: Hidrante[];
+  // AVISOS MASIVOS (broadcasts)
+  broadcasts: Broadcast[];
 }
 
 interface Actions {
@@ -124,6 +128,13 @@ interface Actions {
   marcarEppFueraDeServicio: (eppId: string, fuera: boolean) => void;
   agregarHidrante: (input: Omit<Hidrante, 'id' | 'estado'>) => void;
   actualizarHidrante: (id: string, cambios: Partial<Hidrante>) => void;
+  enviarBroadcast: (input: {
+    audiencia: AudienciaBroadcast;
+    titulo: string;
+    cuerpo: string;
+    destinatarios: number;
+    programadaPara?: string;
+  }) => void;
   presentarRendicion: (rendicionId: string, mandoId: string) => void;
   marcarNotifLeida: (id: string) => void;
   marcarTodasLeidas: () => void;
@@ -230,6 +241,7 @@ const initialState: State = {
   lesiones: lesionesMock,
   equipoEPP: equipoEPPMock,
   hidrantes: hidrantesMock,
+  broadcasts: broadcastsMock,
 };
 
 function recalcularRendicion(state: State, cuartelId: string): State {
@@ -384,6 +396,38 @@ export const useFaroStore = create<FaroStore>()(
       actualizarHidrante(id, cambios) {
         set({
           hidrantes: get().hidrantes.map((h) => (h.id === id ? { ...h, ...cambios } : h)),
+        });
+      },
+      enviarBroadcast(input) {
+        const s = get();
+        const cid = s.sesion?.cuartelId ?? '';
+        const now = demoToday().toISOString();
+        const broadcast: Broadcast = {
+          id: genId('bcast'),
+          cuartelId: cid,
+          titulo: input.titulo,
+          cuerpo: input.cuerpo,
+          audiencia: input.audiencia,
+          fecha: input.programadaPara ?? now,
+          destinatarios: input.destinatarios,
+          leidos: 0,
+          respondieron: 0,
+          programadaPara: input.programadaPara,
+        };
+        const notif: Notificacion = {
+          id: genId('notif'),
+          cuartelId: cid,
+          destinatarioId: s.sesion?.personaId ?? '',
+          tipo: 'broadcast',
+          titulo: input.programadaPara ? 'Aviso programado' : 'Aviso enviado',
+          descripcion: input.titulo,
+          leida: false,
+          fecha: now,
+          linkPagina: '/administrativo/broadcast',
+        };
+        set({
+          broadcasts: [broadcast, ...s.broadcasts],
+          notificaciones: [notif, ...s.notificaciones],
         });
       },
       marcarNotifLeida(id) {
