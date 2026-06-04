@@ -1,10 +1,10 @@
 'use client';
 
-import { ArrowRight, Check, LogOut, HardHat, Shield, FolderCog, Gavel, Globe2 } from 'lucide-react';
+import { ArrowRight, Globe2, HardHat, LogOut, Shield } from 'lucide-react';
 import { usePathname, useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 
-import { Avatar, Button, Card, cn, StatusPill } from '@faro/ui';
+import { Avatar, Button, cn } from '@faro/ui';
 
 import { useFaroStore, selectPersonaActual } from '../../store/use-faro-store';
 import { perfilDescription, perfilHomePath, perfilLabel } from '../../lib/utils/perfil';
@@ -13,60 +13,58 @@ import { CUARTEL_PRINCIPAL_ID, PERSONA_FEDERACION_ID } from '../../data';
 
 import type { Perfil } from '@faro/types';
 
-const perfilIcon: Record<Perfil, React.ReactNode> = {
-  bombero: <HardHat size={18} />,
-  mando: <Shield size={18} />,
-  administrativo: <FolderCog size={18} />,
-  gobierno: <Gavel size={18} />,
-  federacion: <Globe2 size={18} />,
+/** Las únicas tres vistas que ofrece la demo. */
+const OPCIONES: Perfil[] = ['mando', 'bombero', 'federacion'];
+
+const ICONO: Record<'mando' | 'bombero' | 'federacion', React.ReactNode> = {
+  mando: <Shield size={22} />,
+  bombero: <HardHat size={22} />,
+  federacion: <Globe2 size={22} />,
+};
+
+const ACENTO: Record<'mando' | 'bombero' | 'federacion', string> = {
+  mando: 'bg-brand-600',
+  bombero: 'bg-fire-600',
+  federacion: 'bg-status-ok',
 };
 
 export default function SeleccionarPerfil() {
   const router = useRouter();
   const pathname = usePathname();
+  const hidratado = useFaroStore((s) => s.hidratado);
   const sesion = useFaroStore((s) => s.sesion);
   const persona = useFaroStore(selectPersonaActual);
-  const cuarteles = useFaroStore((s) => s.cuarteles);
   const personas = useFaroStore((s) => s.personas);
   const cambiarPerfil = useFaroStore((s) => s.cambiarPerfil);
-  const cambiarCuartel = useFaroStore((s) => s.cambiarCuartel);
   const cerrar = useFaroStore((s) => s.cerrarSesion);
   const iniciarSesion = useFaroStore((s) => s.iniciarSesion);
 
-  const [perfilSel, setPerfilSel] = useState<Perfil | null>(sesion?.perfilActivo ?? null);
-  const [cuartelSel, setCuartelSel] = useState<string>(sesion?.cuartelId ?? CUARTEL_PRINCIPAL_ID);
-
+  // Esperamos a que el store rehidrate antes de decidir; si no, un reload directo
+  // de /seleccionar-perfil rebota a /login aunque haya sesión válida.
   useEffect(() => {
-    if (!sesion || !persona) {
+    if (hidratado && (!sesion || !persona)) {
       if (pathname !== '/login') router.replace('/login');
     }
-  }, [sesion, persona, pathname, router]);
+  }, [hidratado, sesion, persona, pathname, router]);
 
-  if (!sesion || !persona) return null;
+  if (!hidratado || !sesion || !persona) return null;
 
-  function entrar() {
-    if (!perfilSel || !persona) return;
-    cambiarCuartel(cuartelSel);
-    if (perfilSel === 'federacion' && !persona.perfiles.includes('federacion')) {
-      const fed = personas.find((p) => p.id === PERSONA_FEDERACION_ID);
-      if (fed) iniciarSesion(fed.id, cuartelSel, 'federacion');
+  const cuartelId = sesion.cuartelId ?? CUARTEL_PRINCIPAL_ID;
+
+  function entrar(p: Perfil) {
+    if (p === 'federacion') {
+      const fed = personas.find((x) => x.id === PERSONA_FEDERACION_ID);
+      if (fed) iniciarSesion(fed.id, cuartelId, 'federacion');
+      else cambiarPerfil('federacion');
     } else {
-      cambiarPerfil(perfilSel);
+      cambiarPerfil(p);
     }
-    const destino = perfilHomePath[perfilSel];
-    if (pathname !== destino) router.replace(destino);
-  }
-
-  function entrarComoFederacion() {
-    const fed = personas.find((p) => p.id === PERSONA_FEDERACION_ID);
-    if (!fed) return;
-    iniciarSesion(fed.id, cuartelSel, 'federacion');
-    router.push('/federacion');
+    router.replace(perfilHomePath[p]);
   }
 
   return (
     <div className="min-h-dvh bg-slate-50 px-4 py-8 sm:py-12">
-      <div className="mx-auto max-w-3xl">
+      <div className="mx-auto max-w-2xl">
         <div className="mb-6 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <Avatar name={`${persona.nombre} ${persona.apellido}`} size={48} />
@@ -89,124 +87,41 @@ export default function SeleccionarPerfil() {
           </Button>
         </div>
 
-        <Card className="mb-5">
-          <div className="p-5 sm:p-6">
-            <h1 className="text-xl font-bold text-slate-900 sm:text-2xl">¿Cómo querés entrar?</h1>
-            <p className="mt-1 text-sm text-slate-600">Elegí perfil y cuartel.</p>
+        <h1 className="text-xl font-bold text-slate-900 sm:text-2xl">¿Cómo querés entrar?</h1>
+        <p className="mt-1 text-sm text-slate-600">Elegí tu vista. Podés cambiar cuando quieras.</p>
 
-            <div className="mt-5">
-              <div className="mb-2 text-sm font-semibold text-slate-700">Tus perfiles</div>
-              <div className="grid gap-2 sm:grid-cols-2">
-                {persona.perfiles.map((p) => {
-                  const active = perfilSel === p;
-                  return (
-                    <button
-                      key={p}
-                      onClick={() => setPerfilSel(p)}
-                      className={cn(
-                        'rounded-xl border-2 p-4 text-left transition-all',
-                        active
-                          ? 'border-brand-600 bg-brand-50'
-                          : 'border-slate-200 bg-white hover:border-slate-300',
-                      )}
-                    >
-                      <div className="flex items-start gap-3">
-                        <div
-                          className={cn(
-                            'grid h-10 w-10 shrink-0 place-items-center rounded-lg',
-                            active ? 'bg-brand-600 text-white' : 'bg-slate-100 text-slate-700',
-                          )}
-                        >
-                          {perfilIcon[p]}
-                        </div>
-                        <div className="min-w-0 flex-1">
-                          <div className="font-semibold text-slate-900">{perfilLabel[p]}</div>
-                          <div className="mt-0.5 text-xs text-slate-600">
-                            {perfilDescription[p]}
-                          </div>
-                        </div>
-                        {active && <Check size={18} className="text-brand-600 shrink-0" />}
-                      </div>
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-
-            <div className="mt-5">
-              <div className="mb-2 text-sm font-semibold text-slate-700">Cuartel</div>
-              {perfilSel === 'federacion' ? (
-                <>
-                  <div className="mb-2 text-xs text-slate-500">
-                    Como Federación podés entrar a cualquier cuartel para auditar.
-                  </div>
-                  <div className="flex flex-wrap gap-2">
-                    {cuarteles.map((c) => {
-                      const active = cuartelSel === c.id;
-                      return (
-                        <button
-                          key={c.id}
-                          onClick={() => setCuartelSel(c.id)}
-                          className={cn(
-                            'flex items-center gap-2 rounded-lg border-2 px-3 py-2 text-sm',
-                            active
-                              ? 'border-brand-600 bg-brand-50'
-                              : 'border-slate-200 bg-white hover:border-slate-300',
-                          )}
-                        >
-                          <StatusPill
-                            status={c.cumplimiento}
-                            label={`${c.porcentajeRendicion}%`}
-                            size="sm"
-                          />
-                          <span className="font-medium text-slate-900">{c.nombre}</span>
-                        </button>
-                      );
-                    })}
-                  </div>
-                </>
-              ) : (
-                <div className="border-brand-300 bg-brand-50/40 flex items-center gap-3 rounded-lg border-2 p-3">
-                  <div className="bg-brand-600 grid h-10 w-10 shrink-0 place-items-center rounded-lg text-white">
-                    <Globe2 size={18} />
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <div className="font-semibold text-slate-900">
-                      BV {cuarteles.find((c) => c.id === cuartelSel)?.nombre ?? '—'}
-                    </div>
-                    <div className="text-xs text-slate-600">
-                      Tu cuartel asignado. Para auditar otros, ingresá con perfil Federación.
-                    </div>
-                  </div>
+        <div className="mt-5 space-y-3">
+          {OPCIONES.map((p) => {
+            const key = p as 'mando' | 'bombero' | 'federacion';
+            return (
+              <button
+                key={p}
+                onClick={() => entrar(p)}
+                className={cn(
+                  'group flex w-full items-center gap-4 rounded-2xl border-2 border-slate-200 bg-white p-4 text-left transition-all',
+                  'hover:border-brand-400 focus-visible:border-brand-500 hover:shadow-md',
+                )}
+              >
+                <div
+                  className={cn(
+                    'grid h-12 w-12 shrink-0 place-items-center rounded-xl text-white shadow-sm',
+                    ACENTO[key],
+                  )}
+                >
+                  {ICONO[key]}
                 </div>
-              )}
-            </div>
-
-            <Button size="lg" fullWidth className="mt-6" disabled={!perfilSel} onClick={entrar}>
-              Entrar <ArrowRight size={20} />
-            </Button>
-          </div>
-        </Card>
-
-        <Card className="bg-brand-50 border-brand-100">
-          <div className="p-4 sm:p-5">
-            <div className="flex items-start gap-3">
-              <div className="bg-status-ok grid h-9 w-9 shrink-0 place-items-center rounded-lg text-white">
-                <Globe2 size={18} />
-              </div>
-              <div className="min-w-0 flex-1">
-                <div className="text-brand-900 font-semibold">¿Ver la vista de Federación?</div>
-                <div className="text-brand-900/80 mt-0.5 text-sm">
-                  El acceso a la vista de Federación es regional. Si tu cuartel forma parte, vas a
-                  ver el tablero correspondiente.
+                <div className="min-w-0 flex-1">
+                  <div className="text-base font-bold text-slate-900">{perfilLabel[p]}</div>
+                  <div className="mt-0.5 text-sm text-slate-600">{perfilDescription[p]}</div>
                 </div>
-              </div>
-              <Button intent="secondary" size="sm" onClick={entrarComoFederacion}>
-                Entrar como Federación
-              </Button>
-            </div>
-          </div>
-        </Card>
+                <ArrowRight
+                  size={20}
+                  className="group-hover:text-brand-600 shrink-0 text-slate-300 transition-colors"
+                />
+              </button>
+            );
+          })}
+        </div>
       </div>
     </div>
   );
