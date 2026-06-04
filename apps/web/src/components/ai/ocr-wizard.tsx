@@ -289,6 +289,14 @@ export function OCRWizard({ open, onClose, persona, onAplicar }: Props) {
                 </span>
               </div>
 
+              <div className="bg-brand-50 text-brand-800 flex items-start gap-2 rounded-md p-2.5 text-xs">
+                <Sparkles size={13} className="text-brand-600 mt-0.5 shrink-0" />
+                <span>
+                  <strong>Modo demo:</strong> los campos son de muestra. Con el lector de documentos
+                  conectado se extraen del documento que subís.
+                </span>
+              </div>
+
               {persona && (
                 <div className="flex items-center gap-2 rounded-md bg-slate-50 px-3 py-2 text-xs text-slate-600">
                   <Avatar name={`${persona.nombre} ${persona.apellido}`} size={24} />

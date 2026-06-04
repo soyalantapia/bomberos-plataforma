@@ -141,7 +141,7 @@ export default function ConsolidadosFed() {
                           title={`${c.lic} en licencia`}
                         />
                       </div>
-                      <div className="mt-1 flex gap-3 text-[10px] text-slate-500">
+                      <div className="mt-1 flex gap-3 text-[11px] text-slate-500">
                         <span>● Activos {c.activos}</span>
                         <span>● Cadetes {c.cadetes}</span>
                         <span>● Licencia {c.lic}</span>
@@ -245,7 +245,7 @@ export default function ConsolidadosFed() {
                   return (
                     <div key={idx} className="flex flex-1 flex-col items-center justify-end gap-2">
                       <div className="relative w-full">
-                        <div className="absolute -top-5 left-1/2 -translate-x-1/2 text-[10px] font-bold tabular-nums text-slate-700">
+                        <div className="absolute -top-5 left-1/2 -translate-x-1/2 text-[11px] font-bold tabular-nums text-slate-700">
                           {v}
                         </div>
                         <div
@@ -258,7 +258,7 @@ export default function ConsolidadosFed() {
                       </div>
                       <span
                         className={cn(
-                          'text-[10px]',
+                          'text-[11px]',
                           isCurrent ? 'text-brand-700 font-bold' : 'text-slate-500',
                         )}
                       >
@@ -307,19 +307,19 @@ export default function ConsolidadosFed() {
               <div className="mt-5 grid grid-cols-3 gap-3">
                 <div className="bg-brand-50 rounded-xl p-3 text-center">
                   <div className="text-brand-700 text-2xl font-bold">8</div>
-                  <div className="text-[10px] uppercase tracking-wide text-slate-600">
+                  <div className="text-[11px] uppercase tracking-wide text-slate-600">
                     cursos activos
                   </div>
                 </div>
                 <div className="bg-status-ok-bg/40 rounded-xl p-3 text-center">
                   <div className="text-status-ok-fg text-2xl font-bold">124</div>
-                  <div className="text-[10px] uppercase tracking-wide text-slate-600">
+                  <div className="text-[11px] uppercase tracking-wide text-slate-600">
                     inscriptos
                   </div>
                 </div>
                 <div className="bg-status-warn-bg/40 rounded-xl p-3 text-center">
                   <div className="text-status-warn-fg text-2xl font-bold">32</div>
-                  <div className="text-[10px] uppercase tracking-wide text-slate-600">
+                  <div className="text-[11px] uppercase tracking-wide text-slate-600">
                     certificados mes
                   </div>
                 </div>

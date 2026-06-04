@@ -279,15 +279,15 @@ export default function HidrantesPage() {
 
                     <div className="mt-2 grid grid-cols-3 gap-1.5 text-xs">
                       <div className={cn('rounded-md p-1.5', cfg.bg)}>
-                        <div className="text-[10px] text-slate-500">Caudal</div>
+                        <div className="text-[11px] text-slate-500">Caudal</div>
                         <div className="font-bold tabular-nums">{h.caudal} L/m</div>
                       </div>
                       <div className={cn('rounded-md p-1.5', cfg.bg)}>
-                        <div className="text-[10px] text-slate-500">Presión</div>
+                        <div className="text-[11px] text-slate-500">Presión</div>
                         <div className="font-bold tabular-nums">{h.presion} bar</div>
                       </div>
                       <div className={cn('rounded-md p-1.5', cfg.bg)}>
-                        <div className="text-[10px] text-slate-500">Boca</div>
+                        <div className="text-[11px] text-slate-500">Boca</div>
                         <div className="font-bold tabular-nums">{tipoCfg.size}</div>
                       </div>
                     </div>

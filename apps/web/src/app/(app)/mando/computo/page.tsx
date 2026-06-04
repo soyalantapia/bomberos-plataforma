@@ -186,7 +186,7 @@ export default function ComputoPage() {
                           <div className="text-lg font-bold tabular-nums text-slate-900">
                             {c.total}
                           </div>
-                          <div className="text-[10px] uppercase text-slate-500">hs total</div>
+                          <div className="text-[11px] uppercase text-slate-500">hs total</div>
                         </div>
                       </div>
                       {desglose.length > 0 && (
@@ -317,7 +317,7 @@ export default function ComputoPage() {
                       className="flex flex-1 flex-col items-center justify-end gap-2"
                     >
                       <div className="relative w-full">
-                        <div className="absolute -top-5 left-1/2 -translate-x-1/2 text-[10px] font-bold tabular-nums text-slate-700">
+                        <div className="absolute -top-5 left-1/2 -translate-x-1/2 text-[11px] font-bold tabular-nums text-slate-700">
                           {isCurrent ? a.total : `~${a.total}`}
                         </div>
                         <div
@@ -332,7 +332,7 @@ export default function ComputoPage() {
                       </div>
                       <span
                         className={cn(
-                          'text-[10px] uppercase',
+                          'text-[11px] uppercase',
                           isCurrent ? 'text-brand-700 font-bold' : 'text-slate-500',
                         )}
                       >
@@ -412,7 +412,7 @@ export default function ComputoPage() {
                         <div className="text-3xl font-bold tabular-nums text-slate-900">
                           {computoPersona.total}
                         </div>
-                        <div className="text-[10px] uppercase tracking-wide text-slate-500">
+                        <div className="text-[11px] uppercase tracking-wide text-slate-500">
                           hs mes
                         </div>
                       </div>

@@ -197,7 +197,7 @@ export default function CapacitacionBombero() {
                   </div>
 
                   <div className="mt-4">
-                    <div className="mb-1 flex items-center justify-between text-[10px] uppercase tracking-wide text-slate-500">
+                    <div className="mb-1 flex items-center justify-between text-[11px] uppercase tracking-wide text-slate-500">
                       <span>Vigencia consumida</span>
                       <span className="tabular-nums">{Math.round(pctBar)}%</span>
                     </div>
@@ -244,7 +244,7 @@ export default function CapacitacionBombero() {
               )}
             >
               {d.destacado && (
-                <div className="bg-brand-600 px-3 py-1 text-[10px] font-bold uppercase tracking-wide text-white">
+                <div className="bg-brand-600 px-3 py-1 text-[11px] font-bold uppercase tracking-wide text-white">
                   ⭐ Recomendado para vos
                 </div>
               )}
@@ -322,7 +322,7 @@ export default function CapacitacionBombero() {
                 <div className="min-w-0 flex-1">
                   <div className="font-bold text-slate-900">{c.nombre}</div>
                   <div className="mt-0.5 text-xs text-slate-600">Emitido {c.emitido}</div>
-                  <div className="mt-1 inline-flex items-center gap-1 rounded-md bg-white/80 px-1.5 py-0.5 font-mono text-[10px] text-slate-600">
+                  <div className="mt-1 inline-flex items-center gap-1 rounded-md bg-white/80 px-1.5 py-0.5 font-mono text-[11px] text-slate-600">
                     Folio {c.folio}
                   </div>
                 </div>

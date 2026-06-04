@@ -193,7 +193,7 @@ export default function FichaHidranteView() {
                 <span className="text-xs font-bold uppercase text-slate-500">Ubicación</span>
               </div>
               <p className="text-sm font-medium text-slate-900">{hidrante.direccion}</p>
-              <p className="mt-0.5 font-mono text-[10px] text-slate-500">
+              <p className="mt-0.5 font-mono text-[11px] text-slate-500">
                 {hidrante.lat.toFixed(4)}, {hidrante.lng.toFixed(4)}
               </p>
             </CardContent>

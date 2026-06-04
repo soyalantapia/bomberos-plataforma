@@ -425,7 +425,7 @@ export default function MandoDashboard() {
                     <span className="text-xs uppercase text-slate-500">{dia.diaSemana}</span>
                     <span className="text-base font-bold text-slate-900">{dia.diaNum}</span>
                     {dia.esHoy && (
-                      <span className="bg-brand-600 rounded px-1.5 py-0.5 text-[10px] font-semibold uppercase text-white">
+                      <span className="bg-brand-600 rounded px-1.5 py-0.5 text-[11px] font-semibold uppercase text-white">
                         Hoy
                       </span>
                     )}
@@ -516,7 +516,7 @@ export default function MandoDashboard() {
                             </span>
                             <span className="text-lg font-bold text-slate-900">{dia.diaNum}</span>
                             {dia.esHoy && (
-                              <span className="text-brand-700 text-[10px] font-semibold uppercase">
+                              <span className="text-brand-700 text-[11px] font-semibold uppercase">
                                 Hoy
                               </span>
                             )}

@@ -295,7 +295,7 @@ export default function CumplimientoPage() {
                         <div className="text-lg font-bold tabular-nums text-slate-900">
                           {c.global}%
                         </div>
-                        <div className="text-[10px] uppercase text-slate-500">cumple</div>
+                        <div className="text-[11px] uppercase text-slate-500">cumple</div>
                       </div>
                     </div>
 

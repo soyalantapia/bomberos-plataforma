@@ -234,7 +234,7 @@ export default function DocumentosPage() {
             className="group relative overflow-hidden rounded-2xl border border-slate-200 bg-white p-4 text-left transition-all hover:-translate-y-0.5 hover:shadow-lg"
           >
             {d.destacado && (
-              <div className="bg-status-warn-bg text-status-warn-fg absolute right-2 top-2 inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-semibold">
+              <div className="bg-status-warn-bg text-status-warn-fg absolute right-2 top-2 inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-semibold">
                 <Sparkles size={9} /> Destacado
               </div>
             )}
@@ -253,7 +253,7 @@ export default function DocumentosPage() {
             <div className="mt-3 flex items-center justify-between gap-2 border-t border-slate-100 pt-3">
               <span
                 className={cn(
-                  'inline-flex h-5 items-center rounded px-1.5 text-[10px] font-semibold uppercase',
+                  'inline-flex h-5 items-center rounded px-1.5 text-[11px] font-semibold uppercase',
                   TIPO_STYLE[d.tipo].color,
                 )}
               >
@@ -266,7 +266,7 @@ export default function DocumentosPage() {
               </div>
             </div>
 
-            <div className="mt-2 flex items-center gap-1 text-[10px] text-slate-500">
+            <div className="mt-2 flex items-center gap-1 text-[11px] text-slate-500">
               <Clock size={10} /> Actualizado {d.actualizado}
             </div>
           </button>

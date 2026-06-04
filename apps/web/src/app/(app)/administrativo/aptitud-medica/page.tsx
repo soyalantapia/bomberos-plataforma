@@ -224,7 +224,7 @@ export default function AptitudMedicaPage() {
                 {isAll ? 'Todos' : cfg!.label}
                 <span
                   className={cn(
-                    'rounded-full px-1.5 py-0.5 text-[10px] tabular-nums',
+                    'rounded-full px-1.5 py-0.5 text-[11px] tabular-nums',
                     filtro === f ? 'bg-white/20' : 'bg-slate-100',
                   )}
                 >

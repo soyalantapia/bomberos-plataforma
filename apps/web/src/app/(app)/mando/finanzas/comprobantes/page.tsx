@@ -355,7 +355,7 @@ export default function ComprobantesPage() {
                         <div className="truncate text-xs text-slate-600">
                           {m.contraparte}
                           {m.cuitContraparte && (
-                            <span className="ml-1 font-mono text-[10px] text-slate-500">
+                            <span className="ml-1 font-mono text-[11px] text-slate-500">
                               {m.cuitContraparte}
                             </span>
                           )}
@@ -368,7 +368,7 @@ export default function ComprobantesPage() {
                         </span>
                       </div>
                       {m.comprobanteNumero && (
-                        <div className="mt-1 truncate font-mono text-[10px] text-slate-500">
+                        <div className="mt-1 truncate font-mono text-[11px] text-slate-500">
                           {m.comprobanteNumero}
                         </div>
                       )}

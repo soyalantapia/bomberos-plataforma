@@ -278,7 +278,7 @@ export default function EticaPage() {
                       {h.estado === 'completado' && <CheckCircle2 size={14} />}
                       {h.estado === 'actual' && <Sparkles size={12} />}
                     </div>
-                    <div className="text-[10px] uppercase tracking-wide text-slate-500">
+                    <div className="text-[11px] uppercase tracking-wide text-slate-500">
                       {h.fecha}
                     </div>
                     <div

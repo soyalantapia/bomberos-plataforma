@@ -173,7 +173,7 @@ export default function WhatsAppPage() {
                 <span className="font-medium text-slate-900">{p.nombre}</span>
                 {p.aprobada && <Badge intent="ok">Aprobada</Badge>}
               </div>
-              <div className="mt-0.5 text-[10px] uppercase text-slate-500">{p.categoria}</div>
+              <div className="mt-0.5 text-[11px] uppercase text-slate-500">{p.categoria}</div>
             </button>
           ))}
         </div>
@@ -195,7 +195,7 @@ export default function WhatsAppPage() {
                     <pre className="whitespace-pre-wrap font-sans text-sm text-slate-900">
                       {plantilla.cuerpo}
                     </pre>
-                    <div className="mt-2 text-right text-[10px] text-slate-500">14:42 ✓✓</div>
+                    <div className="mt-2 text-right text-[11px] text-slate-500">14:42 ✓✓</div>
                   </div>
                 </div>
 
@@ -210,7 +210,7 @@ export default function WhatsAppPage() {
                       onChange={(e) => setDestinatarios(Number(e.target.value))}
                       className="focus:border-brand-400 mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:ring-2"
                     />
-                    <div className="mt-0.5 text-[10px] text-slate-500">
+                    <div className="mt-0.5 text-[11px] text-slate-500">
                       Cobertura: voluntarios activos con disponibilidad declarada
                     </div>
                   </div>

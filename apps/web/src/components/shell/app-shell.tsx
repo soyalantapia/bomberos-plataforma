@@ -102,7 +102,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             return (
               <div key={item.href}>
                 {showSeccion && (
-                  <div className="mb-1 mt-3 px-3 text-[10px] font-bold uppercase tracking-wider text-white/40">
+                  <div className="mb-1 mt-3 px-3 text-[11px] font-bold uppercase tracking-wider text-white/40">
                     {item.seccion}
                   </div>
                 )}
@@ -185,7 +185,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                   animate={{ scale: 1, opacity: 1 }}
                   exit={{ scale: 0, opacity: 0 }}
                   transition={{ type: 'spring', stiffness: 400, damping: 18 }}
-                  className="bg-status-risk absolute -right-0.5 -top-0.5 grid h-4 min-w-4 place-items-center rounded-full px-1 text-[10px] font-bold tabular-nums text-white ring-2 ring-white"
+                  className="bg-status-risk absolute -right-0.5 -top-0.5 grid h-4 min-w-4 place-items-center rounded-full px-1 text-[11px] font-bold tabular-nums text-white ring-2 ring-white"
                 >
                   {notifSinLeer > 9 ? '9+' : notifSinLeer}
                 </motion.span>

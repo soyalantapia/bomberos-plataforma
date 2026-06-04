@@ -233,13 +233,13 @@ export default function BomberoInicio() {
           </TabsTrigger>
           <TabsTrigger value="proximas">
             <Calendar size={13} className="mr-1" /> Próximas guardias
-            <span className="ml-1 rounded-full bg-slate-100 px-1.5 py-0.5 text-[10px] tabular-nums">
+            <span className="ml-1 rounded-full bg-slate-100 px-1.5 py-0.5 text-[11px] tabular-nums">
               {PROXIMAS_GUARDIAS.length}
             </span>
           </TabsTrigger>
           <TabsTrigger value="avisos">
             <MessageSquare size={13} className="mr-1" /> Avisos
-            <span className="bg-status-warn-bg text-status-warn-fg ml-1 rounded-full px-1.5 py-0.5 text-[10px] tabular-nums">
+            <span className="bg-status-warn-bg text-status-warn-fg ml-1 rounded-full px-1.5 py-0.5 text-[11px] tabular-nums">
               {AVISOS_FULL.length}
             </span>
           </TabsTrigger>
@@ -379,7 +379,7 @@ export default function BomberoInicio() {
                       )}
                     >
                       <div className="grid h-14 w-14 shrink-0 place-items-center rounded-xl bg-white text-center shadow-sm ring-1 ring-slate-200">
-                        <div className="text-[10px] uppercase tracking-wide text-slate-500">
+                        <div className="text-[11px] uppercase tracking-wide text-slate-500">
                           {g.diaSemana}
                         </div>
                         <div className="text-xl font-bold leading-none text-slate-900">

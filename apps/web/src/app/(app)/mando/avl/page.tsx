@@ -175,7 +175,7 @@ export default function AVLPage() {
             ? `${en_emergencia} móvil${en_emergencia === 1 ? '' : 'es'} en emergencia`
             : 'Flota lista para despacho'
         }
-        descripcion="Seguimiento de móviles por GPS en tiempo real. Tiempo de salida del cuartel (objetivo: 1 min) y tiempo de viaje hasta llegar (objetivo: 4 min al 90% de los servicios)."
+        descripcion="Posición y estado de la flota en vivo (simulación de demo — sin GPS conectado). Mide el tiempo de salida del cuartel (objetivo: 1 min) y el de viaje hasta llegar (objetivo: 4 min al 90% de los servicios)."
         icono={<Radio size={26} className={en_emergencia > 0 ? 'animate-pulse' : ''} />}
         variant={en_emergencia > 0 ? 'critical' : 'default'}
         meta={
@@ -377,7 +377,7 @@ export default function AVLPage() {
                         >
                           {movilSel.turnoutSec} seg
                         </span>
-                        <span className="text-[10px] text-slate-500">meta 1 min</span>
+                        <span className="text-[11px] text-slate-500">meta 1 min</span>
                       </div>
                     </div>
                   )}
@@ -390,7 +390,7 @@ export default function AVLPage() {
                           {Math.floor(movilSel.travelSec / 60)}:
                           {(movilSel.travelSec % 60).toString().padStart(2, '0')} min
                         </span>
-                        <span className="text-[10px] text-slate-500">meta 4 min</span>
+                        <span className="text-[11px] text-slate-500">meta 4 min</span>
                       </div>
                     </div>
                   )}

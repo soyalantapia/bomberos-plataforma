@@ -274,7 +274,7 @@ export default function OrganigramaPage() {
                         <div className="truncate text-xs font-medium text-slate-900">
                           {resp.nombre} {resp.apellido}
                         </div>
-                        <div className="text-[10px] text-slate-500">Responsable</div>
+                        <div className="text-[11px] text-slate-500">Responsable</div>
                       </div>
                       <a
                         href={`tel:${soloDigitos(resp.telefono)}`}

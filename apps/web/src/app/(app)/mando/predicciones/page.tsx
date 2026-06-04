@@ -192,7 +192,7 @@ export default function PrediccionesPage() {
                 {FRANJAS.map((f, i) => (
                   <div key={f} className="flex-1 px-1 text-center">
                     <div className="text-xs font-semibold text-slate-700">{f}</div>
-                    <div className="text-[10px] text-slate-400">{FRANJAS_HORA[i]}</div>
+                    <div className="text-[11px] text-slate-400">{FRANJAS_HORA[i]}</div>
                   </div>
                 ))}
               </div>

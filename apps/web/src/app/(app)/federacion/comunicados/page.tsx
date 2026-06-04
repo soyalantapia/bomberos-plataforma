@@ -338,7 +338,7 @@ export default function ComunicadosFed() {
                       <div className="font-bold tabular-nums text-slate-900">
                         {c.leidos}/{c.destinatarios}
                       </div>
-                      <div className="text-[10px] uppercase tracking-wide text-slate-500">
+                      <div className="text-[11px] uppercase tracking-wide text-slate-500">
                         leído
                       </div>
                       <div className="mt-1 h-1 w-16 overflow-hidden rounded-full bg-slate-100">

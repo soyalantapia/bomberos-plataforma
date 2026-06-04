@@ -381,7 +381,7 @@ export default function CuotasPage() {
                               <div>
                                 <div>{fechaCorta(c.pagadoEn)}</div>
                                 {c.medio && (
-                                  <div className="text-[10px] text-slate-500">
+                                  <div className="text-[11px] text-slate-500">
                                     {MEDIO_LABEL[c.medio]}
                                   </div>
                                 )}

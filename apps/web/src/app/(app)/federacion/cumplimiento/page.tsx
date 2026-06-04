@@ -129,7 +129,7 @@ export default function CumplimientoFed() {
               <div key={idx} className="relative pb-4 pl-9 last:pb-0">
                 <div
                   className={cn(
-                    'absolute left-0 grid h-6 w-6 place-items-center rounded-full text-[10px] font-bold text-white ring-4 ring-white',
+                    'absolute left-0 grid h-6 w-6 place-items-center rounded-full text-[11px] font-bold text-white ring-4 ring-white',
                     p.estado === 'actual'
                       ? 'bg-brand-600'
                       : p.estado === 'limite'

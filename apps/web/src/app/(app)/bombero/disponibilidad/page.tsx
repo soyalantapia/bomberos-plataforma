@@ -140,7 +140,7 @@ export default function DisponibilidadPage() {
                     >
                       <div className="flex flex-col items-center">
                         <span className="text-slate-500">{d.label}</span>
-                        <span className="text-[10px] uppercase">{d.nombre.slice(0, 3)}</span>
+                        <span className="text-[11px] uppercase">{d.nombre.slice(0, 3)}</span>
                       </div>
                     </th>
                   ))}
@@ -155,7 +155,7 @@ export default function DisponibilidadPage() {
                           {t.icon}
                           {t.label}
                         </span>
-                        <span className="text-[10px] text-slate-500">{t.rango} hs</span>
+                        <span className="text-[11px] text-slate-500">{t.rango} hs</span>
                       </div>
                     </td>
                     {DIAS.map((d) => {
@@ -256,19 +256,19 @@ export default function DisponibilidadPage() {
             <div className="mb-2 text-xs font-semibold uppercase text-slate-500">Leyenda</div>
             <div className="flex flex-wrap items-center gap-3 text-xs">
               <div className="flex items-center gap-1.5">
-                <span className="bg-status-ok grid h-5 w-5 place-items-center rounded text-[10px] font-bold text-white">
+                <span className="bg-status-ok grid h-5 w-5 place-items-center rounded text-[11px] font-bold text-white">
                   8+
                 </span>
                 <span>Cobertura plena</span>
               </div>
               <div className="flex items-center gap-1.5">
-                <span className="bg-status-warn grid h-5 w-5 place-items-center rounded text-[10px] font-bold text-white">
+                <span className="bg-status-warn grid h-5 w-5 place-items-center rounded text-[11px] font-bold text-white">
                   5-7
                 </span>
                 <span>Cobertura justa</span>
               </div>
               <div className="flex items-center gap-1.5">
-                <span className="bg-status-risk grid h-5 w-5 place-items-center rounded text-[10px] font-bold text-white">
+                <span className="bg-status-risk grid h-5 w-5 place-items-center rounded text-[11px] font-bold text-white">
                   &lt;5
                 </span>
                 <span>Cobertura crítica</span>

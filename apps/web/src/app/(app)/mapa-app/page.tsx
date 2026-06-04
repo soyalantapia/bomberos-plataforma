@@ -86,7 +86,7 @@ export default function MapaAppPage() {
                       <div className="truncate text-sm font-medium text-slate-900">
                         {item.label}
                       </div>
-                      <div className="truncate font-mono text-[10px] text-slate-500">
+                      <div className="truncate font-mono text-[11px] text-slate-500">
                         {item.href}
                       </div>
                     </div>

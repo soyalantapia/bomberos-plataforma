@@ -147,7 +147,7 @@ export default function IntegracionesFed() {
             <div className="flex items-center justify-center">
               <div className="relative flex flex-col items-center gap-1">
                 <div className="from-brand-300 to-status-warn h-px w-16 animate-pulse bg-gradient-to-r" />
-                <div className="inline-flex items-center gap-1 rounded-full bg-white px-2 py-0.5 text-[10px] font-semibold text-slate-700 ring-1 ring-slate-200">
+                <div className="inline-flex items-center gap-1 rounded-full bg-white px-2 py-0.5 text-[11px] font-semibold text-slate-700 ring-1 ring-slate-200">
                   <FileLock2 size={9} /> mTLS
                 </div>
                 <div className="from-status-warn to-brand-300 h-px w-16 animate-pulse bg-gradient-to-r" />
@@ -216,7 +216,7 @@ export default function IntegracionesFed() {
                   <div className="text-sm text-slate-700">{i.proposito}</div>
 
                   <div className="mt-4 space-y-1.5 border-t border-slate-100 pt-3">
-                    <div className="text-[10px] font-semibold uppercase tracking-wide text-slate-500">
+                    <div className="text-[11px] font-semibold uppercase tracking-wide text-slate-500">
                       Lo que habilita
                     </div>
                     {i.beneficios.map((b, idx) => (

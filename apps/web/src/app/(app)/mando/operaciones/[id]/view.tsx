@@ -218,7 +218,7 @@ export default function FichaServicioView() {
                       <div className="truncate text-sm font-medium text-slate-900">
                         {p!.nombre} {p!.apellido}
                       </div>
-                      <div className="font-mono text-[10px] text-slate-500">legajo {p!.legajo}</div>
+                      <div className="font-mono text-[11px] text-slate-500">legajo {p!.legajo}</div>
                     </div>
                   </li>
                 ))}

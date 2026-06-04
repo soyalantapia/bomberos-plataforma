@@ -286,7 +286,7 @@ export default function ICSPage() {
                             <div className="truncate font-medium text-slate-900">
                               {persona.apellido}, {persona.nombre}
                             </div>
-                            <div className="text-[10px] text-slate-500">
+                            <div className="text-[11px] text-slate-500">
                               legajo {persona.legajo}
                             </div>
                           </div>

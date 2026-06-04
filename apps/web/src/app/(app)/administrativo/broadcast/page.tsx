@@ -210,7 +210,7 @@ export default function BroadcastPage() {
                     {a.label}
                     <span
                       className={cn(
-                        'rounded-full px-1.5 py-0.5 text-[10px]',
+                        'rounded-full px-1.5 py-0.5 text-[11px]',
                         audiencia === a.id ? 'bg-white/20' : 'bg-slate-100',
                       )}
                     >

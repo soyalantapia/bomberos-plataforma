@@ -174,13 +174,13 @@ export default function CapacitacionGestion() {
                   <div className="mb-3 flex items-center gap-2">
                     <span
                       className={cn(
-                        'inline-flex h-5 items-center rounded px-1.5 text-[10px] font-bold uppercase text-white',
+                        'inline-flex h-5 items-center rounded px-1.5 text-[11px] font-bold uppercase text-white',
                         CAT_COLOR[c.categoria],
                       )}
                     >
                       {c.categoria}
                     </span>
-                    <span className="inline-flex items-center gap-1 rounded bg-slate-50 px-1.5 py-0.5 text-[10px] text-slate-600">
+                    <span className="inline-flex items-center gap-1 rounded bg-slate-50 px-1.5 py-0.5 text-[11px] text-slate-600">
                       <Calendar size={10} /> {c.inicio}
                     </span>
                   </div>
@@ -290,7 +290,7 @@ export default function CapacitacionGestion() {
             >
               <div className="mb-3 flex items-start justify-between">
                 <div>
-                  <div className="text-[10px] font-semibold uppercase tracking-wide text-slate-500">
+                  <div className="text-[11px] font-semibold uppercase tracking-wide text-slate-500">
                     Folio N°
                   </div>
                   <div className="font-mono text-2xl font-bold text-slate-900">{f.numero}</div>

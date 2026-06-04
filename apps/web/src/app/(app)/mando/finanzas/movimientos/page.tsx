@@ -440,7 +440,7 @@ export default function MovimientosPage() {
                             {cuenta && (
                               <>
                                 <span className="text-slate-300">·</span>
-                                <span className="font-mono text-[10px]">{cuenta.codigo}</span>
+                                <span className="font-mono text-[11px]">{cuenta.codigo}</span>
                               </>
                             )}
                           </div>
@@ -552,7 +552,7 @@ export default function MovimientosPage() {
                                   <div className="truncate text-xs text-slate-500">
                                     {m.contraparte}
                                     {m.cuitContraparte && (
-                                      <span className="ml-1 font-mono text-[10px]">
+                                      <span className="ml-1 font-mono text-[11px]">
                                         {m.cuitContraparte}
                                       </span>
                                     )}
@@ -564,7 +564,7 @@ export default function MovimientosPage() {
                           <td className="px-3 py-2 text-xs text-slate-600">
                             {cuenta ? (
                               <div>
-                                <div className="font-mono text-[10px]">{cuenta.codigo}</div>
+                                <div className="font-mono text-[11px]">{cuenta.codigo}</div>
                                 <div>{cuenta.nombre}</div>
                               </div>
                             ) : (
@@ -583,7 +583,7 @@ export default function MovimientosPage() {
                             {m.comprobanteNumero ? (
                               <div>
                                 <Badge intent="neutral">{m.comprobanteTipo}</Badge>
-                                <div className="mt-0.5 font-mono text-[10px] text-slate-500">
+                                <div className="mt-0.5 font-mono text-[11px] text-slate-500">
                                   {m.comprobanteNumero}
                                 </div>
                               </div>

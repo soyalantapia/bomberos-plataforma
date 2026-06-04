@@ -215,7 +215,7 @@ export function AgregarContactoDialog({ open, onClose }: Props) {
                 <div className="min-w-0">
                   <div className="text-sm font-medium text-slate-900">{label}</div>
                   {!habilitado && (
-                    <div className="mt-0.5 text-[10px] text-slate-500">
+                    <div className="mt-0.5 text-[11px] text-slate-500">
                       Requiere perfil federación
                     </div>
                   )}

@@ -276,7 +276,7 @@ export default function RadioPage() {
                                 className="bg-brand-600 h-full"
                               />
                             </div>
-                            <div className="mt-1 text-[10px] text-slate-500">
+                            <div className="mt-1 text-[11px] text-slate-500">
                               Reproduciendo · {Math.round(t.duracionSeg * 0.6)}/{t.duracionSeg}s
                             </div>
                           </div>

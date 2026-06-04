@@ -174,7 +174,7 @@ export default function InformePage() {
               </div>
             </div>
             <div className="shrink-0 text-right">
-              <div className="text-[10px] font-bold uppercase tracking-widest text-white/50">
+              <div className="text-[11px] font-bold uppercase tracking-widest text-white/50">
                 Vulcano
               </div>
               <div className="mt-1 text-xs text-white/70">Informe N.º</div>

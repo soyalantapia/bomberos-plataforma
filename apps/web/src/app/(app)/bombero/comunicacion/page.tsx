@@ -408,7 +408,7 @@ export default function ComunicacionPage() {
               )}
             >
               {a.prioridad === 'alta' && (
-                <div className="absolute right-3 top-3 inline-flex items-center gap-1 rounded-full bg-white/20 px-2 py-0.5 text-[10px] font-bold uppercase backdrop-blur">
+                <div className="absolute right-3 top-3 inline-flex items-center gap-1 rounded-full bg-white/20 px-2 py-0.5 text-[11px] font-bold uppercase backdrop-blur">
                   ● En vivo
                 </div>
               )}
@@ -462,14 +462,14 @@ export default function ComunicacionPage() {
                     <div className="min-w-0 flex-1">
                       <div className="flex items-baseline gap-2">
                         <div className="truncate font-semibold text-slate-900">{c.nombre}</div>
-                        <div className="shrink-0 text-[10px] text-slate-500">{c.cuando}</div>
+                        <div className="shrink-0 text-[11px] text-slate-500">{c.cuando}</div>
                       </div>
                       <div className="mt-0.5 line-clamp-1 text-xs text-slate-600">
                         <span className="font-medium">{c.autor}:</span> {c.ultimoMensaje}
                       </div>
                     </div>
                     {c.sinLeer > 0 && (
-                      <span className="bg-brand-600 shrink-0 rounded-full px-1.5 py-0.5 text-[10px] font-bold tabular-nums text-white">
+                      <span className="bg-brand-600 shrink-0 rounded-full px-1.5 py-0.5 text-[11px] font-bold tabular-nums text-white">
                         {c.sinLeer}
                       </span>
                     )}
@@ -525,7 +525,7 @@ export default function ComunicacionPage() {
                     </div>
                     <div
                       className={cn(
-                        'mt-0.5 flex items-center gap-1 text-[10px] text-slate-500',
+                        'mt-0.5 flex items-center gap-1 text-[11px] text-slate-500',
                         m.mio ? 'justify-end' : 'justify-start',
                       )}
                     >

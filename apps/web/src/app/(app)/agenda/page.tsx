@@ -191,7 +191,7 @@ export default function AgendaFederalPage() {
           <SlidersHorizontal size={14} />
           <span className="hidden sm:inline">Filtrar</span>
           {hayFiltros && (
-            <span className="bg-brand-600 absolute -right-1 -top-1 grid h-4 min-w-[16px] place-items-center rounded-full px-1 text-[10px] font-bold text-white">
+            <span className="bg-brand-600 absolute -right-1 -top-1 grid h-4 min-w-[16px] place-items-center rounded-full px-1 text-[11px] font-bold text-white">
               {categoriasActivas.size}
             </span>
           )}

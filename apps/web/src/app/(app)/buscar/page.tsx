@@ -325,7 +325,7 @@ function MovilRow({ m }: { m: Movil }) {
           {m.tipo} · {m.marca} {m.modelo}
         </div>
       </div>
-      <span className="font-mono text-[10px] text-slate-500">{m.dominio}</span>
+      <span className="font-mono text-[11px] text-slate-500">{m.dominio}</span>
     </Link>
   );
 }

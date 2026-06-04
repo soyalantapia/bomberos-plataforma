@@ -269,7 +269,7 @@ export default function ParteNFIRSPage() {
 
             <div className="bg-brand-50 border-brand-100 mx-auto mt-4 max-w-md rounded-lg border p-3 text-left">
               <div className="text-brand-900 text-xs font-bold uppercase">Comprobante único</div>
-              <div className="text-brand-800 mt-1 break-all font-mono text-[10px]">{hashFirma}</div>
+              <div className="text-brand-800 mt-1 break-all font-mono text-[11px]">{hashFirma}</div>
             </div>
 
             <div className="mt-6 flex flex-wrap justify-center gap-2">
@@ -397,7 +397,7 @@ export default function ParteNFIRSPage() {
                 </div>
                 <span
                   className={cn(
-                    'mt-1 hidden text-[10px] sm:inline',
+                    'mt-1 hidden text-[11px] sm:inline',
                     p.id === paso ? 'text-brand-700 font-bold' : 'text-slate-500',
                   )}
                 >

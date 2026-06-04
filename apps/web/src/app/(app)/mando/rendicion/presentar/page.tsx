@@ -233,7 +233,7 @@ export default function PresentarRendicionPage() {
                     >
                       {p.titulo}
                     </div>
-                    <div className="text-[10px] text-slate-500">{p.descripcion}</div>
+                    <div className="text-[11px] text-slate-500">{p.descripcion}</div>
                   </div>
                   {idx < PASOS.length - 1 && (
                     <div
@@ -601,7 +601,7 @@ export default function PresentarRendicionPage() {
                     <div className="text-brand-900 flex items-center gap-1 font-semibold">
                       <ShieldCheck size={12} /> Comprobante de firma
                     </div>
-                    <div className="mt-1 break-all font-mono text-[10px] text-slate-600">
+                    <div className="mt-1 break-all font-mono text-[11px] text-slate-600">
                       {comprobante}
                     </div>
                   </div>

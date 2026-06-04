@@ -248,7 +248,7 @@ export default function PlanCuentasPage() {
           {/* Código pill */}
           <div
             className={cn(
-              'shrink-0 rounded px-1.5 py-0.5 font-mono text-[10px] font-bold',
+              'shrink-0 rounded px-1.5 py-0.5 font-mono text-[11px] font-bold',
               nivel === 0 ? `${cfg.bg} ${cfg.text}` : 'bg-slate-100 text-slate-500',
             )}
           >
@@ -278,7 +278,7 @@ export default function PlanCuentasPage() {
             <div className="hidden shrink-0 text-right sm:block">
               <div className="font-mono text-xs font-bold text-slate-900">{arsCompact(ejec)}</div>
               {presup > 0 && (
-                <div className="font-mono text-[10px] text-slate-500">/ {arsCompact(presup)}</div>
+                <div className="font-mono text-[11px] text-slate-500">/ {arsCompact(presup)}</div>
               )}
             </div>
           )}
@@ -287,7 +287,7 @@ export default function PlanCuentasPage() {
           {presup > 0 && (
             <div
               className={cn(
-                'shrink-0 rounded-full px-1.5 py-0.5 text-[10px] font-bold tabular-nums',
+                'shrink-0 rounded-full px-1.5 py-0.5 text-[11px] font-bold tabular-nums',
                 pctIndiv >= 90
                   ? c.tipo === 'egreso'
                     ? 'bg-rose-100 text-rose-700'
@@ -482,7 +482,7 @@ export default function PlanCuentasPage() {
                           )}
                         />
                       </div>
-                      <div className="mt-1 flex items-center justify-between text-[10px] font-medium opacity-90">
+                      <div className="mt-1 flex items-center justify-between text-[11px] font-medium opacity-90">
                         <span>{stat.pct.toFixed(0)}% ejecutado</span>
                         {t === 'ingreso' && stat.pct >= 40 && <TrendingUp size={10} />}
                         {t === 'egreso' && stat.pct > 50 && <TrendingDown size={10} />}
@@ -665,14 +665,14 @@ export default function PlanCuentasPage() {
                               {/* Proyección anual */}
                               <div className="mt-4 grid grid-cols-2 gap-2 border-t border-slate-100 pt-3">
                                 <div className="rounded-lg bg-slate-50 p-2">
-                                  <div className="text-[10px] uppercase text-slate-500">
+                                  <div className="text-[11px] uppercase text-slate-500">
                                     Mensual proyectado
                                   </div>
                                   <div className="font-mono text-sm font-bold text-slate-900">
                                     {arsCompact(ejec / 5)}
                                   </div>
                                   {presupMensual > 0 && (
-                                    <div className="text-[10px] text-slate-500">
+                                    <div className="text-[11px] text-slate-500">
                                       objetivo {arsCompact(presupMensual)}
                                     </div>
                                   )}
@@ -687,7 +687,7 @@ export default function PlanCuentasPage() {
                                         : 'bg-emerald-50',
                                   )}
                                 >
-                                  <div className="text-[10px] uppercase text-slate-500">
+                                  <div className="text-[11px] uppercase text-slate-500">
                                     Proyección 12m
                                   </div>
                                   <div
@@ -702,7 +702,7 @@ export default function PlanCuentasPage() {
                                   >
                                     {arsCompact(proyeccion)}
                                   </div>
-                                  <div className="text-[10px] text-slate-500">
+                                  <div className="text-[11px] text-slate-500">
                                     {((proyeccion / presup) * 100).toFixed(0)}% del año
                                   </div>
                                 </div>
@@ -752,7 +752,7 @@ export default function PlanCuentasPage() {
                               <div className="truncate text-xs font-medium text-slate-900">
                                 {m.descripcion}
                               </div>
-                              <div className="text-[10px] text-slate-500">
+                              <div className="text-[11px] text-slate-500">
                                 {fechaCorta(m.fecha)}
                                 {m.contraparte && ` · ${m.contraparte}`}
                               </div>

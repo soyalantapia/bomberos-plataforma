@@ -255,7 +255,7 @@ export default function MobileTacticalPage() {
                     )}
                   >
                     {b.icon}
-                    <span className="text-[10px] font-bold uppercase">{b.label}</span>
+                    <span className="text-[11px] font-bold uppercase">{b.label}</span>
                   </motion.button>
                 ))}
               </div>
@@ -278,7 +278,7 @@ export default function MobileTacticalPage() {
                 <div className={cn('rounded-lg p-2', modoNoche ? 'bg-red-900/40' : 'bg-slate-900')}>
                   <div
                     className={cn(
-                      'text-[10px] uppercase',
+                      'text-[11px] uppercase',
                       modoNoche ? 'text-red-300/70' : 'text-slate-500',
                     )}
                   >
@@ -296,7 +296,7 @@ export default function MobileTacticalPage() {
                 <div className={cn('rounded-lg p-2', modoNoche ? 'bg-red-900/40' : 'bg-slate-900')}>
                   <div
                     className={cn(
-                      'text-[10px] uppercase',
+                      'text-[11px] uppercase',
                       modoNoche ? 'text-red-300/70' : 'text-slate-500',
                     )}
                   >
@@ -314,7 +314,7 @@ export default function MobileTacticalPage() {
                 <div className={cn('rounded-lg p-2', modoNoche ? 'bg-red-900/40' : 'bg-slate-900')}>
                   <div
                     className={cn(
-                      'text-[10px] uppercase',
+                      'text-[11px] uppercase',
                       modoNoche ? 'text-red-300/70' : 'text-slate-500',
                     )}
                   >
@@ -332,7 +332,7 @@ export default function MobileTacticalPage() {
                 <div className={cn('rounded-lg p-2', modoNoche ? 'bg-red-900/40' : 'bg-slate-900')}>
                   <div
                     className={cn(
-                      'text-[10px] uppercase',
+                      'text-[11px] uppercase',
                       modoNoche ? 'text-red-300/70' : 'text-slate-500',
                     )}
                   >

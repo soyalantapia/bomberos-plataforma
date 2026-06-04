@@ -125,7 +125,7 @@ export function SimplePage({
             <TabsTrigger key={t.value} value={t.value}>
               {t.label}
               {t.items.length > 0 && (
-                <span className="ml-1.5 rounded-full bg-slate-100 px-1.5 py-0.5 text-[10px] tabular-nums text-slate-600">
+                <span className="ml-1.5 rounded-full bg-slate-100 px-1.5 py-0.5 text-[11px] tabular-nums text-slate-600">
                   {t.items.length}
                 </span>
               )}

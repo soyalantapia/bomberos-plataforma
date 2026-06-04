@@ -150,7 +150,7 @@ export default function NotificacionesPage() {
                     key={n.id}
                     className="flex items-start gap-3 rounded-lg bg-white p-3 ring-1 ring-slate-100"
                   >
-                    <div className="bg-brand-600 grid h-6 w-6 shrink-0 place-items-center rounded-full text-[10px] font-bold text-white">
+                    <div className="bg-brand-600 grid h-6 w-6 shrink-0 place-items-center rounded-full text-[11px] font-bold text-white">
                       {idx + 1}
                     </div>
                     <div className="min-w-0 flex-1">

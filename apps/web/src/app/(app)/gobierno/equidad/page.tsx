@@ -179,7 +179,7 @@ export default function EquidadGeneroPage() {
                   >
                     {f.mujeres > 0 && (
                       <div
-                        className="bg-brand-500 grid h-full place-items-center text-[10px] font-bold text-white"
+                        className="bg-brand-500 grid h-full place-items-center text-[11px] font-bold text-white"
                         style={{ width: `${(f.mujeres / f.total) * 100}%` }}
                       >
                         {f.mujeres}
@@ -187,7 +187,7 @@ export default function EquidadGeneroPage() {
                     )}
                     {f.varones + f.otros > 0 && (
                       <div
-                        className="grid h-full flex-1 place-items-center bg-slate-500 text-[10px] font-bold text-white"
+                        className="grid h-full flex-1 place-items-center bg-slate-500 text-[11px] font-bold text-white"
                         title={`Varones/otros: ${f.varones + f.otros}`}
                       >
                         {f.varones + f.otros}

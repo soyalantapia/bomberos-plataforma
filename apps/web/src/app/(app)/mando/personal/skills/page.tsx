@@ -267,7 +267,7 @@ export default function SkillsMatrixPage() {
                     <div className="text-sm font-medium text-slate-900">
                       {row.persona.apellido}, {row.persona.nombre}
                     </div>
-                    <div className="font-mono text-[10px] text-slate-500">
+                    <div className="font-mono text-[11px] text-slate-500">
                       legajo {row.persona.legajo}
                     </div>
                   </Link>
@@ -310,7 +310,7 @@ export default function SkillsMatrixPage() {
                   {ESPECIALIDADES.map((esp) => (
                     <th
                       key={esp.id}
-                      className="px-2 py-3 text-center text-[10px] font-semibold uppercase text-slate-600"
+                      className="px-2 py-3 text-center text-[11px] font-semibold uppercase text-slate-600"
                     >
                       <div className="mx-auto inline-flex flex-col items-center gap-0.5">
                         {esp.icon}
@@ -332,7 +332,7 @@ export default function SkillsMatrixPage() {
                           <span className="text-sm font-medium text-slate-900">
                             {row.persona.apellido}, {row.persona.nombre}
                           </span>
-                          <span className="font-mono text-[10px] text-slate-500">
+                          <span className="font-mono text-[11px] text-slate-500">
                             legajo {row.persona.legajo}
                           </span>
                         </div>
@@ -345,7 +345,7 @@ export default function SkillsMatrixPage() {
                         <td key={esp.id} className="px-2 py-2.5 text-center">
                           <span
                             className={cn(
-                              'inline-flex h-6 min-w-6 items-center justify-center gap-0.5 rounded px-1.5 text-[10px] font-bold',
+                              'inline-flex h-6 min-w-6 items-center justify-center gap-0.5 rounded px-1.5 text-[11px] font-bold',
                               cfg.color,
                             )}
                             title={`${esp.label}: ${cfg.label}`}

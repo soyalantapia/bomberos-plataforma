@@ -164,10 +164,10 @@ export default function AnalisisImagenPage() {
                     <div className="absolute inset-0 grid place-items-center">
                       <ImageIcon size={32} className="text-slate-500" />
                     </div>
-                    <div className="absolute bottom-1 left-1 rounded bg-black/60 px-1.5 py-0.5 text-[10px] font-bold text-white">
+                    <div className="absolute bottom-1 left-1 rounded bg-black/60 px-1.5 py-0.5 text-[11px] font-bold text-white">
                       Foto {i + 1}
                     </div>
-                    <div className="bg-status-ok absolute right-1 top-1 grid h-5 w-5 place-items-center rounded text-[10px] font-bold text-white">
+                    <div className="bg-status-ok absolute right-1 top-1 grid h-5 w-5 place-items-center rounded text-[11px] font-bold text-white">
                       ✓
                     </div>
                   </motion.div>

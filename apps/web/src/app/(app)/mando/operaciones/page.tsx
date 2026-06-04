@@ -256,7 +256,7 @@ export default function OperacionesPage() {
                 >
                   <div
                     className={cn(
-                      'text-[10px] uppercase tracking-wide',
+                      'text-[11px] uppercase tracking-wide',
                       isToday ? 'text-brand-700 font-bold' : 'text-slate-500',
                     )}
                   >
@@ -405,7 +405,7 @@ export default function OperacionesPage() {
                     {personas.slice(0, 4).map((p) => (
                       <div
                         key={p.id}
-                        className="bg-brand-600 grid h-7 w-7 place-items-center rounded-full text-[10px] font-bold text-white ring-2 ring-white"
+                        className="bg-brand-600 grid h-7 w-7 place-items-center rounded-full text-[11px] font-bold text-white ring-2 ring-white"
                         title={`${p.nombre} ${p.apellido}`}
                       >
                         {p.nombre[0]}

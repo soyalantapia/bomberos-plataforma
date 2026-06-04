@@ -463,7 +463,7 @@ export default function AprobacionesPage() {
                     {col.icon}
                     <span>{col.label}</span>
                     {estado === 'pendiente' && alta > 0 && (
-                      <span className="bg-status-risk-bg text-status-risk-fg rounded px-1.5 py-0.5 text-[10px] font-semibold uppercase">
+                      <span className="bg-status-risk-bg text-status-risk-fg rounded px-1.5 py-0.5 text-[11px] font-semibold uppercase">
                         {alta} urg
                       </span>
                     )}
@@ -498,14 +498,14 @@ export default function AprobacionesPage() {
                               <div className="mt-0.5 flex items-center gap-1.5">
                                 <span
                                   className={cn(
-                                    'inline-flex h-5 items-center rounded px-1.5 text-[10px] font-semibold uppercase',
+                                    'inline-flex h-5 items-center rounded px-1.5 text-[11px] font-semibold uppercase',
                                     CAT_COLOR[s.categoria],
                                   )}
                                 >
                                   {CAT_LABEL[s.categoria]}
                                 </span>
                                 {s.prioridad === 'alta' && estado === 'pendiente' && (
-                                  <span className="bg-status-risk-bg text-status-risk-fg inline-flex h-5 items-center rounded px-1.5 text-[10px] font-semibold uppercase">
+                                  <span className="bg-status-risk-bg text-status-risk-fg inline-flex h-5 items-center rounded px-1.5 text-[11px] font-semibold uppercase">
                                     Urgente
                                   </span>
                                 )}

@@ -279,7 +279,7 @@ export default function FichaAuditView() {
 
               {hashGenerado ? (
                 <>
-                  <div className="break-all rounded bg-slate-900 p-3 font-mono text-[10px] text-green-400">
+                  <div className="break-all rounded bg-slate-900 p-3 font-mono text-[11px] text-green-400">
                     {hashGenerado}
                   </div>
                   <div className="mt-2 flex items-center justify-between">

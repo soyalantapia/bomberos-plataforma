@@ -185,7 +185,7 @@ export default function AgendaPage() {
             </button>
           </div>
 
-          <div className="mb-1 grid grid-cols-7 gap-px text-center text-[10px] font-semibold uppercase text-slate-500">
+          <div className="mb-1 grid grid-cols-7 gap-px text-center text-[11px] font-semibold uppercase text-slate-500">
             {['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'].map((d) => (
               <div key={d}>{d}</div>
             ))}
@@ -224,7 +224,7 @@ export default function AgendaPage() {
                       <div
                         key={i}
                         className={cn(
-                          'mt-1 truncate rounded px-1 py-0.5 text-[10px] font-medium',
+                          'mt-1 truncate rounded px-1 py-0.5 text-[11px] font-medium',
                           st.color,
                         )}
                         title={e.titulo}
@@ -234,7 +234,7 @@ export default function AgendaPage() {
                     );
                   })}
                   {evs.length > 2 && (
-                    <div className="mt-0.5 text-[10px] text-slate-500">+{evs.length - 2}</div>
+                    <div className="mt-0.5 text-[11px] text-slate-500">+{evs.length - 2}</div>
                   )}
                 </div>
               );

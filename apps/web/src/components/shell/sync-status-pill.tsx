@@ -133,7 +133,7 @@ export function SyncStatusPill() {
         {config.icon}
         <span>{config.label}</span>
         {queue.length > 0 && (
-          <span className="ml-0.5 rounded-full bg-white/80 px-1.5 py-0.5 text-[10px] font-bold tabular-nums">
+          <span className="ml-0.5 rounded-full bg-white/80 px-1.5 py-0.5 text-[11px] font-bold tabular-nums">
             {queue.length}
           </span>
         )}
@@ -155,7 +155,7 @@ export function SyncStatusPill() {
       >
         {config.icon}
         {queue.length > 0 && (
-          <span className="bg-status-warn absolute -right-0.5 -top-0.5 grid h-4 min-w-4 place-items-center rounded-full px-1 text-[10px] font-bold tabular-nums text-white ring-2 ring-white">
+          <span className="bg-status-warn absolute -right-0.5 -top-0.5 grid h-4 min-w-4 place-items-center rounded-full px-1 text-[11px] font-bold tabular-nums text-white ring-2 ring-white">
             {queue.length}
           </span>
         )}
@@ -226,13 +226,13 @@ export function SyncStatusPill() {
                           <Loader2 size={10} className="text-brand-600 animate-spin" />
                         )}
                         {estado === 'offline' && (
-                          <span className="bg-status-warn-bg text-status-warn-fg rounded px-1 text-[10px] font-medium">
+                          <span className="bg-status-warn-bg text-status-warn-fg rounded px-1 text-[11px] font-medium">
                             En cola
                           </span>
                         )}
                       </div>
                       <div className="truncate text-xs text-slate-700">{item.descripcion}</div>
-                      <div className="mt-0.5 text-[10px] text-slate-500">{item.cuando}</div>
+                      <div className="mt-0.5 text-[11px] text-slate-500">{item.cuando}</div>
                     </div>
                   </motion.div>
                 ))}

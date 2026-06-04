@@ -232,7 +232,7 @@ export default function LicenciasNovedades() {
                         <div className="mb-2 flex items-center gap-2">
                           <span
                             className={cn(
-                              'inline-flex h-5 items-center rounded px-1.5 text-[10px] font-semibold uppercase text-white',
+                              'inline-flex h-5 items-center rounded px-1.5 text-[11px] font-semibold uppercase text-white',
                               TIPO_STYLE[s.tipo].color,
                             )}
                           >
@@ -242,7 +242,7 @@ export default function LicenciasNovedades() {
                             {s.dias} {s.dias === 1 ? 'día' : 'días'}
                           </span>
                           {s.externa && (
-                            <span className="inline-flex items-center gap-0.5 rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[10px] text-slate-600">
+                            <span className="inline-flex items-center gap-0.5 rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[11px] text-slate-600">
                               Aquarii
                             </span>
                           )}
@@ -286,7 +286,7 @@ export default function LicenciasNovedades() {
                         )}
 
                         {s.resueltaPor && estado !== 'pendiente' && (
-                          <div className="mt-2 flex items-center gap-1 text-[10px] text-slate-500">
+                          <div className="mt-2 flex items-center gap-1 text-[11px] text-slate-500">
                             <CheckCircle2 size={9} /> Resuelta por {s.resueltaPor}
                           </div>
                         )}
