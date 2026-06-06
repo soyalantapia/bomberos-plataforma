@@ -36,7 +36,7 @@ import {
 } from '../../../../../components/finanzas/utils';
 import { PageHero } from '../../../../../components/shared/page-hero';
 import { demoToday } from '../../../../../lib/utils/demo-today';
-import { useFaroStore } from '../../../../../store/use-faro-store';
+import { selectCuartelActivo, useFaroStore } from '../../../../../store/use-faro-store';
 
 import type { Caja, TipoCaja } from '@faro/types';
 
@@ -58,8 +58,24 @@ const TIPO_COLOR: Record<TipoCaja, string> = {
   plazo_fijo: 'from-purple-500 to-purple-700',
 };
 
+// Color sólido para la barra de distribución "¿dónde está la plata?"
+const TIPO_BAR: Record<TipoCaja, string> = {
+  caja_chica: 'bg-amber-500',
+  caja_principal: 'bg-emerald-500',
+  banco_cc: 'bg-brand-600',
+  banco_ca: 'bg-brand-600',
+  mercadopago: 'bg-sky-500',
+  plazo_fijo: 'bg-purple-500',
+};
+
+function diasDesde(fechaIso?: string): number | null {
+  if (!fechaIso) return null;
+  return Math.round((demoToday().getTime() - new Date(fechaIso).getTime()) / 86400000);
+}
+
 export default function CajasPage() {
   const toast = useToast();
+  const cuartel = useFaroStore(selectCuartelActivo);
   const cajas = useFaroStore((s) => s.cajas);
   const movimientos = useFaroStore((s) => s.movimientos);
   const transferirEntreCajas = useFaroStore((s) => s.transferirEntreCajas);
@@ -78,6 +94,10 @@ export default function CajasPage() {
   const saldoTotal = useMemo(() => cajas.reduce((s, c) => s + c.saldoActual, 0), [cajas]);
   const cajasOk = cajas.filter((c) => c.saldoActual === c.saldoConciliado).length;
   const conDif = cajas.filter((c) => c.saldoActual !== c.saldoConciliado).length;
+  const cajasOrden = useMemo(
+    () => [...cajas].sort((a, b) => b.saldoActual - a.saldoActual),
+    [cajas],
+  );
 
   // Últimos movimientos de la caja seleccionada
   const movsCaja = useMemo(() => {
@@ -134,7 +154,7 @@ export default function CajasPage() {
     <>
       <div className="mx-auto max-w-7xl space-y-5">
         <PageHero
-          objetivo="Vista Mando · Tesorería"
+          objetivo={`Tesorería · ${cuartel?.nombre ?? 'Cuartel'}`}
           titulo="Cuentas y cajas"
           descripcion="Saldos al día de cajas, cuentas del banco y billeteras virtuales. Compará con el resumen del banco para que cierre."
           icono={<Landmark size={26} />}
@@ -161,6 +181,56 @@ export default function CajasPage() {
             </>
           }
         />
+
+        {/* ¿Dónde está la plata? — distribución entre cuentas */}
+        {saldoTotal > 0 && cajas.length > 1 && (
+          <Card>
+            <CardContent className="p-5">
+              <div className="mb-3">
+                <h3 className="font-bold text-slate-900">¿Dónde está la plata?</h3>
+                <p className="text-xs text-slate-600">
+                  Cómo se reparten los {ars.format(saldoTotal)} entre las cuentas
+                </p>
+              </div>
+              <div className="flex h-7 overflow-hidden rounded-lg">
+                {cajasOrden.map((c) => {
+                  const pct = (c.saldoActual / saldoTotal) * 100;
+                  if (pct <= 0) return null;
+                  return (
+                    <div
+                      key={c.id}
+                      className={cn(
+                        'grid place-items-center text-[11px] font-bold text-white',
+                        TIPO_BAR[c.tipo],
+                      )}
+                      style={{ width: `${pct}%` }}
+                      title={`${c.nombre}: ${ars.format(c.saldoActual)} (${pct.toFixed(0)}%)`}
+                    >
+                      {pct >= 8 ? `${pct.toFixed(0)}%` : ''}
+                    </div>
+                  );
+                })}
+              </div>
+              <div className="mt-3 grid gap-x-4 gap-y-1.5 sm:grid-cols-2">
+                {cajasOrden.map((c) => {
+                  const pct = (c.saldoActual / saldoTotal) * 100;
+                  return (
+                    <div key={c.id} className="flex items-center gap-2 text-sm">
+                      <span className={cn('h-2.5 w-2.5 shrink-0 rounded-sm', TIPO_BAR[c.tipo])} />
+                      <span className="min-w-0 flex-1 truncate text-slate-700">{c.nombre}</span>
+                      <span className="font-mono text-xs font-bold text-slate-900">
+                        {ars.format(c.saldoActual)}
+                      </span>
+                      <span className="w-10 text-right text-xs tabular-nums text-slate-500">
+                        {pct.toFixed(0)}%
+                      </span>
+                    </div>
+                  );
+                })}
+              </div>
+            </CardContent>
+          </Card>
+        )}
 
         {/* Grid cajas */}
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-2">
@@ -209,12 +279,24 @@ export default function CajasPage() {
                       </div>
                       {dif !== 0 && <Badge intent="warn">Δ {ars.format(dif)}</Badge>}
                     </div>
-                    {c.saldoConciliado !== undefined && (
-                      <div className="mt-2 text-xs text-slate-500">
-                        Conciliado al {c.fechaUltimaConciliacion}:{' '}
-                        <span className="font-mono">{ars.format(c.saldoConciliado)}</span>
-                      </div>
-                    )}
+                    {(() => {
+                      const d = diasDesde(c.fechaUltimaConciliacion);
+                      const stale = d !== null && d > 30;
+                      return (
+                        <div
+                          className={cn(
+                            'mt-2 text-xs',
+                            stale ? 'text-status-warn-fg font-medium' : 'text-slate-500',
+                          )}
+                        >
+                          {d === null
+                            ? 'Sin verificar contra el banco todavía'
+                            : `Verificado ${d === 0 ? 'hoy' : `hace ${d} día${d === 1 ? '' : 's'}`}`}
+                          {dif === 0 && d !== null && ' · coincide con el banco'}
+                          {stale && ' · conviene revisar'}
+                        </div>
+                      );
+                    })()}
                     {(c.cbu || c.alias) && (
                       <div className="mt-3 space-y-1 border-t border-slate-100 pt-2 text-xs">
                         {c.cbu && (
