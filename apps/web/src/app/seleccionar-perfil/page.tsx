@@ -1,6 +1,6 @@
 'use client';
 
-import { ArrowRight, Globe2, HardHat, LogOut, Shield } from 'lucide-react';
+import { ArrowRight, Globe2, HardHat, LogOut, Shield, Wallet } from 'lucide-react';
 import { usePathname, useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 
@@ -13,16 +13,19 @@ import { CUARTEL_PRINCIPAL_ID, PERSONA_FEDERACION_ID } from '../../data';
 
 import type { Perfil } from '@faro/types';
 
-/** Las únicas tres vistas que ofrece la demo. */
-const OPCIONES: Perfil[] = ['mando', 'bombero', 'federacion'];
+// FASE 1 — VULCANO FINANZAS: única vista, el administrador del cuartel.
+// Backlog (otra etapa): ['mando', 'bombero', 'federacion'].
+const OPCIONES: Perfil[] = ['administrativo'];
 
-const ICONO: Record<'mando' | 'bombero' | 'federacion', React.ReactNode> = {
+const ICONO: Partial<Record<Perfil, React.ReactNode>> = {
+  administrativo: <Wallet size={22} />,
   mando: <Shield size={22} />,
   bombero: <HardHat size={22} />,
   federacion: <Globe2 size={22} />,
 };
 
-const ACENTO: Record<'mando' | 'bombero' | 'federacion', string> = {
+const ACENTO: Partial<Record<Perfil, string>> = {
+  administrativo: 'bg-brand-600',
   mando: 'bg-brand-600',
   bombero: 'bg-fire-600',
   federacion: 'bg-status-ok',
@@ -87,12 +90,11 @@ export default function SeleccionarPerfil() {
           </Button>
         </div>
 
-        <h1 className="text-xl font-bold text-slate-900 sm:text-2xl">¿Cómo querés entrar?</h1>
-        <p className="mt-1 text-sm text-slate-600">Elegí tu vista. Podés cambiar cuando quieras.</p>
+        <h1 className="text-xl font-bold text-slate-900 sm:text-2xl">Entrá a Vulcano</h1>
+        <p className="mt-1 text-sm text-slate-600">La gestión financiera de tu cuartel, en vivo.</p>
 
         <div className="mt-5 space-y-3">
           {OPCIONES.map((p) => {
-            const key = p as 'mando' | 'bombero' | 'federacion';
             return (
               <button
                 key={p}
@@ -105,10 +107,10 @@ export default function SeleccionarPerfil() {
                 <div
                   className={cn(
                     'grid h-12 w-12 shrink-0 place-items-center rounded-xl text-white shadow-sm',
-                    ACENTO[key],
+                    ACENTO[p] ?? 'bg-brand-600',
                   )}
                 >
-                  {ICONO[key]}
+                  {ICONO[p]}
                 </div>
                 <div className="min-w-0 flex-1">
                   <div className="text-base font-bold text-slate-900">{perfilLabel[p]}</div>

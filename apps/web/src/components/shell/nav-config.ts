@@ -34,7 +34,87 @@ const ORGANIGRAMA_PUBLICO: NavItem = {
   seccion: 'Red',
 };
 
+// ════════════════════════════════════════════════════════════════════
+// FASE 1 — VULCANO FINANZAS · única navegación viva
+// Solo el Administrador del cuartel, solo Finanzas. Todo lo demás está en
+// `navByPerfilBacklog` (abajo) — no borrado, recuperable. Ver BACKLOG.md.
+// ════════════════════════════════════════════════════════════════════
+const NAV_FINANZAS: NavItem[] = [
+  {
+    label: 'Resumen',
+    href: '/mando/finanzas',
+    icon: 'piggy-bank',
+    bottomNav: true,
+    seccion: 'Día a día',
+  },
+  {
+    label: 'Movimientos',
+    href: '/mando/finanzas/movimientos',
+    icon: 'arrow-left-right',
+    bottomNav: true,
+    seccion: 'Día a día',
+  },
+  {
+    label: 'Cuentas y cajas',
+    href: '/mando/finanzas/cajas',
+    icon: 'landmark',
+    bottomNav: true,
+    seccion: 'Día a día',
+  },
+  {
+    label: 'Cuotas sociales',
+    href: '/mando/finanzas/cuotas',
+    icon: 'badge-dollar-sign',
+    bottomNav: true,
+    seccion: 'Planeamiento',
+  },
+  {
+    label: 'Presupuesto',
+    href: '/mando/finanzas/presupuesto',
+    icon: 'target',
+    seccion: 'Planeamiento',
+  },
+  {
+    label: 'Flujo de fondos',
+    href: '/mando/finanzas/cashflow',
+    icon: 'trending-up',
+    bottomNav: true,
+    seccion: 'Planeamiento',
+  },
+  {
+    label: 'Categorías',
+    href: '/mando/finanzas/categorias',
+    icon: 'list-tree',
+    seccion: 'Documentos',
+  },
+  {
+    label: 'Facturas',
+    href: '/mando/finanzas/comprobantes',
+    icon: 'receipt',
+    seccion: 'Documentos',
+  },
+  {
+    label: 'Resúmenes contables',
+    href: '/mando/finanzas/reportes',
+    icon: 'file-spreadsheet',
+    seccion: 'Documentos',
+  },
+];
+
 export const navByPerfil: Record<Perfil, NavItem[]> = {
+  bombero: NAV_FINANZAS,
+  mando: NAV_FINANZAS,
+  administrativo: NAV_FINANZAS,
+  gobierno: NAV_FINANZAS,
+  federacion: NAV_FINANZAS,
+};
+
+// ════════════════════════════════════════════════════════════════════
+// BACKLOG — navegación completa por perfil. PARADA en Fase 1, NO BORRAR.
+// Reactivar (otra etapa): `export const navByPerfil = navByPerfilBacklog`
+// o mover items puntuales a NAV_FINANZAS. Ver BACKLOG.md.
+// ════════════════════════════════════════════════════════════════════
+export const navByPerfilBacklog: Record<Perfil, NavItem[]> = {
   bombero: [
     { label: 'Inicio', href: '/bombero', icon: 'home', bottomNav: true },
     { label: 'Registrar', href: '/bombero/registrar-servicio', icon: 'flame', bottomNav: true },
