@@ -15,9 +15,10 @@ import { Badge, Card, CardContent, Kpi, cn } from '@faro/ui';
 import { PageHero } from '../../../../../components/shared/page-hero';
 import { ars, arsCompact } from '../../../../../components/finanzas/utils';
 import { calcularCashFlow } from '../../../../../lib/utils/cashflow';
-import { useFaroStore } from '../../../../../store/use-faro-store';
+import { selectCuartelActivo, useFaroStore } from '../../../../../store/use-faro-store';
 
 export default function CashFlowPage() {
+  const cuartel = useFaroStore(selectCuartelActivo);
   const cajas = useFaroStore((s) => s.cajas);
   const movimientos = useFaroStore((s) => s.movimientos);
   const presupuestos = useFaroStore((s) => s.presupuestos);
@@ -31,14 +32,47 @@ export default function CashFlowPage() {
   const maxSaldo = Math.max(cf.saldoHoy, ...cf.proyeccion.map((p) => Math.abs(p.saldoFinal)), 1);
   const quiebre = cf.proyeccion.find((p) => p.negativo);
 
+  // Trayectoria del saldo (hoy + proyección) para el gráfico
+  const chartPts = useMemo(
+    () => [
+      { label: 'Hoy', val: cf.saldoHoy },
+      ...cf.proyeccion.map((p) => ({ label: p.label, val: p.saldoFinal })),
+    ],
+    [cf],
+  );
+  const cVals = chartPts.map((p) => p.val);
+  const cMax = Math.max(0, ...cVals);
+  const cMin = Math.min(0, ...cVals);
+  const cRange = cMax - cMin || 1;
+  const CW = 640;
+  const CH = 180;
+  const cPadX = 12;
+  const cPadTop = 14;
+  const cPlotBottom = CH - 26;
+  const cPlotW = CW - cPadX * 2;
+  const cPlotH = cPlotBottom - cPadTop;
+  const cx = (i: number) =>
+    cPadX + (chartPts.length <= 1 ? cPlotW / 2 : (i / (chartPts.length - 1)) * cPlotW);
+  const cy = (v: number) => cPadTop + (1 - (v - cMin) / cRange) * cPlotH;
+  const cZeroY = cy(0);
+  const cLine = chartPts.map((p, i) => `${cx(i).toFixed(1)},${cy(p.val).toFixed(1)}`).join(' ');
+  const cArea = `${cx(0).toFixed(1)},${cPlotBottom} ${cLine} ${cx(chartPts.length - 1).toFixed(1)},${cPlotBottom}`;
+  const ultimo = chartPts[chartPts.length - 1]!;
+
   return (
     <div className="mx-auto max-w-4xl space-y-5">
       <PageHero
-        objetivo="Vista Mando · Tesorería"
+        objetivo={`Tesorería · ${cuartel?.nombre ?? 'Cuartel'}`}
         titulo="Flujo de fondos proyectado"
         descripcion="Con qué dinero contás de acá en adelante. Proyecta el saldo mes a mes según ingresos y egresos esperados, separando el gasto operativo de la inversión en bienes de uso."
         icono={<PiggyBank size={26} />}
-        variant={cf.runwayMeses !== null ? 'critical' : 'success'}
+        variant={
+          cf.runwayMeses !== null && cf.runwayMeses <= 6
+            ? 'critical'
+            : cf.runwayMeses !== null
+              ? 'default'
+              : 'success'
+        }
         meta={
           <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
             <Kpi label="Saldo hoy" value={arsCompact(cf.saldoHoy)} intent="brand" />
@@ -123,6 +157,86 @@ export default function CashFlowPage() {
               </div>
               <div className="text-brand-700 mt-1 font-bold">{arsCompact(cf.inversionMensual)}</div>
             </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Trayectoria del saldo — gráfico */}
+      <Card>
+        <CardContent className="p-4">
+          <h3 className="mb-1 font-bold text-slate-900">Trayectoria del saldo</h3>
+          <p className="mb-3 text-xs text-slate-600">
+            {quiebre
+              ? `Si nada cambia, el saldo entra en rojo en ${quiebre.label}.`
+              : 'El saldo se mantiene en positivo en toda la proyección.'}
+          </p>
+          <svg
+            viewBox={`0 0 ${CW} ${CH}`}
+            className="w-full"
+            role="img"
+            aria-label="Proyección del saldo mes a mes"
+          >
+            {cMin < 0 && (
+              <rect
+                x="0"
+                y={cZeroY}
+                width={CW}
+                height={cPlotBottom - cZeroY}
+                className="fill-red-100"
+              />
+            )}
+            <line
+              x1={cPadX}
+              y1={cZeroY}
+              x2={CW - cPadX}
+              y2={cZeroY}
+              className="stroke-slate-300"
+              strokeWidth="1"
+              strokeDasharray="4 4"
+            />
+            <polygon points={cArea} className="fill-brand-500/10" />
+            <polyline
+              points={cLine}
+              fill="none"
+              className="stroke-brand-600"
+              strokeWidth="2.5"
+              strokeLinejoin="round"
+              strokeLinecap="round"
+            />
+            {chartPts.map((p, i) => (
+              <circle
+                key={i}
+                cx={cx(i)}
+                cy={cy(p.val)}
+                r={p.val < 0 ? 4 : 3}
+                className={p.val < 0 ? 'fill-red-500' : 'fill-brand-600'}
+              />
+            ))}
+            {chartPts.map((p, i) =>
+              i % 2 === 0 || i === chartPts.length - 1 ? (
+                <text
+                  key={`l${i}`}
+                  x={cx(i)}
+                  y={CH - 8}
+                  textAnchor="middle"
+                  className="fill-slate-500"
+                  fontSize="11"
+                >
+                  {p.label}
+                </text>
+              ) : null,
+            )}
+          </svg>
+          <div className="mt-1 flex justify-between text-[11px] text-slate-500">
+            <span>
+              Hoy: <strong className="text-slate-900">{ars.format(cf.saldoHoy)}</strong>
+            </span>
+            <span>
+              Fin de proyección:{' '}
+              <strong className={cn(ultimo.val < 0 ? 'text-status-risk-fg' : 'text-slate-900')}>
+                {ars.format(ultimo.val)}
+              </strong>
+            </span>
           </div>
         </CardContent>
       </Card>
