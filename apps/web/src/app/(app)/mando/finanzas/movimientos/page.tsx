@@ -18,11 +18,13 @@ import {
   ArrowUpRight,
   Ban,
   BookOpen,
+  CalendarDays,
   CheckCircle2,
   ChevronDown,
   Download,
   Filter,
   Plus,
+  Receipt,
   Search,
   X,
 } from 'lucide-react';
@@ -32,8 +34,10 @@ import { NuevoMovimientoDialog } from '../../../../../components/finanzas/nuevo-
 import { MEDIO_LABEL, ars, arsCompact, fechaCorta } from '../../../../../components/finanzas/utils';
 import { EmptyState } from '../../../../../components/shared/empty-state';
 import { PageHero } from '../../../../../components/shared/page-hero';
+import { mesKey } from '../../../../../lib/utils/date';
+import { demoToday } from '../../../../../lib/utils/demo-today';
 import { exportarCsv } from '../../../../../lib/utils/export-csv';
-import { useFaroStore } from '../../../../../store/use-faro-store';
+import { selectCuartelActivo, useFaroStore } from '../../../../../store/use-faro-store';
 
 import type { MovimientoFinanciero } from '@faro/types';
 
@@ -47,6 +51,46 @@ const estadoLabel: Record<MovimientoFinanciero['estado'], string> = {
   rechazado: 'Rechazado',
 };
 
+function QuickChip({
+  active,
+  onClick,
+  count,
+  icon,
+  children,
+}: {
+  active: boolean;
+  onClick: () => void;
+  count?: number;
+  icon?: React.ReactNode;
+  children: React.ReactNode;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={cn(
+        'inline-flex shrink-0 items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-semibold transition-colors',
+        active
+          ? 'bg-brand-600 text-white'
+          : 'bg-white text-slate-700 ring-1 ring-slate-200 hover:bg-slate-50',
+      )}
+    >
+      {icon}
+      {children}
+      {count != null && count > 0 && (
+        <span
+          className={cn(
+            'rounded-full px-1.5 text-[10px] font-bold tabular-nums',
+            active ? 'bg-white/25 text-white' : 'bg-slate-100 text-slate-600',
+          )}
+        >
+          {count}
+        </span>
+      )}
+    </button>
+  );
+}
+
 export default function MovimientosPage() {
   const toast = useToast();
   const movimientos = useFaroStore((s) => s.movimientos);
@@ -57,8 +101,10 @@ export default function MovimientosPage() {
   const cajaMap = useMemo(() => new Map(cajas.map((c) => [c.id, c])), [cajas]);
   const conciliarMovimiento = useFaroStore((s) => s.conciliarMovimiento);
   const anularMovimiento = useFaroStore((s) => s.anularMovimiento);
+  const cuartel = useFaroStore(selectCuartelActivo);
 
   const [openNuevo, setOpenNuevo] = useState(false);
+  const [soloSinComprobante, setSoloSinComprobante] = useState(false);
   const [tipoFiltro, setTipoFiltro] = useState<FiltroTipo>('todos');
   const [estadoFiltro, setEstadoFiltro] = useState<FiltroEstado>('todos');
   const [cuentaFiltro, setCuentaFiltro] = useState<string>('todas');
@@ -77,6 +123,10 @@ export default function MovimientosPage() {
     if (cajaFiltro !== 'todas') arr = arr.filter((m) => m.cajaOrigenId === cajaFiltro);
     if (desde) arr = arr.filter((m) => m.fecha >= desde);
     if (hasta) arr = arr.filter((m) => m.fecha <= `${hasta}T23:59:59`);
+    if (soloSinComprobante)
+      arr = arr.filter(
+        (m) => m.tipo === 'egreso' && m.estado !== 'anulado' && !m.comprobanteNumero,
+      );
     if (busqueda.trim()) {
       const q = busqueda.toLowerCase();
       arr = arr.filter(
@@ -88,7 +138,17 @@ export default function MovimientosPage() {
       );
     }
     return arr.sort((a, b) => b.fecha.localeCompare(a.fecha));
-  }, [movimientos, tipoFiltro, estadoFiltro, cuentaFiltro, cajaFiltro, desde, hasta, busqueda]);
+  }, [
+    movimientos,
+    tipoFiltro,
+    estadoFiltro,
+    cuentaFiltro,
+    cajaFiltro,
+    desde,
+    hasta,
+    busqueda,
+    soloSinComprobante,
+  ]);
 
   const totalIngresos = filtrados
     .filter((m) => m.tipo === 'ingreso' && m.estado === 'conciliado')
@@ -98,11 +158,25 @@ export default function MovimientosPage() {
     .reduce((s, m) => s + m.monto, 0);
   const saldo = totalIngresos - totalEgresos;
 
+  // Conteos globales (no dependen del filtro) para los accesos rápidos
+  const borradoresCount = useMemo(
+    () => movimientos.filter((m) => m.estado === 'borrador').length,
+    [movimientos],
+  );
+  const sinComprobanteCount = useMemo(
+    () =>
+      movimientos.filter(
+        (m) => m.tipo === 'egreso' && m.estado !== 'anulado' && !m.comprobanteNumero,
+      ).length,
+    [movimientos],
+  );
+
   const hayFiltros =
     tipoFiltro !== 'todos' ||
     estadoFiltro !== 'todos' ||
     cuentaFiltro !== 'todas' ||
     cajaFiltro !== 'todas' ||
+    soloSinComprobante ||
     desde ||
     hasta ||
     busqueda.trim();
@@ -112,9 +186,17 @@ export default function MovimientosPage() {
     setEstadoFiltro('todos');
     setCuentaFiltro('todas');
     setCajaFiltro('todas');
+    setSoloSinComprobante(false);
     setDesde('');
     setHasta('');
     setBusqueda('');
+  }
+
+  function verEsteMes() {
+    limpiarFiltros();
+    const mk = mesKey(demoToday());
+    setDesde(`${mk}-01`);
+    setHasta(`${mk}-31`);
   }
 
   function exportar() {
@@ -191,16 +273,30 @@ export default function MovimientosPage() {
     <>
       <div className="mx-auto max-w-7xl space-y-5">
         <PageHero
-          objetivo="Vista Mando · Tesorería"
+          objetivo={`Tesorería · ${cuartel?.nombre ?? 'Cuartel'}`}
           titulo="Movimientos"
-          descripcion="Todas las entradas y salidas del cuartel. Filtrá por tipo, estado, categoría o cuenta."
+          descripcion="El libro de entradas y salidas del cuartel. Buscá, filtrá y confirmá cada movimiento."
           icono={<BookOpen size={26} />}
           meta={
             <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
-              <Kpi label="Movimientos" value={filtrados.length} intent="neutral" />
-              <Kpi label="Ingresos" value={arsCompact(totalIngresos)} intent="ok" />
+              <Kpi
+                label="Ingresos"
+                value={arsCompact(totalIngresos)}
+                hint={`${filtrados.length} movimientos`}
+                intent="ok"
+              />
               <Kpi label="Egresos" value={arsCompact(totalEgresos)} intent="warn" />
-              <Kpi label="Saldo" value={arsCompact(saldo)} intent={saldo >= 0 ? 'ok' : 'risk'} />
+              <Kpi
+                label="Saldo del filtro"
+                value={arsCompact(saldo)}
+                intent={saldo >= 0 ? 'ok' : 'risk'}
+              />
+              <Kpi
+                label="Por confirmar"
+                value={borradoresCount}
+                hint={borradoresCount ? 'borradores' : 'todo confirmado'}
+                intent={borradoresCount > 0 ? 'warn' : 'ok'}
+              />
             </div>
           }
           acciones={
@@ -214,6 +310,38 @@ export default function MovimientosPage() {
             </>
           }
         />
+
+        {/* Accesos rápidos a lo que el administrador hace seguido */}
+        <div className="-mx-1 flex gap-1.5 overflow-x-auto px-1">
+          <QuickChip active={!hayFiltros} onClick={limpiarFiltros}>
+            Todos
+          </QuickChip>
+          <QuickChip
+            active={estadoFiltro === 'borrador'}
+            onClick={() => {
+              limpiarFiltros();
+              setEstadoFiltro('borrador');
+            }}
+            count={borradoresCount}
+            icon={<CheckCircle2 size={13} />}
+          >
+            Por confirmar
+          </QuickChip>
+          <QuickChip
+            active={soloSinComprobante}
+            onClick={() => {
+              limpiarFiltros();
+              setSoloSinComprobante(true);
+            }}
+            count={sinComprobanteCount}
+            icon={<Receipt size={13} />}
+          >
+            Sin comprobante
+          </QuickChip>
+          <QuickChip active={!!desde} onClick={verEsteMes} icon={<CalendarDays size={13} />}>
+            Este mes
+          </QuickChip>
+        </div>
 
         {/* Filtros */}
         <Card>
@@ -443,6 +571,16 @@ export default function MovimientosPage() {
                                 <span className="font-mono text-[11px]">{cuenta.codigo}</span>
                               </>
                             )}
+                            {m.tipo === 'egreso' &&
+                              m.estado !== 'anulado' &&
+                              !m.comprobanteNumero && (
+                                <>
+                                  <span className="text-slate-300">·</span>
+                                  <span className="text-status-warn-fg font-medium">
+                                    falta comp.
+                                  </span>
+                                </>
+                              )}
                           </div>
                           <div className="mt-2 flex items-center justify-between gap-2">
                             <Badge
@@ -587,6 +725,8 @@ export default function MovimientosPage() {
                                   {m.comprobanteNumero}
                                 </div>
                               </div>
+                            ) : m.tipo === 'egreso' && m.estado !== 'anulado' ? (
+                              <Badge intent="warn">Falta</Badge>
                             ) : (
                               <span className="text-slate-500">—</span>
                             )}
