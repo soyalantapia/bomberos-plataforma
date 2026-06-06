@@ -8,6 +8,8 @@ import {
   ArrowUpRight,
   Banknote,
   Calendar,
+  CheckCircle2,
+  Clock,
   Download,
   Landmark,
   PiggyBank,
@@ -15,6 +17,7 @@ import {
   ShieldAlert,
   Target,
   Users,
+  Wallet,
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useMemo, useState } from 'react';
@@ -32,12 +35,18 @@ import { PageHero } from '../../../../components/shared/page-hero';
 import { mesAnteriorKey, mesKey, nombreMes } from '../../../../lib/utils/date';
 import { demoToday } from '../../../../lib/utils/demo-today';
 import { exportarCsv } from '../../../../lib/utils/export-csv';
-import { useFaroStore } from '../../../../store/use-faro-store';
+import { selectCuartelActivo, useFaroStore } from '../../../../store/use-faro-store';
 
-const VENCIMIENTOS = [
-  { titulo: 'Aportes patronales · junio', subtitulo: 'Cargas sociales mayo', fecha: '2026-06-15' },
-  { titulo: 'VTV BV-2', subtitulo: 'Vence 12/06/2026', fecha: '2026-06-12' },
-  { titulo: 'Ingresos Brutos', subtitulo: 'Vence 28/05/2026', fecha: '2026-05-28' },
+// Obligaciones próximas (ilustrativas): impuestos/cargas con fecha. Se calcula
+// "días hasta" contra el día de la demo. A futuro: store-backed por cuartel.
+const OBLIGACIONES = [
+  {
+    titulo: 'Aportes patronales · junio',
+    subtitulo: 'Cargas sociales de mayo',
+    fecha: '2026-06-15',
+  },
+  { titulo: 'VTV unidad BV-2', subtitulo: 'Verificación técnica', fecha: '2026-06-12' },
+  { titulo: 'Ingresos Brutos', subtitulo: 'Anticipo mensual', fecha: '2026-05-28' },
 ];
 
 function diasHasta(fechaIso: string): number {
@@ -46,9 +55,14 @@ function diasHasta(fechaIso: string): number {
   return Math.round((f.getTime() - hoy.getTime()) / 86400000);
 }
 
+function meses1(n: number): string {
+  return n.toFixed(1).replace('.', ',');
+}
+
 export default function FinanzasDashboardPage() {
   const router = useRouter();
   const toast = useToast();
+  const cuartel = useFaroStore(selectCuartelActivo);
   const movimientos = useFaroStore((s) => s.movimientos);
   const cajas = useFaroStore((s) => s.cajas);
   const cuentas = useFaroStore((s) => s.cuentas);
@@ -56,7 +70,6 @@ export default function FinanzasDashboardPage() {
   const presupuestos = useFaroStore((s) => s.presupuestos);
   const [openNuevo, setOpenNuevo] = useState(false);
 
-  // KPIs del mes actual (derivado del DEMO_TODAY consolidado)
   const hoy = demoToday();
   const mesActual = mesKey(hoy);
   const mesAnterior = mesAnteriorKey(hoy);
@@ -73,36 +86,48 @@ export default function FinanzasDashboardPage() {
       movsConciliados
         .filter((m) => m.tipo === 'ingreso' && m.fecha.startsWith(mesActual))
         .reduce((s, m) => s + m.monto, 0),
-    [movsConciliados],
+    [movsConciliados, mesActual],
   );
   const egrMes = useMemo(
     () =>
       movsConciliados
         .filter((m) => m.tipo === 'egreso' && m.fecha.startsWith(mesActual))
         .reduce((s, m) => s + m.monto, 0),
-    [movsConciliados],
+    [movsConciliados, mesActual],
   );
   const ingAnt = useMemo(
     () =>
       movsConciliados
         .filter((m) => m.tipo === 'ingreso' && m.fecha.startsWith(mesAnterior))
         .reduce((s, m) => s + m.monto, 0),
-    [movsConciliados],
-  );
-  const egrAnt = useMemo(
-    () =>
-      movsConciliados
-        .filter((m) => m.tipo === 'egreso' && m.fecha.startsWith(mesAnterior))
-        .reduce((s, m) => s + m.monto, 0),
-    [movsConciliados],
+    [movsConciliados, mesAnterior],
   );
 
   const saldoMes = ingMes - egrMes;
   const saldoTotal = cajas.reduce((s, c) => s + c.saldoActual, 0);
   const variacionIngresos = ingAnt > 0 ? ((ingMes - ingAnt) / ingAnt) * 100 : 0;
-  const variacionEgresos = egrAnt > 0 ? ((egrMes - egrAnt) / egrAnt) * 100 : 0;
 
-  // % personal rentado (Ley 25.054 obligatorio 70%)
+  // ── Flujo 6 meses + RUNWAY ("meses de aire") ───────────────────────
+  const series = useMemo(() => agruparPorMes(movsConciliados, 6), [movsConciliados]);
+  const maxBar = Math.max(1, ...series.flatMap((s) => [s.ingresos, s.egresos]));
+  const egrPromMensual = useMemo(() => {
+    const conDatos = series.filter((s) => s.egresos > 0);
+    return conDatos.length ? conDatos.reduce((s, x) => s + x.egresos, 0) / conDatos.length : 0;
+  }, [series]);
+  const mesesAire = egrPromMensual > 0 ? saldoTotal / egrPromMensual : null;
+  const aireIntent =
+    mesesAire === null ? 'neutral' : mesesAire >= 6 ? 'ok' : mesesAire >= 3 ? 'warn' : 'risk';
+
+  // ── Cobranza de cuotas ─────────────────────────────────────────────
+  const cuotasPagadas = cuotas.filter((c) => c.estado === 'pagada').length;
+  const cuotasAlDiaPct = cuotas.length ? Math.round((cuotasPagadas / cuotas.length) * 100) : 0;
+  const cuotasVencidas = useMemo(
+    () => cuotas.filter((c) => c.estado === 'vencida' || c.estado === 'pendiente'),
+    [cuotas],
+  );
+  const recuperableCuotas = cuotasVencidas.reduce((s, c) => s + c.monto + (c.cargoRecargo ?? 0), 0);
+
+  // ── Ley 25.054: ≥70% del subsidio nacional a sueldos ──────────────
   const sueldosMes = useMemo(() => {
     const cuentasPersonal = cuentas
       .filter((c) => c.categoria === 'personal_rentado')
@@ -115,24 +140,39 @@ export default function FinanzasDashboardPage() {
           cuentasPersonal.includes(m.cuentaId),
       )
       .reduce((s, m) => s + m.monto, 0);
-  }, [movsConciliados, cuentas]);
-
-  const subsidioMes = useMemo(() => {
-    return movsConciliados
-      .filter(
-        (m) => m.tipo === 'ingreso' && m.fecha.startsWith(mesActual) && m.cuentaId === 'c-4-1-01',
-      )
-      .reduce((s, m) => s + m.monto, 0);
-  }, [movsConciliados]);
-
+  }, [movsConciliados, cuentas, mesActual]);
+  const subsidioMes = useMemo(
+    () =>
+      movsConciliados
+        .filter(
+          (m) => m.tipo === 'ingreso' && m.fecha.startsWith(mesActual) && m.cuentaId === 'c-4-1-01',
+        )
+        .reduce((s, m) => s + m.monto, 0),
+    [movsConciliados, mesActual],
+  );
   const pctPersonalRentado = subsidioMes > 0 ? (sueldosMes / subsidioMes) * 100 : 0;
-  const cumple70 = pctPersonalRentado >= 70;
+  const cumple70 = subsidioMes === 0 || pctPersonalRentado >= 70;
 
-  // Gráfico de 6 meses
-  const series = useMemo(() => agruparPorMes(movsConciliados, 6), [movsConciliados]);
-  const maxBar = Math.max(...series.flatMap((s) => [s.ingresos, s.egresos]));
+  // ── Composición de ingresos del mes + dependencia del subsidio ─────
+  const cuentasSubsidio = useMemo(
+    () => cuentas.filter((c) => c.codigo.startsWith('4.1')).map((c) => c.id),
+    [cuentas],
+  );
+  const subsidiosMes = useMemo(
+    () =>
+      movsConciliados
+        .filter(
+          (m) =>
+            m.tipo === 'ingreso' &&
+            m.fecha.startsWith(mesActual) &&
+            cuentasSubsidio.includes(m.cuentaId),
+        )
+        .reduce((s, m) => s + m.monto, 0),
+    [movsConciliados, cuentasSubsidio, mesActual],
+  );
+  const dependenciaSubsidio = ingMes > 0 ? Math.round((subsidiosMes / ingMes) * 100) : 0;
 
-  // Top 5 categorías de egresos del mes
+  // Top 5 egresos del mes
   const topEgresos = useMemo(() => {
     const map = new Map<string, number>();
     for (const m of movsConciliados.filter(
@@ -146,21 +186,25 @@ export default function FinanzasDashboardPage() {
     return Array.from(map.entries())
       .sort((a, b) => b[1] - a[1])
       .slice(0, 5);
-  }, [movsConciliados, cuentas]);
+  }, [movsConciliados, cuentas, mesActual]);
 
-  // Cuotas vencidas
-  const cuotasVencidas = useMemo(
-    () => cuotas.filter((c) => c.estado === 'vencida' || c.estado === 'pendiente'),
-    [cuotas],
-  );
+  const ingresosComp = useMemo(() => {
+    const map = new Map<string, number>();
+    for (const m of movsConciliados.filter(
+      (m) => m.tipo === 'ingreso' && m.fecha.startsWith(mesActual),
+    )) {
+      const cuenta = cuentas.find((c) => c.id === m.cuentaId);
+      if (!cuenta) continue;
+      const label = cuenta.categoria
+        ? (CATEGORIA_INGRESO_LABEL[cuenta.categoria as keyof typeof CATEGORIA_INGRESO_LABEL] ??
+          cuenta.nombre)
+        : cuenta.nombre;
+      map.set(label, (map.get(label) ?? 0) + m.monto);
+    }
+    return Array.from(map.entries()).sort((a, b) => b[1] - a[1]);
+  }, [movsConciliados, cuentas, mesActual]);
 
-  // Borradores pendientes de conciliar
-  const borradores = useMemo(
-    () => movimientos.filter((m) => m.estado === 'borrador'),
-    [movimientos],
-  );
-
-  // Presupuesto ejecutado YTD
+  // Presupuesto YTD
   const presupuesto = presupuestos[0];
   const ingresosYTD = useMemo(
     () => movsConciliados.filter((m) => m.tipo === 'ingreso').reduce((s, m) => s + m.monto, 0),
@@ -177,20 +221,85 @@ export default function FinanzasDashboardPage() {
     ? (egresosYTD / presupuesto.totalEgresos) * 100
     : 0;
 
-  // Últimos 8 movimientos
+  const borradores = useMemo(
+    () => movimientos.filter((m) => m.estado === 'borrador'),
+    [movimientos],
+  );
   const ultimos = useMemo(
     () => [...movsConciliados].sort((a, b) => b.fecha.localeCompare(a.fecha)).slice(0, 8),
     [movsConciliados],
   );
+  const obligacionesUrgentes = OBLIGACIONES.filter((o) => diasHasta(o.fecha) <= 7).length;
+
+  // ── VEREDICTO (answer-first) ───────────────────────────────────────
+  const veredicto = useMemo(() => {
+    const mesCap = mesActualNombre.charAt(0).toUpperCase() + mesActualNombre.slice(1);
+    const pos = `Tenés ${arsCompact(saldoTotal)} en caja${
+      mesesAire !== null ? ` · ~${meses1(mesesAire)} meses de aire al ritmo de gastos actual` : ''
+    }. ${mesCap}: ${saldoMes >= 0 ? 'vas +' : 'vas −'}${arsCompact(Math.abs(saldoMes))}.`;
+    if (!cumple70)
+      return {
+        estado: 'risk' as const,
+        titulo: 'Revisá cómo se aplica el subsidio',
+        desc: pos,
+      };
+    if (saldoTotal <= 0 || (mesesAire !== null && mesesAire < 2))
+      return { estado: 'risk' as const, titulo: 'La caja está al límite', desc: pos };
+    if ((mesesAire !== null && mesesAire < 4) || saldoMes < 0)
+      return { estado: 'warn' as const, titulo: 'La caja está justa', desc: pos };
+    return { estado: 'ok' as const, titulo: 'El cuartel está en regla', desc: pos };
+  }, [cumple70, saldoTotal, mesesAire, saldoMes, mesActualNombre]);
+
+  // ── "Necesita tu atención" — consolidado ───────────────────────────
+  type Atencion = {
+    icon: React.ReactNode;
+    texto: string;
+    detalle: string;
+    href: string;
+    intent: 'risk' | 'warn';
+  };
+  const atencion: Atencion[] = [];
+  if (!cumple70)
+    atencion.push({
+      icon: <ShieldAlert size={18} />,
+      texto: `Subsidio: ${pctPersonalRentado.toFixed(0)}% aplicado a sueldos (la Ley 25.054 pide ≥70%)`,
+      detalle: `Faltan ${ars.format(Math.max(0, subsidioMes * 0.7 - sueldosMes))} para llegar al mínimo.`,
+      href: '/mando/rendicion',
+      intent: 'risk',
+    });
+  if (cuotasVencidas.length > 0)
+    atencion.push({
+      icon: <Users size={18} />,
+      texto: `${cuotasVencidas.length} cuotas sociales por cobrar`,
+      detalle: `${ars.format(recuperableCuotas)} recuperables si las regularizás.`,
+      href: '/mando/finanzas/cuotas',
+      intent: 'warn',
+    });
+  if (borradores.length > 0)
+    atencion.push({
+      icon: <AlertTriangle size={18} />,
+      texto: `${borradores.length} movimiento${borradores.length === 1 ? '' : 's'} sin terminar`,
+      detalle: 'Falta confirmar factura o comprobante. Cerralos antes de fin de mes.',
+      href: '/mando/finanzas/movimientos?estado=borrador',
+      intent: 'warn',
+    });
+  if (obligacionesUrgentes > 0)
+    atencion.push({
+      icon: <Calendar size={18} />,
+      texto: `${obligacionesUrgentes} obligación${obligacionesUrgentes === 1 ? '' : 'es'} vence${obligacionesUrgentes === 1 ? '' : 'n'} esta semana`,
+      detalle: 'Revisá los próximos vencimientos para no pagar recargos.',
+      href: '/mando/finanzas/movimientos',
+      intent: 'risk',
+    });
 
   function exportarBalance() {
-    // Balance ejecutivo del mes en CSV (resumen + composición)
     const rows: Array<Array<string | number>> = [
       ['Sección', 'Concepto', 'Monto ARS'],
       ['Resumen', `Ingresos ${mesActualNombre}`, ingMes],
       ['Resumen', `Egresos ${mesActualNombre}`, egrMes],
       ['Resumen', 'Saldo del mes', saldoMes],
       ['Resumen', 'Saldo total (todas las cajas)', saldoTotal],
+      ['Resumen', 'Meses de aire (runway)', mesesAire !== null ? Number(mesesAire.toFixed(1)) : 0],
       ['Saldos', 'Caja', 'Saldo actual'],
       ...cajas.map((c) => ['Saldos', c.nombre, c.saldoActual]),
       ['Top egresos', 'Categoría', 'Monto'],
@@ -200,62 +309,65 @@ export default function FinanzasDashboardPage() {
         monto,
       ]),
     ];
-    exportarCsv(`balance-faro-${mesActual}`, rows[0]!.map(String), rows.slice(1));
+    exportarCsv(`balance-${mesActual}`, rows[0]!.map(String), rows.slice(1));
     toast.push({
       kind: 'success',
-      title: 'Balance descargado',
-      description: `balance-faro-${mesActual}.csv`,
+      title: 'Balance exportado',
+      description: `balance-${mesActual}.csv`,
     });
   }
+
+  const heroVariant =
+    veredicto.estado === 'risk' ? 'critical' : veredicto.estado === 'ok' ? 'success' : 'default';
 
   return (
     <>
       <div className="mx-auto max-w-7xl space-y-5">
         <PageHero
-          objetivo="Vista Mando · Tesorería"
-          titulo="Finanzas · panel ejecutivo"
-          descripcion="Resumen de entradas y salidas, saldos por cuenta, avance del presupuesto y aporte al personal pago."
+          objetivo={`Tesorería · ${cuartel?.nombre ?? 'Cuartel'}`}
+          titulo={veredicto.titulo}
+          descripcion={veredicto.desc}
           icono={<PiggyBank size={26} />}
-          variant={
-            !cumple70
-              ? 'critical'
-              : saldoMes < 0
-                ? 'critical'
-                : saldoMes > 0
-                  ? 'success'
-                  : 'default'
-          }
+          variant={heroVariant}
           meta={
             <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
               <Kpi
-                label={`Ingresos ${mesActualNombre}`}
-                value={arsCompact(ingMes)}
-                intent="ok"
-                hint={`${variacionIngresos >= 0 ? '+' : ''}${variacionIngresos.toFixed(0)}% vs ${mesAnteriorAbrev}`}
+                label="En caja hoy"
+                value={arsCompact(saldoTotal)}
+                hint={`${cajas.length} cuentas`}
+                intent="brand"
+                icon={<Wallet size={16} />}
               />
               <Kpi
-                label={`Egresos ${mesActualNombre}`}
-                value={arsCompact(egrMes)}
-                intent="warn"
-                hint={`${variacionEgresos >= 0 ? '+' : ''}${variacionEgresos.toFixed(0)}% vs ${mesAnteriorAbrev}`}
-              />
-              <Kpi
-                label="Saldo mes"
-                value={arsCompact(saldoMes)}
+                label={`Resultado ${mesActualNombre.slice(0, 3)}.`}
+                value={`${saldoMes >= 0 ? '+' : '−'}${arsCompact(Math.abs(saldoMes))}`}
+                hint={`ingresos ${variacionIngresos >= 0 ? '+' : ''}${variacionIngresos.toFixed(0)}% vs ${mesAnteriorAbrev}`}
                 intent={saldoMes >= 0 ? 'ok' : 'risk'}
               />
               <Kpi
-                label="Saldo total"
-                value={arsCompact(saldoTotal)}
-                intent="ok"
-                hint={`${cajas.length} cajas`}
+                label="Meses de aire"
+                value={mesesAire === null ? '—' : meses1(mesesAire)}
+                hint="al ritmo de gastos actual"
+                intent={aireIntent}
+                icon={<Clock size={16} />}
+              />
+              <Kpi
+                label="Cuotas al día"
+                value={`${cuotasAlDiaPct}%`}
+                hint={
+                  recuperableCuotas > 0
+                    ? `${arsCompact(recuperableCuotas)} por cobrar`
+                    : 'todo cobrado'
+                }
+                intent={cuotasAlDiaPct >= 80 ? 'ok' : cuotasAlDiaPct >= 60 ? 'warn' : 'risk'}
+                icon={<Users size={16} />}
               />
             </div>
           }
           acciones={
             <>
               <Button intent="ghost" size="sm" onClick={exportarBalance}>
-                <Download size={12} /> Balance PDF
+                <Download size={12} /> Exportar balance
               </Button>
               <Button intent="primary" onClick={() => setOpenNuevo(true)}>
                 <Plus size={14} /> Nuevo movimiento
@@ -264,62 +376,68 @@ export default function FinanzasDashboardPage() {
           }
         />
 
-        {/* Alerta Ley 25.054 si no cumple */}
-        {!cumple70 && (
-          <Card className="border-status-warn/40 bg-status-warn-bg/30 border-2">
-            <CardContent className="flex items-start gap-3 p-4">
-              <ShieldAlert size={20} className="text-status-warn-fg mt-0.5 shrink-0" />
-              <div className="flex-1 text-sm">
-                <strong className="text-status-warn-fg">
-                  Estás usando {pctPersonalRentado.toFixed(0)}% del subsidio en sueldos (debe ser al
-                  menos 70%)
-                </strong>
-                <p className="mt-0.5 text-slate-700">
-                  Pagaste {ars.format(sueldosMes)} de sueldos sobre {ars.format(subsidioMes)} del
-                  subsidio nacional. Te falta usar{' '}
-                  {ars.format(Math.max(0, subsidioMes * 0.7 - sueldosMes))} más para cumplir el
-                  mínimo.
-                </p>
+        {/* Necesita tu atención — todo lo accionable en un solo lugar */}
+        {atencion.length > 0 ? (
+          <Card className="overflow-hidden border-slate-200">
+            <CardContent className="p-0">
+              <div className="flex items-center gap-2 border-b border-slate-100 px-5 py-3">
+                <AlertTriangle size={16} className="text-status-warn-fg" />
+                <h3 className="font-bold text-slate-900">Necesita tu atención</h3>
+                <Badge intent="warn" className="ml-auto">
+                  {atencion.length}
+                </Badge>
               </div>
-              <Button intent="ghost" size="sm" onClick={() => router.push('/mando/rendicion')}>
-                Ver rendición <ArrowRight size={12} />
-              </Button>
+              <ul className="divide-y divide-slate-100">
+                {atencion.map((a, i) => (
+                  <li key={i}>
+                    <button
+                      type="button"
+                      onClick={() => router.push(a.href as Parameters<typeof router.push>[0])}
+                      className="flex w-full items-center gap-3 px-5 py-3 text-left hover:bg-slate-50"
+                    >
+                      <span
+                        className={cn(
+                          'grid h-9 w-9 shrink-0 place-items-center rounded-lg',
+                          a.intent === 'risk'
+                            ? 'bg-status-risk-bg/50 text-status-risk-fg'
+                            : 'bg-status-warn-bg/50 text-status-warn-fg',
+                        )}
+                      >
+                        {a.icon}
+                      </span>
+                      <div className="min-w-0 flex-1">
+                        <div className="text-sm font-semibold text-slate-900">{a.texto}</div>
+                        <div className="text-xs text-slate-600">{a.detalle}</div>
+                      </div>
+                      <ArrowRight size={16} className="shrink-0 text-slate-300" />
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </CardContent>
+          </Card>
+        ) : (
+          <Card className="border-status-ok/30 bg-status-ok-bg/20 border">
+            <CardContent className="flex items-center gap-3 p-4">
+              <CheckCircle2 size={20} className="text-status-ok shrink-0" />
+              <div className="text-sm font-medium text-slate-800">
+                Todo en orden: sin movimientos sin terminar, cuotas al día y subsidio bien aplicado.
+              </div>
             </CardContent>
           </Card>
         )}
 
-        {/* Borradores pendientes */}
-        {borradores.length > 0 && (
-          <Card className="border-brand-200 bg-brand-50 border">
-            <CardContent className="flex items-start gap-3 p-4">
-              <AlertTriangle size={18} className="text-brand-600 mt-0.5 shrink-0" />
-              <div className="flex-1 text-sm">
-                <strong className="text-brand-900">
-                  Tenés {borradores.length} movimiento{borradores.length === 1 ? '' : 's'} sin
-                  terminar
-                </strong>
-                <p className="text-brand-800/80 text-xs">
-                  Falta confirmar la factura o el comprobante. Cerralos antes de fin de mes.
-                </p>
-              </div>
-              <Button
-                intent="ghost"
-                size="sm"
-                onClick={() => router.push('/mando/finanzas/movimientos?estado=borrador')}
-              >
-                Revisar <ArrowRight size={12} />
-              </Button>
-            </CardContent>
-          </Card>
-        )}
-
-        {/* Gráfico 6 meses */}
+        {/* Flujo 6 meses */}
         <Card>
           <CardContent className="p-5">
             <div className="mb-4 flex items-end justify-between">
               <div>
-                <h3 className="font-bold text-slate-900">Flujo últimos 6 meses</h3>
-                <p className="text-xs text-slate-600">Ingresos · Egresos · Saldo neto mensual</p>
+                <h3 className="font-bold text-slate-900">
+                  Cómo se movió la plata · últimos 6 meses
+                </h3>
+                <p className="text-xs text-slate-600">
+                  Ingresos vs egresos y el saldo neto de cada mes
+                </p>
               </div>
               <div className="flex gap-3 text-xs">
                 <span className="flex items-center gap-1">
@@ -337,29 +455,30 @@ export default function FinanzasDashboardPage() {
                   <div
                     key={i}
                     className={cn('flex flex-col items-center', sinDatos && 'opacity-40')}
-                    title={sinDatos ? 'Sin movimientos cargados en este mes' : undefined}
                   >
                     <div className="flex h-32 w-full items-end justify-center gap-1">
                       {sinDatos ? (
-                        <div className="w-full self-center text-center text-[11px] text-slate-500">
+                        <div className="w-full self-center text-center text-[11px] text-slate-400">
                           sin datos
                         </div>
                       ) : (
                         <>
                           <div
-                            className="bg-status-ok w-2 rounded-t transition-[height] duration-300 sm:w-3"
+                            className="bg-status-ok w-2.5 rounded-t transition-[height] duration-500 sm:w-4"
                             style={{ height: `${(s.ingresos / maxBar) * 100}%` }}
                             title={`Ingresos: ${ars.format(s.ingresos)}`}
                           />
                           <div
-                            className="bg-status-risk w-2 rounded-t transition-[height] duration-300 sm:w-3"
+                            className="bg-status-risk w-2.5 rounded-t transition-[height] duration-500 sm:w-4"
                             style={{ height: `${(s.egresos / maxBar) * 100}%` }}
                             title={`Egresos: ${ars.format(s.egresos)}`}
                           />
                         </>
                       )}
                     </div>
-                    <div className="mt-1 text-xs font-medium uppercase text-slate-500">{s.mes}</div>
+                    <div className="mt-1.5 text-xs font-medium uppercase text-slate-500">
+                      {s.mes}
+                    </div>
                     {!sinDatos && (
                       <div
                         className={cn(
@@ -367,8 +486,8 @@ export default function FinanzasDashboardPage() {
                           s.saldo >= 0 ? 'text-status-ok-fg' : 'text-status-risk-fg',
                         )}
                       >
-                        {s.saldo >= 0 ? '+' : ''}
-                        {arsCompact(s.saldo)}
+                        {s.saldo >= 0 ? '+' : '−'}
+                        {arsCompact(Math.abs(s.saldo))}
                       </div>
                     )}
                   </div>
@@ -379,59 +498,59 @@ export default function FinanzasDashboardPage() {
         </Card>
 
         <div className="grid grid-cols-1 gap-5 lg:grid-cols-3">
-          {/* Saldos por caja */}
+          {/* De dónde viene */}
           <Card>
             <CardContent className="p-5">
-              <div className="mb-3 flex items-center justify-between">
-                <h3 className="font-bold text-slate-900">
-                  <Landmark size={14} className="mr-1 inline" /> Saldos por caja
-                </h3>
-                <Button
-                  intent="ghost"
-                  size="sm"
-                  onClick={() => router.push('/mando/finanzas/cajas')}
-                >
-                  Ver todas <ArrowRight size={12} />
-                </Button>
-              </div>
-              <ul className="space-y-2">
-                {cajas.map((c) => (
-                  <li
-                    key={c.id}
-                    className="flex items-center justify-between rounded-lg border border-slate-200 bg-white p-2.5"
-                  >
-                    <div>
-                      <div className="text-sm font-semibold text-slate-900">{c.nombre}</div>
-                      {c.banco && <div className="text-xs text-slate-500">{c.banco}</div>}
-                    </div>
-                    <div className="text-right">
-                      <div className="font-mono text-sm font-bold text-slate-900">
-                        {ars.format(c.saldoActual)}
-                      </div>
-                      {c.saldoConciliado !== c.saldoActual && (
-                        <Badge intent="warn">
-                          Δ {ars.format(c.saldoActual - (c.saldoConciliado ?? 0))}
-                        </Badge>
-                      )}
-                    </div>
-                  </li>
-                ))}
-              </ul>
+              <h3 className="mb-1 font-bold text-slate-900">
+                <ArrowUpRight size={14} className="text-status-ok mr-1 inline" /> De dónde viene
+              </h3>
+              <p className="mb-3 text-xs text-slate-500">Ingresos de {mesActualNombre}</p>
+              {ingresosComp.length === 0 ? (
+                <p className="text-sm text-slate-500">Sin ingresos cargados este mes.</p>
+              ) : (
+                <ul className="space-y-2">
+                  {ingresosComp.map(([label, monto]) => {
+                    const pct = ingMes ? (monto / ingMes) * 100 : 0;
+                    return (
+                      <li key={label}>
+                        <div className="mb-0.5 flex items-center justify-between text-xs">
+                          <span className="font-medium text-slate-700">{label}</span>
+                          <span className="font-mono font-bold text-slate-900">
+                            {pct.toFixed(0)}%
+                          </span>
+                        </div>
+                        <div className="h-1.5 overflow-hidden rounded-full bg-slate-100">
+                          <div className="bg-status-ok h-full" style={{ width: `${pct}%` }} />
+                        </div>
+                      </li>
+                    );
+                  })}
+                </ul>
+              )}
+              {dependenciaSubsidio > 0 && (
+                <p className="mt-3 border-t border-slate-100 pt-2 text-xs text-slate-600">
+                  <strong className="text-slate-900">{dependenciaSubsidio}%</strong> de los ingresos
+                  son subsidios.{' '}
+                  {dependenciaSubsidio >= 70
+                    ? 'Alta dependencia — conviene diversificar.'
+                    : 'Buena diversificación.'}
+                </p>
+              )}
             </CardContent>
           </Card>
 
-          {/* Top 5 egresos */}
+          {/* A dónde va */}
           <Card>
             <CardContent className="p-5">
-              <h3 className="mb-3 font-bold capitalize text-slate-900">
-                <ArrowDownRight size={14} className="mr-1 inline" /> Top 5 egresos ·{' '}
-                {mesActualNombre}
+              <h3 className="mb-1 font-bold text-slate-900">
+                <ArrowDownRight size={14} className="text-status-risk mr-1 inline" /> A dónde va
               </h3>
+              <p className="mb-3 text-xs text-slate-500">Top egresos de {mesActualNombre}</p>
               <ul className="space-y-2">
                 {topEgresos.map(([cat, monto], i) => {
                   const label =
                     CATEGORIA_EGRESO_LABEL[cat as keyof typeof CATEGORIA_EGRESO_LABEL] ?? cat;
-                  const pct = (monto / egrMes) * 100;
+                  const pct = egrMes ? (monto / egrMes) * 100 : 0;
                   return (
                     <li key={cat}>
                       <div className="mb-0.5 flex items-center justify-between text-xs">
@@ -455,12 +574,13 @@ export default function FinanzasDashboardPage() {
             </CardContent>
           </Card>
 
-          {/* Presupuesto ejecución */}
+          {/* Presupuesto */}
           <Card>
             <CardContent className="p-5">
               <div className="mb-3 flex items-center justify-between">
                 <h3 className="font-bold text-slate-900">
-                  <Target size={14} className="mr-1 inline" /> Presupuesto 2026
+                  <Target size={14} className="text-brand-600 mr-1 inline" /> Presupuesto{' '}
+                  {presupuesto?.anio ?? ''}
                 </h3>
                 <Button
                   intent="ghost"
@@ -510,7 +630,50 @@ export default function FinanzasDashboardPage() {
         </div>
 
         <div className="grid grid-cols-1 gap-5 lg:grid-cols-3">
-          {/* Cuotas pendientes */}
+          {/* Saldos por caja */}
+          <Card>
+            <CardContent className="p-5">
+              <div className="mb-3 flex items-center justify-between">
+                <h3 className="font-bold text-slate-900">
+                  <Landmark size={14} className="mr-1 inline" /> Saldos por cuenta
+                </h3>
+                <Button
+                  intent="ghost"
+                  size="sm"
+                  onClick={() => router.push('/mando/finanzas/cajas')}
+                >
+                  Ver todas <ArrowRight size={12} />
+                </Button>
+              </div>
+              <ul className="space-y-2">
+                {cajas.map((c) => {
+                  const pct = saldoTotal > 0 ? (c.saldoActual / saldoTotal) * 100 : 0;
+                  return (
+                    <li key={c.id} className="rounded-lg border border-slate-200 bg-white p-2.5">
+                      <div className="flex items-center justify-between">
+                        <div className="min-w-0">
+                          <div className="truncate text-sm font-semibold text-slate-900">
+                            {c.nombre}
+                          </div>
+                          {c.banco && (
+                            <div className="truncate text-xs text-slate-500">{c.banco}</div>
+                          )}
+                        </div>
+                        <div className="ml-2 shrink-0 text-right font-mono text-sm font-bold text-slate-900">
+                          {ars.format(c.saldoActual)}
+                        </div>
+                      </div>
+                      <div className="mt-1.5 h-1 overflow-hidden rounded-full bg-slate-100">
+                        <div className="bg-brand-500 h-full" style={{ width: `${pct}%` }} />
+                      </div>
+                    </li>
+                  );
+                })}
+              </ul>
+            </CardContent>
+          </Card>
+
+          {/* Cuotas sociales */}
           <Card>
             <CardContent className="p-5">
               <div className="mb-3 flex items-center justify-between">
@@ -527,9 +690,7 @@ export default function FinanzasDashboardPage() {
               </div>
               <div className="grid grid-cols-3 gap-2">
                 <div className="bg-status-ok-bg/40 rounded-lg p-2 text-center">
-                  <div className="text-xl font-bold text-slate-900">
-                    {cuotas.filter((c) => c.estado === 'pagada').length}
-                  </div>
+                  <div className="text-xl font-bold text-slate-900">{cuotasPagadas}</div>
                   <div className="text-xs text-slate-600">Pagas</div>
                 </div>
                 <div className="bg-status-warn-bg/40 rounded-lg p-2 text-center">
@@ -545,67 +706,16 @@ export default function FinanzasDashboardPage() {
                   <div className="text-xs text-slate-600">Vencidas</div>
                 </div>
               </div>
-              {cuotasVencidas.length > 0 && (
-                <div className="mt-3 text-xs text-slate-600">
-                  Recuperable:{' '}
-                  <span className="font-bold text-slate-900">
-                    {ars.format(
-                      cuotasVencidas.reduce((s, c) => s + c.monto + (c.cargoRecargo ?? 0), 0),
-                    )}
-                  </span>
+              <div className="mt-3 flex items-center justify-between border-t border-slate-100 pt-2 text-xs">
+                <span className="text-slate-600">Al día</span>
+                <span className="font-bold text-slate-900">{cuotasAlDiaPct}%</span>
+              </div>
+              {recuperableCuotas > 0 && (
+                <div className="flex items-center justify-between text-xs">
+                  <span className="text-slate-600">Por cobrar</span>
+                  <span className="font-bold text-slate-900">{ars.format(recuperableCuotas)}</span>
                 </div>
               )}
-            </CardContent>
-          </Card>
-
-          {/* Ingresos del mes desglosados */}
-          <Card>
-            <CardContent className="p-5">
-              <h3 className="mb-3 font-bold capitalize text-slate-900">
-                <ArrowUpRight size={14} className="mr-1 inline" /> Composición ingresos ·{' '}
-                {mesActualNombre}
-              </h3>
-              <ul className="space-y-2">
-                {Array.from(
-                  new Set(
-                    movsConciliados
-                      .filter((m) => m.tipo === 'ingreso' && m.fecha.startsWith(mesActual))
-                      .map((m) => m.cuentaId),
-                  ),
-                )
-                  .map((cuentaId) => {
-                    const cuenta = cuentas.find((c) => c.id === cuentaId);
-                    if (!cuenta) return null;
-                    const total = movsConciliados
-                      .filter(
-                        (m) =>
-                          m.tipo === 'ingreso' &&
-                          m.fecha.startsWith(mesActual) &&
-                          m.cuentaId === cuentaId,
-                      )
-                      .reduce((s, m) => s + m.monto, 0);
-                    const pct = (total / ingMes) * 100;
-                    const label = cuenta.categoria
-                      ? (CATEGORIA_INGRESO_LABEL[
-                          cuenta.categoria as keyof typeof CATEGORIA_INGRESO_LABEL
-                        ] ?? cuenta.nombre)
-                      : cuenta.nombre;
-                    return (
-                      <li key={cuentaId}>
-                        <div className="mb-0.5 flex items-center justify-between text-xs">
-                          <span className="font-medium text-slate-700">{label}</span>
-                          <span className="font-mono font-bold text-slate-900">
-                            {pct.toFixed(0)}%
-                          </span>
-                        </div>
-                        <div className="h-1.5 overflow-hidden rounded-full bg-slate-100">
-                          <div className="bg-status-ok h-full" style={{ width: `${pct}%` }} />
-                        </div>
-                      </li>
-                    );
-                  })
-                  .filter(Boolean)}
-              </ul>
             </CardContent>
           </Card>
 
@@ -616,30 +726,32 @@ export default function FinanzasDashboardPage() {
                 <Calendar size={14} className="mr-1 inline" /> Próximos vencimientos
               </h3>
               <ul className="space-y-2 text-sm">
-                {VENCIMIENTOS.map((v) => {
-                  const dias = diasHasta(v.fecha);
-                  const intent = dias <= 7 ? 'risk' : 'warn';
-                  const bgClass =
-                    intent === 'risk' ? 'bg-status-risk-bg/30' : 'bg-status-warn-bg/30';
-                  return (
-                    <li
-                      key={v.titulo}
-                      className={`${bgClass} flex items-start justify-between rounded-lg p-2`}
-                    >
-                      <div>
-                        <div className="font-semibold text-slate-900">{v.titulo}</div>
-                        <div className="text-xs text-slate-600">{v.subtitulo}</div>
-                      </div>
-                      <Badge intent={intent}>
-                        {dias < 0
-                          ? `Hace ${Math.abs(dias)} días`
-                          : dias === 0
-                            ? 'Hoy'
-                            : `En ${dias} días`}
-                      </Badge>
-                    </li>
-                  );
-                })}
+                {[...OBLIGACIONES]
+                  .sort((a, b) => diasHasta(a.fecha) - diasHasta(b.fecha))
+                  .map((v) => {
+                    const dias = diasHasta(v.fecha);
+                    const intent = dias <= 7 ? 'risk' : 'warn';
+                    const bgClass =
+                      intent === 'risk' ? 'bg-status-risk-bg/30' : 'bg-status-warn-bg/30';
+                    return (
+                      <li
+                        key={v.titulo}
+                        className={`${bgClass} flex items-start justify-between rounded-lg p-2`}
+                      >
+                        <div className="min-w-0">
+                          <div className="font-semibold text-slate-900">{v.titulo}</div>
+                          <div className="text-xs text-slate-600">{v.subtitulo}</div>
+                        </div>
+                        <Badge intent={intent}>
+                          {dias < 0
+                            ? `Hace ${Math.abs(dias)}d`
+                            : dias === 0
+                              ? 'Hoy'
+                              : `En ${dias}d`}
+                        </Badge>
+                      </li>
+                    );
+                  })}
               </ul>
             </CardContent>
           </Card>
@@ -666,7 +778,7 @@ export default function FinanzasDashboardPage() {
                   <tr>
                     <th className="px-2 py-1.5 text-left">Fecha</th>
                     <th className="px-2 py-1.5 text-left">Descripción</th>
-                    <th className="px-2 py-1.5 text-left">Caja</th>
+                    <th className="px-2 py-1.5 text-left">Cuenta</th>
                     <th className="px-2 py-1.5 text-right">Monto</th>
                   </tr>
                 </thead>
