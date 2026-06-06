@@ -70,6 +70,13 @@ const NAV_FINANZAS: NavItem[] = [
     seccion: 'Día a día',
   },
   {
+    label: 'Subsidios',
+    href: '/mando/finanzas/subsidios',
+    icon: 'calendar-clock',
+    nuevo: true,
+    seccion: 'Día a día',
+  },
+  {
     label: 'Cuotas sociales',
     href: '/mando/finanzas/cuotas',
     icon: 'badge-dollar-sign',
