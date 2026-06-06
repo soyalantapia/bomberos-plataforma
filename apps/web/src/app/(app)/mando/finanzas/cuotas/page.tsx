@@ -32,7 +32,7 @@ import { useMemo, useState } from 'react';
 import { MEDIO_LABEL, ars, arsCompact, fechaCorta } from '../../../../../components/finanzas/utils';
 import { EmptyState } from '../../../../../components/shared/empty-state';
 import { PageHero } from '../../../../../components/shared/page-hero';
-import { useFaroStore } from '../../../../../store/use-faro-store';
+import { selectCuartelActivo, useFaroStore } from '../../../../../store/use-faro-store';
 
 import type { CuotaSocial, MedioPago } from '@faro/types';
 
@@ -40,6 +40,7 @@ type FiltroEstado = 'todas' | 'pendiente' | 'pagada' | 'vencida' | 'condonada';
 
 export default function CuotasPage() {
   const toast = useToast();
+  const cuartel = useFaroStore(selectCuartelActivo);
   const cuotas = useFaroStore((s) => s.cuotas);
   const cajas = useFaroStore((s) => s.cajas);
   const cobrarCuota = useFaroStore((s) => s.cobrarCuota);
@@ -103,6 +104,34 @@ export default function CuotasPage() {
     };
   }, [cuotas]);
 
+  // Socios que deben (pendiente + vencida), agrupados — la lista accionable de cobranza
+  const morosos = useMemo(() => {
+    const map = new Map<
+      string,
+      { id: string; nombre: string; cuotas: CuotaSocial[]; total: number; tieneVencida: boolean }
+    >();
+    for (const c of cuotas) {
+      if (c.estado !== 'pendiente' && c.estado !== 'vencida') continue;
+      const e = map.get(c.socioId) ?? {
+        id: c.socioId,
+        nombre: c.socioNombre,
+        cuotas: [],
+        total: 0,
+        tieneVencida: false,
+      };
+      e.cuotas.push(c);
+      e.total += c.monto + (c.cargoRecargo ?? 0);
+      if (c.estado === 'vencida') e.tieneVencida = true;
+      map.set(c.socioId, e);
+    }
+    return [...map.values()]
+      .map((m) => ({
+        ...m,
+        cuotas: [...m.cuotas].sort((a, b) => a.periodo.localeCompare(b.periodo)),
+      }))
+      .sort((a, b) => Number(b.tieneVencida) - Number(a.tieneVencida) || b.total - a.total);
+  }, [cuotas]);
+
   function handleCobrar() {
     if (!cobrando) return;
     if (!cobroCaja) {
@@ -136,7 +165,7 @@ export default function CuotasPage() {
     <>
       <div className="mx-auto max-w-7xl space-y-5">
         <PageHero
-          objetivo="Vista Mando · Tesorería"
+          objetivo={`Tesorería · ${cuartel?.nombre ?? 'Cuartel'}`}
           titulo="Cuotas sociales"
           descripcion={`Padrón de ${sociosMap.size} socios contribuyentes. Cobranza por MercadoPago, transferencia o efectivo en cuartel.`}
           icono={<BadgeDollarSign size={26} />}
@@ -172,6 +201,76 @@ export default function CuotasPage() {
             </>
           }
         />
+
+        {/* Hay que cobrar — los socios que deben, agrupados y accionables */}
+        {morosos.length > 0 ? (
+          <Card>
+            <CardContent className="p-5">
+              <div className="mb-3 flex items-center justify-between gap-2">
+                <div>
+                  <h3 className="flex items-center gap-2 font-bold text-slate-900">
+                    <AlertTriangle size={16} className="text-status-warn-fg" /> Hay que cobrar
+                  </h3>
+                  <p className="text-xs text-slate-600">
+                    {morosos.length} socio{morosos.length === 1 ? '' : 's'} adeuda
+                    {morosos.length === 1 ? '' : 'n'} · {ars.format(stats.recuperable)} a recuperar
+                  </p>
+                </div>
+                <Button intent="ghost" size="sm" onClick={() => setOpenBatch(true)}>
+                  <Send size={12} /> Recordar a todos
+                </Button>
+              </div>
+              <ul className="divide-y divide-slate-100">
+                {morosos.map((m) => (
+                  <li key={m.id} className="flex items-center gap-3 py-2.5">
+                    <Avatar name={m.nombre} size={36} />
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-center gap-2">
+                        <span className="truncate font-medium text-slate-900">{m.nombre}</span>
+                        {m.tieneVencida && <Badge intent="risk">atrasado</Badge>}
+                      </div>
+                      <div className="text-xs text-slate-500">
+                        debe {m.cuotas.length} cuota{m.cuotas.length === 1 ? '' : 's'} ·{' '}
+                        {m.cuotas.map((c) => c.periodo).join(', ')}
+                      </div>
+                    </div>
+                    <div className="shrink-0 text-right font-mono text-sm font-bold text-slate-900">
+                      {ars.format(m.total)}
+                    </div>
+                    <div className="flex shrink-0 gap-1">
+                      <Button
+                        intent="ghost"
+                        size="sm"
+                        aria-label={`Recordar a ${m.nombre}`}
+                        onClick={() =>
+                          toast.push({
+                            kind: 'success',
+                            title: `Recordatorio enviado a ${m.nombre}`,
+                            description: 'Vía WhatsApp con link de pago MP',
+                          })
+                        }
+                      >
+                        <MessageSquare size={14} />
+                      </Button>
+                      <Button intent="primary" size="sm" onClick={() => setCobrando(m.cuotas[0]!)}>
+                        <CreditCard size={12} /> Cobrar
+                      </Button>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            </CardContent>
+          </Card>
+        ) : (
+          <Card className="border-status-ok/30 bg-status-ok-bg/20 border">
+            <CardContent className="flex items-center gap-3 p-4">
+              <CheckCircle2 size={20} className="text-status-ok shrink-0" />
+              <div className="text-sm font-medium text-slate-800">
+                Toda la cobranza al día — ningún socio adeuda cuotas.
+              </div>
+            </CardContent>
+          </Card>
+        )}
 
         {/* Filtros */}
         <Card>
