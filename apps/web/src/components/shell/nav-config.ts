@@ -41,6 +41,14 @@ const ORGANIGRAMA_PUBLICO: NavItem = {
 // ════════════════════════════════════════════════════════════════════
 const NAV_FINANZAS: NavItem[] = [
   {
+    label: 'Acciones',
+    href: '/mando/finanzas/acciones',
+    icon: 'clipboard-check',
+    bottomNav: true,
+    nuevo: true,
+    seccion: 'Día a día',
+  },
+  {
     label: 'Resumen',
     href: '/mando/finanzas',
     icon: 'piggy-bank',
