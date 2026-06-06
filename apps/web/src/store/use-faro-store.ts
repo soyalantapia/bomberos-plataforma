@@ -77,6 +77,12 @@ import {
   type CanalComunicado,
   type ComunicadoFed,
 } from '../data/comunicados-fed';
+import {
+  planAnualMock,
+  type InversionPlan,
+  type ObjetivoPlan,
+  type PlanAnual,
+} from '../data/plan-anual';
 import { calcularComputoMensual } from '../lib/utils/computo';
 import { demoToday } from '../lib/utils/demo-today';
 
@@ -132,6 +138,8 @@ interface State {
   accionesFed: AccionFed[];
   // COMUNICADOS de la Federación a la red (broadcast nacional/regional)
   comunicadosFed: ComunicadoFed[];
+  // PLAN DEL AÑO (objetivos + inversiones para presentar a la comisión)
+  planAnual: PlanAnual;
 }
 
 interface Actions {
@@ -172,6 +180,12 @@ interface Actions {
     canales: CanalComunicado[];
     prioridad: 'alta' | 'normal';
   }) => ComunicadoFed;
+  agregarObjetivoPlan: (texto: string) => void;
+  toggleObjetivoPlan: (id: string) => void;
+  eliminarObjetivoPlan: (id: string) => void;
+  agregarInversionPlan: (input: Omit<InversionPlan, 'id'>) => void;
+  eliminarInversionPlan: (id: string) => void;
+  presentarPlan: () => void;
   presentarRendicion: (rendicionId: string, mandoId: string) => void;
   marcarNotifLeida: (id: string) => void;
   marcarTodasLeidas: () => void;
@@ -282,6 +296,7 @@ const initialState: State = {
   fichasMovil: fichasMovilMock,
   accionesFed: accionesFedMock,
   comunicadosFed: comunicadosFedMock,
+  planAnual: planAnualMock,
 };
 
 function recalcularRendicion(state: State, cuartelId: string): State {
@@ -592,6 +607,36 @@ export const useFaroStore = create<FaroStore>()(
         };
         set({ comunicadosFed: [comunicado, ...s.comunicadosFed], notificaciones });
         return comunicado;
+      },
+      agregarObjetivoPlan(texto) {
+        const o: ObjetivoPlan = { id: genId('obj'), texto, cumplido: false };
+        const p = get().planAnual;
+        set({ planAnual: { ...p, objetivos: [...p.objetivos, o] } });
+      },
+      toggleObjetivoPlan(id) {
+        const p = get().planAnual;
+        set({
+          planAnual: {
+            ...p,
+            objetivos: p.objetivos.map((o) => (o.id === id ? { ...o, cumplido: !o.cumplido } : o)),
+          },
+        });
+      },
+      eliminarObjetivoPlan(id) {
+        const p = get().planAnual;
+        set({ planAnual: { ...p, objetivos: p.objetivos.filter((o) => o.id !== id) } });
+      },
+      agregarInversionPlan(input) {
+        const i: InversionPlan = { id: genId('inv'), ...input };
+        const p = get().planAnual;
+        set({ planAnual: { ...p, inversiones: [...p.inversiones, i] } });
+      },
+      eliminarInversionPlan(id) {
+        const p = get().planAnual;
+        set({ planAnual: { ...p, inversiones: p.inversiones.filter((i) => i.id !== id) } });
+      },
+      presentarPlan() {
+        set({ planAnual: { ...get().planAnual, estado: 'presentado' } });
       },
       marcarNotifLeida(id) {
         set({

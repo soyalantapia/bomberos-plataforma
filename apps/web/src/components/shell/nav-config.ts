@@ -75,6 +75,12 @@ const NAV_FINANZAS: NavItem[] = [
     seccion: 'Planeamiento',
   },
   {
+    label: 'Plan del año',
+    href: '/mando/finanzas/plan',
+    icon: 'clipboard-list',
+    seccion: 'Planeamiento',
+  },
+  {
     label: 'Flujo de fondos',
     href: '/mando/finanzas/cashflow',
     icon: 'trending-up',
