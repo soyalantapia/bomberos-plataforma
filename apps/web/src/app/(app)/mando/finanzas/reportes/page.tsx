@@ -20,12 +20,14 @@ import { useMemo, useState } from 'react';
 import { ars, arsCompact } from '../../../../../components/finanzas/utils';
 import { PageHero } from '../../../../../components/shared/page-hero';
 import { demoToday } from '../../../../../lib/utils/demo-today';
-import { useFaroStore } from '../../../../../store/use-faro-store';
+import { exportarCsv } from '../../../../../lib/utils/export-csv';
+import { selectCuartelActivo, useFaroStore } from '../../../../../store/use-faro-store';
 
 type ReporteTipo = 'balance' | 'resultados' | 'flujo' | 'compliance' | 'iva';
 
 export default function ReportesPage() {
   const toast = useToast();
+  const cuartel = useFaroStore(selectCuartelActivo);
   const movimientos = useFaroStore((s) => s.movimientos);
   const cuentas = useFaroStore((s) => s.cuentas);
   const cajas = useFaroStore((s) => s.cajas);
@@ -89,10 +91,33 @@ export default function ReportesPage() {
   const activos = cajas.reduce((s, c) => s + c.saldoActual, 0);
 
   function exportar(formato: 'pdf' | 'excel' | 'csv') {
+    if (formato === 'csv') {
+      const headers = ['Sección', 'Concepto', 'Monto ARS'];
+      const rows: Array<Array<string | number>> = [
+        ['Resumen', `Ingresos (${periodo})`, totalIng],
+        ['Resumen', `Egresos (${periodo})`, totalEgr],
+        ['Resumen', 'Resultado', resultado],
+        ['Resumen', 'Aporte sueldos sobre subsidio (%)', Number(pctPersonal.toFixed(1))],
+        ...ingresoPorCategoria.map(
+          ([cat, monto]) => ['Ingresos', cat, monto] as Array<string | number>,
+        ),
+        ...egresoPorCategoria.map(
+          ([cat, monto]) => ['Egresos', cat, monto] as Array<string | number>,
+        ),
+      ];
+      exportarCsv(`reporte-${tipo}-${periodo}`, headers, rows);
+      toast.push({
+        kind: 'success',
+        title: 'Reporte exportado · CSV',
+        description: `reporte-${tipo}-${periodo}.csv`,
+      });
+      return;
+    }
     toast.push({
-      kind: 'success',
-      title: `Reporte exportado · ${formato.toUpperCase()}`,
-      description: `${tipo}-${periodo}-${demoToday().toISOString().slice(0, 7)}.${formato}`,
+      kind: 'info',
+      title: 'Por ahora, descargá en CSV',
+      description:
+        'El CSV abre en Excel. El PDF/Excel nativo se integra con el sistema del contador.',
     });
   }
 
@@ -107,7 +132,7 @@ export default function ReportesPage() {
   return (
     <div className="mx-auto max-w-7xl space-y-5">
       <PageHero
-        objetivo="Vista Mando · Tesorería"
+        objetivo={`Tesorería · ${cuartel?.nombre ?? 'Cuartel'}`}
         titulo="Reportes"
         descripcion="Resúmenes listos para mostrarle a la Comisión Directiva y a los organismos que controlan."
         icono={<ScrollText size={26} />}

@@ -22,7 +22,7 @@ import { useMemo, useState } from 'react';
 
 import { ars, arsCompact, fechaCorta } from '../../../../../components/finanzas/utils';
 import { PageHero } from '../../../../../components/shared/page-hero';
-import { useFaroStore } from '../../../../../store/use-faro-store';
+import { selectCuartelActivo, useFaroStore } from '../../../../../store/use-faro-store';
 
 import type { CuentaContable, TipoCuentaContable } from '@faro/types';
 
@@ -86,6 +86,7 @@ const TIPO_CONFIG: Record<
 };
 
 export default function PlanCuentasPage() {
+  const cuartel = useFaroStore(selectCuartelActivo);
   const cuentas = useFaroStore((s) => s.cuentas);
   const movimientos = useFaroStore((s) => s.movimientos);
   const [tipoActivo, setTipoActivo] = useState<TipoCuentaContable>('ingreso');
@@ -350,7 +351,7 @@ export default function PlanCuentasPage() {
   return (
     <div className="mx-auto max-w-7xl space-y-5">
       <PageHero
-        objetivo="Vista Mando · Tesorería"
+        objetivo={`Tesorería · ${cuartel?.nombre ?? 'Cuartel'}`}
         titulo="Categorías"
         descripcion="Cómo organizamos la plata del cuartel. Cada categoría puede recibir movimientos y muestra cuánto se gastó del presupuesto anual."
         icono={<ListTree size={26} />}

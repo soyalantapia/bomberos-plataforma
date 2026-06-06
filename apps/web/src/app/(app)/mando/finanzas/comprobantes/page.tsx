@@ -21,7 +21,7 @@ import { ars, arsCompact, fechaCorta } from '../../../../../components/finanzas/
 import { EmptyState } from '../../../../../components/shared/empty-state';
 import { PageHero } from '../../../../../components/shared/page-hero';
 import { exportarCsv } from '../../../../../lib/utils/export-csv';
-import { useFaroStore } from '../../../../../store/use-faro-store';
+import { selectCuartelActivo, useFaroStore } from '../../../../../store/use-faro-store';
 
 import type { MovimientoFinanciero } from '@faro/types';
 
@@ -37,6 +37,7 @@ type Filtro = 'todos' | 'sin_comprobante' | 'con_comprobante' | 'pendiente_conci
 
 export default function ComprobantesPage() {
   const toast = useToast();
+  const cuartel = useFaroStore(selectCuartelActivo);
   const movimientos = useFaroStore((s) => s.movimientos);
   const actualizarMovimiento = useFaroStore((s) => s.actualizarMovimiento);
   const conciliarMovimiento = useFaroStore((s) => s.conciliarMovimiento);
@@ -159,7 +160,7 @@ export default function ComprobantesPage() {
     <>
       <div className="mx-auto max-w-7xl space-y-5">
         <PageHero
-          objetivo="Vista Mando · Tesorería"
+          objetivo={`Tesorería · ${cuartel?.nombre ?? 'Cuartel'}`}
           titulo="Comprobantes y facturas"
           descripcion="Facturas y recibos de los gastos del cuartel. Sacá una foto y los datos se completan automáticamente."
           icono={<Receipt size={26} />}
