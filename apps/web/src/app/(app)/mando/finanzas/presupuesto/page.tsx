@@ -18,10 +18,11 @@ import { ars, arsCompact } from '../../../../../components/finanzas/utils';
 import { PageHero } from '../../../../../components/shared/page-hero';
 import { demoToday } from '../../../../../lib/utils/demo-today';
 import { exportarCsv } from '../../../../../lib/utils/export-csv';
-import { useFaroStore } from '../../../../../store/use-faro-store';
+import { selectCuartelActivo, useFaroStore } from '../../../../../store/use-faro-store';
 
 export default function PresupuestoPage() {
   const toast = useToast();
+  const cuartel = useFaroStore(selectCuartelActivo);
   const cuentas = useFaroStore((s) => s.cuentas);
   const movimientos = useFaroStore((s) => s.movimientos);
   const presupuestos = useFaroStore((s) => s.presupuestos);
@@ -80,11 +81,20 @@ export default function PresupuestoPage() {
   const pctIngresos = totalIngPres > 0 ? (totalIngEjec / totalIngPres) * 100 : 0;
   const pctEgresos = totalEgrPres > 0 ? (totalEgrEjec / totalEgrPres) * 100 : 0;
 
+  // Proyección de cierre (estirar lo ejecutado al ritmo del año transcurrido)
+  const resultadoPlan = totalIngPres - totalEgrPres;
+  const factorProy = pctAnio > 0 ? 100 / pctAnio : 0;
+  const ingProj = totalIngEjec * factorProy;
+  const egrProj = totalEgrEjec * factorProy;
+  const resultadoProj = ingProj - egrProj;
+  const ingProjPctPlan = totalIngPres > 0 ? (ingProj / totalIngPres) * 100 : 0;
+  const egrProjPctPlan = totalEgrPres > 0 ? (egrProj / totalEgrPres) * 100 : 0;
+
   if (!presupuesto) {
     return (
       <div className="mx-auto max-w-4xl space-y-5">
         <PageHero
-          objetivo="Vista Mando · Tesorería"
+          objetivo={`Tesorería · ${cuartel?.nombre ?? 'Cuartel'}`}
           titulo="Presupuesto anual"
           descripcion="Aún no hay presupuesto cargado para el año."
           icono={<Target size={26} />}
@@ -101,7 +111,7 @@ export default function PresupuestoPage() {
   return (
     <div className="mx-auto max-w-7xl space-y-5">
       <PageHero
-        objetivo="Vista Mando · Tesorería"
+        objetivo={`Tesorería · ${cuartel?.nombre ?? 'Cuartel'}`}
         titulo={`Presupuesto ${presupuesto.anio} vs ejecución`}
         descripcion={`Llevamos ${pctAnio.toFixed(0)}% del año. Te muestra cuánto pensaste gastar/cobrar y cuánto va realmente.`}
         icono={<Target size={26} />}
@@ -257,6 +267,71 @@ export default function PresupuestoPage() {
               </div>
             </div>
           </div>
+        </CardContent>
+      </Card>
+
+      {/* Proyección de cierre — ¿dónde cerramos el año si seguimos así? */}
+      <Card>
+        <CardContent className="p-5">
+          <div className="mb-3">
+            <h3 className="font-bold text-slate-900">Si seguís a este ritmo…</h3>
+            <p className="text-xs text-slate-600">
+              Proyección a diciembre, estirando lo ejecutado al {pctAnio.toFixed(0)}% del año.
+            </p>
+          </div>
+          <div className="grid gap-3 sm:grid-cols-3">
+            <div className="rounded-xl border border-slate-200 p-3">
+              <div className="text-status-ok-fg flex items-center gap-1 text-xs font-semibold">
+                <ArrowUpRight size={13} /> Ingresos proyectados
+              </div>
+              <div className="mt-1 text-xl font-bold text-slate-900">{arsCompact(ingProj)}</div>
+              <div className="text-xs text-slate-500">
+                plan {arsCompact(totalIngPres)} · {ingProjPctPlan.toFixed(0)}%
+              </div>
+            </div>
+            <div className="rounded-xl border border-slate-200 p-3">
+              <div className="text-status-risk-fg flex items-center gap-1 text-xs font-semibold">
+                <ArrowDownRight size={13} /> Egresos proyectados
+              </div>
+              <div className="mt-1 text-xl font-bold text-slate-900">{arsCompact(egrProj)}</div>
+              <div className="text-xs text-slate-500">
+                plan {arsCompact(totalEgrPres)} · {egrProjPctPlan.toFixed(0)}%
+              </div>
+            </div>
+            <div
+              className={cn(
+                'rounded-xl border p-3',
+                resultadoProj >= 0
+                  ? 'border-status-ok/30 bg-status-ok-bg/20'
+                  : 'border-status-risk/30 bg-status-risk-bg/20',
+              )}
+            >
+              <div className="text-xs font-semibold text-slate-600">Resultado proyectado</div>
+              <div
+                className={cn(
+                  'mt-1 text-xl font-bold',
+                  resultadoProj >= 0 ? 'text-status-ok-fg' : 'text-status-risk-fg',
+                )}
+              >
+                {resultadoProj >= 0 ? '+' : '−'}
+                {arsCompact(Math.abs(resultadoProj))}
+              </div>
+              <div className="text-xs text-slate-500">
+                {resultadoProj >= 0 ? 'superávit' : 'déficit'} a fin de año
+              </div>
+            </div>
+          </div>
+          <p className="mt-3 border-t border-slate-100 pt-3 text-sm text-slate-700">
+            El plan del año preveía un{' '}
+            <strong>
+              {resultadoPlan >= 0 ? 'superávit' : 'déficit'} de{' '}
+              {arsCompact(Math.abs(resultadoPlan))}
+            </strong>
+            .{' '}
+            {ingProjPctPlan < 90
+              ? `Ojo: los ingresos van por debajo de lo planeado — a este ritmo cerrás en ${arsCompact(ingProj)} (${ingProjPctPlan.toFixed(0)}% del plan de ingresos).`
+              : 'Los ingresos van en línea con lo previsto.'}
+          </p>
         </CardContent>
       </Card>
 
