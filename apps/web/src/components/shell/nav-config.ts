@@ -5,6 +5,8 @@ export interface NavItem {
   href: string;
   icon: string;
   bottomNav?: boolean;
+  /** Etiqueta corta (1 palabra) para el bottom nav mobile. Cae a `label` si falta. */
+  bottomLabel?: string;
   /** Marca visual "nuevo" en el sidebar */
   nuevo?: boolean;
   /** Sección en la que agrupar el item en sidebar */
@@ -60,6 +62,7 @@ const NAV_FINANZAS: NavItem[] = [
     href: '/mando/finanzas/movimientos',
     icon: 'arrow-left-right',
     bottomNav: true,
+    bottomLabel: 'Movim.',
     seccion: 'Día a día',
   },
   {
@@ -67,6 +70,7 @@ const NAV_FINANZAS: NavItem[] = [
     href: '/mando/finanzas/cajas',
     icon: 'landmark',
     bottomNav: true,
+    bottomLabel: 'Cajas',
     seccion: 'Día a día',
   },
   {
@@ -88,6 +92,7 @@ const NAV_FINANZAS: NavItem[] = [
     href: '/mando/finanzas/cuotas',
     icon: 'badge-dollar-sign',
     bottomNav: true,
+    bottomLabel: 'Cuotas',
     seccion: 'Planeamiento',
   },
   {
@@ -107,6 +112,7 @@ const NAV_FINANZAS: NavItem[] = [
     href: '/mando/finanzas/cashflow',
     icon: 'trending-up',
     bottomNav: true,
+    bottomLabel: 'Flujo',
     seccion: 'Planeamiento',
   },
   {
@@ -147,8 +153,15 @@ const NAV_BOMBERO: NavItem[] = [
     href: '/bombero/registrar-servicio',
     icon: 'flame',
     bottomNav: true,
+    bottomLabel: 'Registrar',
   },
-  { label: 'Disponibilidad', href: '/bombero/disponibilidad', icon: 'calendar', bottomNav: true },
+  {
+    label: 'Disponibilidad',
+    href: '/bombero/disponibilidad',
+    icon: 'calendar',
+    bottomNav: true,
+    bottomLabel: 'Disponible',
+  },
   { label: 'Mi desempeño', href: '/bombero/mi-desempeno', icon: 'star', seccion: 'Tu información' },
   { label: 'Mi legajo', href: '/bombero/legajo', icon: 'user', seccion: 'Tu información' },
   {

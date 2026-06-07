@@ -195,7 +195,10 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
       {/* Bottom nav mobile */}
       <nav className="fixed inset-x-0 bottom-0 z-30 border-t border-slate-200 bg-white/85 pb-[env(safe-area-inset-bottom)] backdrop-blur-lg md:hidden">
-        <div className="grid" style={{ gridTemplateColumns: `repeat(${bottomItems.length}, 1fr)` }}>
+        <div
+          className="grid"
+          style={{ gridTemplateColumns: `repeat(${bottomItems.length}, minmax(0, 1fr))` }}
+        >
           {bottomItems.map((item) => {
             const active = activeCheck(item.href);
             return (
@@ -204,7 +207,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                 href={item.href}
                 aria-current={active ? 'page' : undefined}
                 className={cn(
-                  'relative flex min-h-[3.25rem] flex-col items-center justify-center gap-1 py-1.5 text-[11px] font-medium transition-colors active:scale-95',
+                  'relative flex min-h-[3.25rem] min-w-0 flex-col items-center justify-center gap-1 px-0.5 py-1.5 text-[11px] font-medium transition-colors active:scale-95',
                   active ? 'text-brand-700' : 'text-slate-500',
                 )}
               >
@@ -222,7 +225,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                     className={cn('relative z-10', active ? 'text-brand-700' : '')}
                   />
                 </span>
-                <span className="leading-none">{item.label}</span>
+                <span className="block w-full truncate px-0.5 text-center leading-tight">
+                  {item.bottomLabel ?? item.label}
+                </span>
               </Link>
             );
           })}
