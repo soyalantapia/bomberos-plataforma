@@ -8,7 +8,7 @@ export const perfilLabel: Record<Perfil, string> = {
   federacion: 'Federación',
 };
 export const perfilDescription: Record<Perfil, string> = {
-  bombero: 'Registrá lo que pasa en la calle y consultá tu legajo.',
+  bombero: 'Protocolos operativos, guardias y tu legajo — en tu bolsillo.',
   mando: 'Supervisión, decisiones y cumplimiento del cuartel.',
   administrativo: 'Las finanzas del cuartel en vivo: caja, movimientos, cuotas y presupuesto.',
   gobierno: 'Orden Interno, Ética, Género · acceso sensible.',
@@ -19,7 +19,7 @@ export const perfilDescription: Record<Perfil, string> = {
 //   bombero:/bombero · mando:/mando · administrativo:/administrativo
 //   gobierno:/gobierno · federacion:/federacion
 export const perfilHomePath: Record<Perfil, string> = {
-  bombero: '/mando/finanzas',
+  bombero: '/bombero/protocolos',
   mando: '/mando/finanzas',
   administrativo: '/mando/finanzas',
   gobierno: '/mando/finanzas',

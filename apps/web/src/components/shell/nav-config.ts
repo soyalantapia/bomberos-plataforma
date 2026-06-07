@@ -129,8 +129,39 @@ const NAV_FINANZAS: NavItem[] = [
   },
 ];
 
+// ════════════════════════════════════════════════════════════════════
+// FASE 2 — CUERPO ACTIVO · el bombero entra a Protocolos + su autogestión.
+// Nav enfocada (no todo el backlog operativo). Reversible: bombero → NAV_FINANZAS.
+// ════════════════════════════════════════════════════════════════════
+const NAV_BOMBERO: NavItem[] = [
+  {
+    label: 'Protocolos',
+    href: '/bombero/protocolos',
+    icon: 'clipboard-list',
+    bottomNav: true,
+    nuevo: true,
+  },
+  { label: 'Inicio', href: '/bombero', icon: 'home', bottomNav: true },
+  {
+    label: 'Registrar servicio',
+    href: '/bombero/registrar-servicio',
+    icon: 'flame',
+    bottomNav: true,
+  },
+  { label: 'Disponibilidad', href: '/bombero/disponibilidad', icon: 'calendar', bottomNav: true },
+  { label: 'Mi desempeño', href: '/bombero/mi-desempeno', icon: 'star', seccion: 'Tu información' },
+  { label: 'Mi legajo', href: '/bombero/legajo', icon: 'user', seccion: 'Tu información' },
+  {
+    label: 'Capacitación',
+    href: '/bombero/capacitacion',
+    icon: 'graduation-cap',
+    seccion: 'Tu información',
+  },
+  DIRECTORIO_PUBLICO,
+];
+
 export const navByPerfil: Record<Perfil, NavItem[]> = {
-  bombero: NAV_FINANZAS,
+  bombero: NAV_BOMBERO,
   mando: NAV_FINANZAS,
   administrativo: NAV_FINANZAS,
   gobierno: NAV_FINANZAS,
@@ -144,6 +175,7 @@ export const navByPerfil: Record<Perfil, NavItem[]> = {
 // ════════════════════════════════════════════════════════════════════
 export const navByPerfilBacklog: Record<Perfil, NavItem[]> = {
   bombero: [
+    { label: 'Protocolos', href: '/bombero/protocolos', icon: 'clipboard-list', nuevo: true },
     { label: 'Inicio', href: '/bombero', icon: 'home', bottomNav: true },
     { label: 'Registrar', href: '/bombero/registrar-servicio', icon: 'flame', bottomNav: true },
     { label: 'Mis tareas', href: '/bombero/tareas', icon: 'clipboard-list' },
