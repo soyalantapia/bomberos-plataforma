@@ -29,7 +29,10 @@ import {
   agruparPorMes,
   ars,
   arsCompact,
+  calcLey25054,
+  egresoMensualPromedio,
   fechaCorta,
+  mesesDeAire,
 } from '../../../../components/finanzas/utils';
 import { PageHero } from '../../../../components/shared/page-hero';
 import { mesAnteriorKey, mesKey, nombreMes } from '../../../../lib/utils/date';
@@ -110,11 +113,8 @@ export default function FinanzasDashboardPage() {
   // ── Flujo 6 meses + RUNWAY ("meses de aire") ───────────────────────
   const series = useMemo(() => agruparPorMes(movsConciliados, 6), [movsConciliados]);
   const maxBar = Math.max(1, ...series.flatMap((s) => [s.ingresos, s.egresos]));
-  const egrPromMensual = useMemo(() => {
-    const conDatos = series.filter((s) => s.egresos > 0);
-    return conDatos.length ? conDatos.reduce((s, x) => s + x.egresos, 0) / conDatos.length : 0;
-  }, [series]);
-  const mesesAire = egrPromMensual > 0 ? saldoTotal / egrPromMensual : null;
+  const egrPromMensual = useMemo(() => egresoMensualPromedio(movsConciliados), [movsConciliados]);
+  const mesesAire = mesesDeAire(saldoTotal, egrPromMensual);
   const aireIntent =
     mesesAire === null ? 'neutral' : mesesAire >= 6 ? 'ok' : mesesAire >= 3 ? 'warn' : 'risk';
 
@@ -128,30 +128,14 @@ export default function FinanzasDashboardPage() {
   const recuperableCuotas = cuotasVencidas.reduce((s, c) => s + c.monto + (c.cargoRecargo ?? 0), 0);
 
   // ── Ley 25.054: ≥70% del subsidio nacional a sueldos ──────────────
-  const sueldosMes = useMemo(() => {
-    const cuentasPersonal = cuentas
-      .filter((c) => c.categoria === 'personal_rentado')
-      .map((c) => c.id);
-    return movsConciliados
-      .filter(
-        (m) =>
-          m.tipo === 'egreso' &&
-          m.fecha.startsWith(mesActual) &&
-          cuentasPersonal.includes(m.cuentaId),
-      )
-      .reduce((s, m) => s + m.monto, 0);
-  }, [movsConciliados, cuentas, mesActual]);
-  const subsidioMes = useMemo(
-    () =>
-      movsConciliados
-        .filter(
-          (m) => m.tipo === 'ingreso' && m.fecha.startsWith(mesActual) && m.cuentaId === 'c-4-1-01',
-        )
-        .reduce((s, m) => s + m.monto, 0),
-    [movsConciliados, mesActual],
+  const ley = useMemo(
+    () => calcLey25054(movsConciliados, cuentas, mesActual),
+    [movsConciliados, cuentas, mesActual],
   );
-  const pctPersonalRentado = subsidioMes > 0 ? (sueldosMes / subsidioMes) * 100 : 0;
-  const cumple70 = subsidioMes === 0 || pctPersonalRentado >= 70;
+  const sueldosMes = ley.sueldosMes;
+  const subsidioMes = ley.subsidioMes;
+  const pctPersonalRentado = ley.pct;
+  const cumple70 = ley.cumple;
 
   // ── Composición de ingresos del mes + dependencia del subsidio ─────
   const cuentasSubsidio = useMemo(

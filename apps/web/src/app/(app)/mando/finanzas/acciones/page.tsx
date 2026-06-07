@@ -17,7 +17,13 @@ import {
 import { useRouter } from 'next/navigation';
 import { useMemo, useState } from 'react';
 
-import { agruparPorMes, ars, arsCompact } from '../../../../../components/finanzas/utils';
+import {
+  ars,
+  arsCompact,
+  calcLey25054,
+  egresoMensualPromedio,
+  mesesDeAire,
+} from '../../../../../components/finanzas/utils';
 import { PageHero } from '../../../../../components/shared/page-hero';
 import { mesKey } from '../../../../../lib/utils/date';
 import { demoToday } from '../../../../../lib/utils/demo-today';
@@ -98,32 +104,16 @@ export default function AccionesPage() {
     const list: Accion[] = [];
 
     // 1. Ley 25.054 — ≥70% del subsidio nacional a sueldos
-    const cuentasPersonal = cuentas
-      .filter((c) => c.categoria === 'personal_rentado')
-      .map((c) => c.id);
-    const sueldosMes = conciliados
-      .filter(
-        (m) =>
-          m.tipo === 'egreso' &&
-          m.fecha.startsWith(mesActual) &&
-          cuentasPersonal.includes(m.cuentaId),
-      )
-      .reduce((s, m) => s + m.monto, 0);
-    const subsidioMes = conciliados
-      .filter(
-        (m) => m.tipo === 'ingreso' && m.fecha.startsWith(mesActual) && m.cuentaId === 'c-4-1-01',
-      )
-      .reduce((s, m) => s + m.monto, 0);
-    const pctPersonal = subsidioMes > 0 ? (sueldosMes / subsidioMes) * 100 : 100;
-    if (subsidioMes > 0 && pctPersonal < 70) {
+    const ley = calcLey25054(conciliados, cuentas, mesActual);
+    if (ley.subsidioMes > 0 && !ley.cumple) {
       list.push({
         id: 'ley70',
         severidad: 'urgente',
         categoria: 'cumplimiento',
         icon: <ShieldAlert size={18} />,
-        titulo: `Subsidio: ${pctPersonal.toFixed(0)}% aplicado a sueldos (mínimo 70%)`,
-        detalle: `Faltan ${ars.format(Math.max(0, subsidioMes * 0.7 - sueldosMes))} para cumplir la Ley 25.054 este mes.`,
-        monto: Math.max(0, subsidioMes * 0.7 - sueldosMes),
+        titulo: `Subsidio: ${ley.pct.toFixed(0)}% aplicado a sueldos (mínimo 70%)`,
+        detalle: `Faltan ${ars.format(ley.falta)} para cumplir la Ley 25.054 este mes.`,
+        monto: ley.falta,
         cta: 'Ver rendición',
         href: '/mando/finanzas/reportes',
       });
@@ -197,7 +187,9 @@ export default function AccionesPage() {
     }
 
     // 6. Cuentas sin verificar contra el banco
-    const conDif = cajas.filter((c) => c.saldoActual !== c.saldoConciliado).length;
+    const conDif = cajas.filter(
+      (c) => c.saldoActual !== (c.saldoConciliado ?? c.saldoActual),
+    ).length;
     if (conDif > 0) {
       list.push({
         id: 'concilia',
@@ -213,9 +205,7 @@ export default function AccionesPage() {
 
     // 7. Caja apretada (runway)
     const saldoTotal = cajas.reduce((s, c) => s + c.saldoActual, 0);
-    const series = agruparPorMes(conciliados, 6).filter((s) => s.egresos > 0);
-    const egrProm = series.length ? series.reduce((s, x) => s + x.egresos, 0) / series.length : 0;
-    const mesesAire = egrProm > 0 ? saldoTotal / egrProm : null;
+    const mesesAire = mesesDeAire(saldoTotal, egresoMensualPromedio(conciliados));
     if (mesesAire !== null && mesesAire < 4) {
       list.push({
         id: 'runway',

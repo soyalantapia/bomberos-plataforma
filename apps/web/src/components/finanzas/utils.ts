@@ -1,6 +1,7 @@
 import type {
   CategoriaEgreso,
   CategoriaIngreso,
+  CuentaContable,
   MedioPago,
   MovimientoFinanciero,
   TipoCaja,
@@ -109,4 +110,58 @@ export function agruparPorMes(
     });
   }
   return resultado;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Selectores derivados compartidos — UNA sola fuente de verdad para métricas que
+// antes cada pantalla recalculaba distinto (runway/meses de aire, Ley 25.054).
+// ─────────────────────────────────────────────────────────────────────────────
+
+/** Promedio mensual de egresos reales (meses con datos). Base del "meses de aire". */
+export function egresoMensualPromedio(movs: MovimientoFinanciero[], meses = 6): number {
+  const conDatos = agruparPorMes(movs, meses).filter((s) => s.egresos > 0);
+  return conDatos.length ? conDatos.reduce((s, x) => s + x.egresos, 0) / conDatos.length : 0;
+}
+
+/** Meses de aire: cuántos meses cubre el saldo al ritmo de gasto real. null si no hay datos. */
+export function mesesDeAire(saldoTotal: number, egrPromMensual: number): number | null {
+  return egrPromMensual > 0 ? saldoTotal / egrPromMensual : null;
+}
+
+/** Semáforo del "meses de aire", consistente en todas las pantallas. */
+export function aireIntent(meses: number | null): 'neutral' | 'ok' | 'warn' | 'risk' {
+  if (meses === null) return 'neutral';
+  return meses >= 6 ? 'ok' : meses >= 3 ? 'warn' : 'risk';
+}
+
+/**
+ * Ley 25.054: porcentaje del subsidio nacional (cuenta c-4-1-01) aplicado a
+ * personal rentado en el mes. Usa TODAS las cuentas categoría 'personal_rentado'
+ * (sueldos + cargas sociales) — misma base en Resumen, Acciones y Reportes.
+ */
+export function calcLey25054(
+  movsConciliados: MovimientoFinanciero[],
+  cuentas: CuentaContable[],
+  mesKey: string,
+): { subsidioMes: number; sueldosMes: number; pct: number; cumple: boolean; falta: number } {
+  const cuentasPersonal = cuentas
+    .filter((c) => c.categoria === 'personal_rentado')
+    .map((c) => c.id);
+  const sueldosMes = movsConciliados
+    .filter(
+      (m) =>
+        m.tipo === 'egreso' && m.fecha.startsWith(mesKey) && cuentasPersonal.includes(m.cuentaId),
+    )
+    .reduce((s, m) => s + m.monto, 0);
+  const subsidioMes = movsConciliados
+    .filter((m) => m.tipo === 'ingreso' && m.fecha.startsWith(mesKey) && m.cuentaId === 'c-4-1-01')
+    .reduce((s, m) => s + m.monto, 0);
+  const pct = subsidioMes > 0 ? (sueldosMes / subsidioMes) * 100 : 0;
+  return {
+    subsidioMes,
+    sueldosMes,
+    pct,
+    cumple: subsidioMes === 0 || pct >= 70,
+    falta: Math.max(0, subsidioMes * 0.7 - sueldosMes),
+  };
 }

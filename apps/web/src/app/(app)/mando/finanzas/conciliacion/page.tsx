@@ -28,7 +28,9 @@ export default function ConciliacionPage() {
   const actualizarCaja = useFaroStore((s) => s.actualizarCaja);
 
   const [selId, setSelId] = useState(cajas[0]?.id ?? '');
-  const [extracto, setExtracto] = useState(String(cajas[0]?.saldoActual ?? ''));
+  const [extracto, setExtracto] = useState(
+    String(cajas[0]?.saldoConciliado ?? cajas[0]?.saldoActual ?? ''),
+  );
   const [confirmados, setConfirmados] = useState<Set<string>>(new Set());
   const [ajustes, setAjustes] = useState<Ajuste[]>([]);
   const [ajDesc, setAjDesc] = useState('');
@@ -50,7 +52,7 @@ export default function ConciliacionPage() {
   function seleccionar(id: string) {
     const c = cajas.find((x) => x.id === id);
     setSelId(id);
-    setExtracto(String(c?.saldoActual ?? ''));
+    setExtracto(String(c?.saldoConciliado ?? c?.saldoActual ?? ''));
     setConfirmados(new Set());
     setAjustes([]);
   }
@@ -99,6 +101,8 @@ export default function ConciliacionPage() {
   // al extracto. Cuadra cuando (sistema − extracto) + ajustes = 0.
   const sinExplicar = diferencia + totalAjustes;
   const cuadra = Math.abs(sinExplicar) < 1;
+  const todoRevisado = movsCaja.length === 0 || confirmados.size === movsCaja.length;
+  const listoParaConciliar = cuadra && todoRevisado;
 
   const cuadradas = cajas.filter((c) => c.saldoActual === c.saldoConciliado).length;
 
@@ -286,8 +290,8 @@ export default function ConciliacionPage() {
               </ul>
             )}
             <p className="mt-2 text-[11px] text-slate-400">
-              Tildá los que ya figuran en el extracto. Los que no, están en tránsito o faltan
-              cargar.
+              Revisá cada uno contra el extracto y tildalo. Para conciliar hay que revisarlos todos;
+              los que no figuran están en tránsito.
             </p>
           </CardContent>
         </Card>
@@ -358,31 +362,37 @@ export default function ConciliacionPage() {
       <Card
         className={cn(
           'border-2',
-          cuadra ? 'border-status-ok/30 bg-status-ok-bg/10' : 'border-slate-200',
+          listoParaConciliar ? 'border-status-ok/30 bg-status-ok-bg/10' : 'border-slate-200',
         )}
       >
         <CardContent className="flex flex-wrap items-center justify-between gap-3 p-4">
           <div className="flex items-center gap-3">
-            {cuadra ? (
+            {listoParaConciliar ? (
               <CheckCircle2 size={22} className="text-status-ok shrink-0" />
             ) : (
               <AlertTriangle size={22} className="text-status-warn-fg shrink-0" />
             )}
             <div className="text-sm text-slate-700">
-              {cuadra ? (
+              {!cuadra ? (
+                <>
+                  Todavía faltan <strong>{ars.format(Math.abs(sinExplicar))}</strong> por explicar.
+                  Ajustá el saldo del extracto o cargá un ajuste hasta que cuadre.
+                </>
+              ) : !todoRevisado ? (
+                <>
+                  <strong className="text-slate-900">Cuadra</strong>, pero te faltan revisar{' '}
+                  <strong>{movsCaja.length - confirmados.size}</strong> movimiento(s) contra el
+                  extracto antes de conciliar.
+                </>
+              ) : (
                 <>
                   <strong className="text-slate-900">{caja.nombre} cuadra.</strong> El saldo del
                   sistema coincide con el extracto (con los ajustes cargados).
                 </>
-              ) : (
-                <>
-                  Todavía faltan <strong>{ars.format(Math.abs(sinExplicar))}</strong> por explicar.
-                  Tildá movimientos o cargá un ajuste hasta que cuadre.
-                </>
               )}
             </div>
           </div>
-          <Button intent="primary" onClick={conciliar} disabled={!cuadra}>
+          <Button intent="primary" onClick={conciliar} disabled={!listoParaConciliar}>
             <CheckCircle2 size={14} /> Marcar conciliada
           </Button>
         </CardContent>

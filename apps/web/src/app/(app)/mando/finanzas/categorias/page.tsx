@@ -22,6 +22,7 @@ import { useMemo, useState } from 'react';
 
 import { ars, arsCompact, fechaCorta } from '../../../../../components/finanzas/utils';
 import { PageHero } from '../../../../../components/shared/page-hero';
+import { demoToday } from '../../../../../lib/utils/demo-today';
 import { selectCuartelActivo, useFaroStore } from '../../../../../store/use-faro-store';
 
 import type { CuentaContable, TipoCuentaContable } from '@faro/types';
@@ -400,7 +401,7 @@ export default function PlanCuentasPage() {
                 })}
               </svg>
               <div className="relative z-10 text-center">
-                <div className="text-xs uppercase text-slate-500">Total YTD</div>
+                <div className="text-xs uppercase text-slate-500">Volumen YTD</div>
                 <div className="font-mono text-xl font-black text-slate-900">
                   {arsCompact(totalGeneralEjec)}
                 </div>
@@ -614,7 +615,8 @@ export default function PlanCuentasPage() {
                       const presup = seleccionada.presupuestoAnual ?? 0;
                       const presupMensual = seleccionada.presupuestoMensual ?? 0;
                       const pct = presup > 0 ? (ejec / presup) * 100 : 0;
-                      const proyeccion = (ejec / 5) * 12; // 5 meses YTD
+                      const mesesYTD = demoToday().getMonth() + 1; // meses transcurridos del año
+                      const proyeccion = mesesYTD > 0 ? (ejec / mesesYTD) * 12 : 0;
                       return (
                         <>
                           {presup > 0 ? (
@@ -670,7 +672,7 @@ export default function PlanCuentasPage() {
                                     Mensual proyectado
                                   </div>
                                   <div className="font-mono text-sm font-bold text-slate-900">
-                                    {arsCompact(ejec / 5)}
+                                    {arsCompact(mesesYTD > 0 ? ejec / mesesYTD : 0)}
                                   </div>
                                   {presupMensual > 0 && (
                                     <div className="text-[11px] text-slate-500">

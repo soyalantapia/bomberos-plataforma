@@ -13,7 +13,13 @@ import { useMemo } from 'react';
 import { Badge, Card, CardContent, Kpi, cn } from '@faro/ui';
 
 import { PageHero } from '../../../../../components/shared/page-hero';
-import { ars, arsCompact } from '../../../../../components/finanzas/utils';
+import {
+  aireIntent,
+  ars,
+  arsCompact,
+  egresoMensualPromedio,
+  mesesDeAire,
+} from '../../../../../components/finanzas/utils';
 import { calcularCashFlow } from '../../../../../lib/utils/cashflow';
 import { selectCuartelActivo, useFaroStore } from '../../../../../store/use-faro-store';
 
@@ -28,6 +34,16 @@ export default function CashFlowPage() {
     () => calcularCashFlow(cajas, movimientos, presupuestos[0], cuentas),
     [cajas, movimientos, presupuestos, cuentas],
   );
+
+  // "Meses de aire" — misma definición que Resumen y Acciones (saldo ÷ gasto real
+  // promedio), para que las tres pantallas digan lo mismo. La trayectoria de abajo
+  // es otra cosa: la proyección del déficit presupuestado.
+  const egrProm = useMemo(
+    () => egresoMensualPromedio(movimientos.filter((m) => m.estado === 'conciliado')),
+    [movimientos],
+  );
+  const mesesAire = mesesDeAire(cf.saldoHoy, egrProm);
+  const hayDeficit = cf.netoMensual < 0 && cf.saldoHoy > 0;
 
   const maxSaldo = Math.max(cf.saldoHoy, ...cf.proyeccion.map((p) => Math.abs(p.saldoFinal)), 1);
   const quiebre = cf.proyeccion.find((p) => p.negativo);
@@ -67,11 +83,7 @@ export default function CashFlowPage() {
         descripcion="Con qué dinero contás de acá en adelante. Proyecta el saldo mes a mes según ingresos y egresos esperados, separando el gasto operativo de la inversión en bienes de uso."
         icono={<PiggyBank size={26} />}
         variant={
-          cf.runwayMeses !== null && cf.runwayMeses <= 6
-            ? 'critical'
-            : cf.runwayMeses !== null
-              ? 'default'
-              : 'success'
+          mesesAire !== null && mesesAire < 3 ? 'critical' : hayDeficit ? 'default' : 'success'
         }
         meta={
           <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
@@ -82,9 +94,10 @@ export default function CashFlowPage() {
               intent={cf.netoMensual >= 0 ? 'ok' : 'risk'}
             />
             <Kpi
-              label="Runway"
-              value={cf.runwayMeses !== null ? `${cf.runwayMeses} meses` : '∞'}
-              intent={cf.runwayMeses !== null && cf.runwayMeses <= 6 ? 'risk' : 'ok'}
+              label="Meses de aire"
+              value={mesesAire === null ? '—' : mesesAire.toFixed(1).replace('.', ',')}
+              hint="si se cortaran ingresos"
+              intent={aireIntent(mesesAire)}
             />
             <Kpi label="Inversión/mes" value={arsCompact(cf.inversionMensual)} intent="neutral" />
           </div>
@@ -95,30 +108,30 @@ export default function CashFlowPage() {
       <Card
         className={cn(
           'border-2',
-          cf.runwayMeses !== null
+          hayDeficit
             ? 'border-status-risk/30 bg-status-risk-bg/20'
             : 'border-status-ok/30 bg-status-ok-bg/20',
         )}
       >
         <CardContent className="flex items-start gap-3 p-4">
-          {cf.runwayMeses !== null ? (
+          {hayDeficit ? (
             <TrendingDown size={22} className="text-status-risk-fg mt-0.5 shrink-0" />
           ) : (
             <ArrowUpRight size={22} className="text-status-ok-fg mt-0.5 shrink-0" />
           )}
           <div className="text-sm text-slate-700">
-            {cf.runwayMeses !== null ? (
+            {hayDeficit ? (
               <>
-                A este ritmo gastás <strong>{ars.format(Math.abs(cf.netoMensual))}</strong> más de
-                lo que entra por mes. Con el saldo actual te alcanza para{' '}
-                <strong>~{cf.runwayMeses} meses</strong>
+                Con el presupuesto actual gastás{' '}
+                <strong>{ars.format(Math.abs(cf.netoMensual))}</strong> más de lo que entra por mes.
                 {quiebre && (
                   <>
                     {' '}
-                    — la proyección se vuelve negativa en <strong>{quiebre.label}</strong>
+                    Si el déficit se mantiene, el saldo entra en rojo en{' '}
+                    <strong>{quiebre.label}</strong>.
                   </>
-                )}
-                . Conviene revisar gastos o postergar inversiones.
+                )}{' '}
+                Conviene revisar gastos o postergar inversiones.
               </>
             ) : (
               <>

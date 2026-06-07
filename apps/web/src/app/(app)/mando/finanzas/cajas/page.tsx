@@ -92,8 +92,10 @@ export default function CajasPage() {
   const [errTrans, setErrTrans] = useState<Record<string, string>>({});
 
   const saldoTotal = useMemo(() => cajas.reduce((s, c) => s + c.saldoActual, 0), [cajas]);
-  const cajasOk = cajas.filter((c) => c.saldoActual === c.saldoConciliado).length;
-  const conDif = cajas.filter((c) => c.saldoActual !== c.saldoConciliado).length;
+  const cajasOk = cajas.filter(
+    (c) => c.saldoActual === (c.saldoConciliado ?? c.saldoActual),
+  ).length;
+  const conDif = cajas.filter((c) => c.saldoActual !== (c.saldoConciliado ?? c.saldoActual)).length;
   const cajasOrden = useMemo(
     () => [...cajas].sort((a, b) => b.saldoActual - a.saldoActual),
     [cajas],

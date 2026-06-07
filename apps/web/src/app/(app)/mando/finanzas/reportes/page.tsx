@@ -82,13 +82,20 @@ export default function ReportesPage() {
   const subsidio = movsPeriodo
     .filter((m) => m.cuentaId === 'c-4-1-01' && m.tipo === 'ingreso')
     .reduce((s, m) => s + m.monto, 0);
+  const cuentasPersonal = cuentas
+    .filter((c) => c.categoria === 'personal_rentado')
+    .map((c) => c.id);
   const sueldos = movsPeriodo
-    .filter((m) => m.cuentaId === 'c-5-1-01' && m.tipo === 'egreso')
+    .filter((m) => m.tipo === 'egreso' && cuentasPersonal.includes(m.cuentaId))
     .reduce((s, m) => s + m.monto, 0);
   const pctPersonal = subsidio > 0 ? (sueldos / subsidio) * 100 : 0;
 
-  // Balance simplificado (saldos por caja)
+  // Balance simplificado. "Resultados acumulados" es la figura de cierre para que
+  // Activo = Pasivo + P.Neto (como en un balance real simplificado), no un número suelto.
   const activos = cajas.reduce((s, c) => s + c.saldoActual, 0);
+  const activoTotal = activos + 45_000_000;
+  const pasivoFijo = 2_400_000 + 1_100_000 + 50_000_000;
+  const resultadosAcum = activoTotal - pasivoFijo;
 
   function exportar(formato: 'pdf' | 'excel' | 'csv') {
     if (formato === 'csv') {
@@ -123,9 +130,10 @@ export default function ReportesPage() {
 
   function enviarPorMail() {
     toast.push({
-      kind: 'success',
-      title: 'Enviado a Comisión Directiva',
-      description: '5 destinatarios · reporte adjunto PDF + Excel',
+      kind: 'info',
+      title: 'Demo: se enviaría a la Comisión Directiva',
+      description:
+        'En producción adjunta el reporte (PDF + Excel) y lo manda a los 5 destinatarios.',
     });
   }
 
@@ -358,7 +366,7 @@ export default function ReportesPage() {
                       <tr className="bg-status-ok-bg/40 border-t-2 border-slate-300">
                         <td className="py-2 font-bold uppercase text-slate-900">Total activo</td>
                         <td className="text-status-ok-fg py-2 text-right font-mono text-lg font-bold">
-                          {ars.format(activos + 45_000_000)}
+                          {ars.format(activoTotal)}
                         </td>
                       </tr>
                     </tbody>
@@ -387,12 +395,12 @@ export default function ReportesPage() {
                       </tr>
                       <tr className="border-t border-slate-100">
                         <td className="py-1 font-semibold text-slate-700">Resultados acumulados</td>
-                        <td className="py-1 text-right font-mono">{ars.format(6_320_000)}</td>
+                        <td className="py-1 text-right font-mono">{ars.format(resultadosAcum)}</td>
                       </tr>
                       <tr className="bg-status-risk-bg/40 border-t-2 border-slate-300">
                         <td className="py-2 font-bold uppercase text-slate-900">Total P+PN</td>
-                        <td className="text-status-risk-fg py-2 text-right font-mono text-lg font-bold">
-                          {ars.format(activos + 45_000_000)}
+                        <td className="text-status-ok-fg py-2 text-right font-mono text-lg font-bold">
+                          {ars.format(activoTotal)}
                         </td>
                       </tr>
                     </tbody>
@@ -414,8 +422,8 @@ export default function ReportesPage() {
                 <tr>
                   <th className="px-3 py-2 text-left">Concepto</th>
                   <th className="px-3 py-2 text-right">Mes</th>
-                  <th className="px-3 py-2 text-right">Trimestre</th>
-                  <th className="px-3 py-2 text-right">YTD</th>
+                  <th className="px-3 py-2 text-right">Trim. (est.)</th>
+                  <th className="px-3 py-2 text-right">YTD (est.)</th>
                 </tr>
               </thead>
               <tbody>
