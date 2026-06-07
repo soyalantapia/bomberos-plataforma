@@ -18,11 +18,21 @@ export interface InversionPlan {
   trimestre: 1 | 2 | 3 | 4;
 }
 
+export interface LineaPlan {
+  id: string;
+  concepto: string;
+  monto: number;
+}
+
 export interface PlanAnual {
   anio: number;
   estado: 'borrador' | 'presentado' | 'aprobado';
   objetivos: ObjetivoPlan[];
   inversiones: InversionPlan[];
+  /** Ingresos esperados del año, por fuente. */
+  ingresos: LineaPlan[];
+  /** Egresos operativos planeados del año, por categoría. */
+  egresos: LineaPlan[];
 }
 
 export const planAnualMock: PlanAnual = {
@@ -70,5 +80,25 @@ export const planAnualMock: PlanAnual = {
       monto: 600_000,
       trimestre: 1,
     },
+  ],
+  ingresos: [
+    { id: 'ing-1', concepto: 'Subsidio Nacional · Ley 25.054', monto: 30_000_000 },
+    { id: 'ing-2', concepto: 'Subsidio Provincial', monto: 12_000_000 },
+    { id: 'ing-3', concepto: 'Subsidio Municipal', monto: 3_000_000 },
+    { id: 'ing-4', concepto: 'Cuotas sociales', monto: 9_000_000 },
+    { id: 'ing-5', concepto: 'Rifas y eventos', monto: 8_000_000 },
+    { id: 'ing-6', concepto: 'Donaciones', monto: 4_000_000 },
+    { id: 'ing-7', concepto: 'Otros ingresos', monto: 3_600_000 },
+  ],
+  egresos: [
+    { id: 'egr-1', concepto: 'Personal rentado', monto: 38_000_000 },
+    { id: 'egr-2', concepto: 'Combustible', monto: 6_000_000 },
+    { id: 'egr-3', concepto: 'Mantenimiento de móviles', monto: 7_000_000 },
+    { id: 'egr-4', concepto: 'Servicios públicos', monto: 5_000_000 },
+    { id: 'egr-5', concepto: 'Seguros', monto: 4_000_000 },
+    { id: 'egr-6', concepto: 'EPP y equipamiento', monto: 6_000_000 },
+    { id: 'egr-7', concepto: 'Capacitación', monto: 2_000_000 },
+    { id: 'egr-8', concepto: 'Administrativo', monto: 4_000_000 },
+    { id: 'egr-9', concepto: 'Impuestos y tasas', monto: 3_000_000 },
   ],
 };

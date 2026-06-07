@@ -13,6 +13,8 @@ import {
   useToast,
 } from '@faro/ui';
 import {
+  ArrowDownRight,
+  ArrowUpRight,
   CheckCircle2,
   Circle,
   Coins,
@@ -34,12 +36,14 @@ export default function PlanAnualPage() {
   const toast = useToast();
   const cuartel = useFaroStore(selectCuartelActivo);
   const plan = useFaroStore((s) => s.planAnual);
-  const presupuestos = useFaroStore((s) => s.presupuestos);
   const agregarObjetivo = useFaroStore((s) => s.agregarObjetivoPlan);
   const toggleObjetivo = useFaroStore((s) => s.toggleObjetivoPlan);
   const eliminarObjetivo = useFaroStore((s) => s.eliminarObjetivoPlan);
   const agregarInversion = useFaroStore((s) => s.agregarInversionPlan);
   const eliminarInversion = useFaroStore((s) => s.eliminarInversionPlan);
+  const agregarLinea = useFaroStore((s) => s.agregarLineaPlan);
+  const setMontoLinea = useFaroStore((s) => s.setMontoLineaPlan);
+  const eliminarLinea = useFaroStore((s) => s.eliminarLineaPlan);
   const presentarPlan = useFaroStore((s) => s.presentarPlan);
 
   const [nuevoObjetivo, setNuevoObjetivo] = useState('');
@@ -47,10 +51,17 @@ export default function PlanAnualPage() {
   const [invConcepto, setInvConcepto] = useState('');
   const [invMonto, setInvMonto] = useState('');
   const [invTrim, setInvTrim] = useState<1 | 2 | 3 | 4>(1);
+  const [nuevaIng, setNuevaIng] = useState({ concepto: '', monto: '' });
+  const [nuevaEgr, setNuevaEgr] = useState({ concepto: '', monto: '' });
 
-  const presupuesto = presupuestos[0];
-  const ingEsperados = presupuesto?.totalIngresos ?? 0;
-  const egrOperativos = presupuesto?.totalEgresos ?? 0;
+  const ingEsperados = useMemo(
+    () => plan.ingresos.reduce((s, l) => s + l.monto, 0),
+    [plan.ingresos],
+  );
+  const egrOperativos = useMemo(
+    () => plan.egresos.reduce((s, l) => s + l.monto, 0),
+    [plan.egresos],
+  );
   const resultadoOperativo = ingEsperados - egrOperativos;
 
   const inversionTotal = useMemo(
@@ -91,6 +102,18 @@ export default function PlanAnualPage() {
     setInvMonto('');
     setInvTrim(1);
     toast.push({ kind: 'success', title: 'Inversión agregada al plan' });
+  }
+
+  function addLinea(tipo: 'ingresos' | 'egresos') {
+    const draft = tipo === 'ingresos' ? nuevaIng : nuevaEgr;
+    const monto = Number(draft.monto);
+    if (!draft.concepto.trim() || !monto || monto <= 0) {
+      toast.push({ kind: 'warn', title: 'Completá concepto y monto' });
+      return;
+    }
+    agregarLinea(tipo, draft.concepto.trim(), monto);
+    if (tipo === 'ingresos') setNuevaIng({ concepto: '', monto: '' });
+    else setNuevaEgr({ concepto: '', monto: '' });
   }
 
   function exportar() {
@@ -313,6 +336,133 @@ export default function PlanAnualPage() {
                     </div>
                   ))}
                 </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Presupuesto del año — editable */}
+        <div className="space-y-0.5 px-1">
+          <h2 className="text-sm font-bold uppercase tracking-wide text-slate-700">
+            Presupuesto del año · armalo al detalle
+          </h2>
+          <p className="text-xs text-slate-500">
+            Editá cada monto, agregá o quitá líneas. El cierre de abajo se recalcula solo.
+          </p>
+        </div>
+        <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
+          {/* Ingresos */}
+          <Card>
+            <CardContent className="p-5">
+              <div className="mb-3 flex items-center justify-between">
+                <h3 className="flex items-center gap-2 font-bold text-slate-900">
+                  <ArrowUpRight size={16} className="text-status-ok-fg" /> Ingresos esperados
+                </h3>
+                <span className="text-status-ok-fg font-mono text-sm font-bold">
+                  {ars.format(ingEsperados)}
+                </span>
+              </div>
+              <ul className="space-y-1.5">
+                {plan.ingresos.map((l) => (
+                  <li key={l.id} className="group flex items-center gap-2">
+                    <span className="min-w-0 flex-1 truncate text-sm text-slate-800">
+                      {l.concepto}
+                    </span>
+                    <Input
+                      type="number"
+                      inputMode="numeric"
+                      value={String(l.monto)}
+                      onChange={(e) => setMontoLinea('ingresos', l.id, Number(e.target.value) || 0)}
+                      className="w-28 text-right font-mono text-sm"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => eliminarLinea('ingresos', l.id)}
+                      aria-label="Quitar ingreso"
+                      className="hover:text-status-risk-fg shrink-0 text-slate-300 opacity-0 transition-opacity group-hover:opacity-100"
+                    >
+                      <Trash2 size={15} />
+                    </button>
+                  </li>
+                ))}
+              </ul>
+              <div className="mt-3 flex gap-2 border-t border-slate-100 pt-3">
+                <Input
+                  value={nuevaIng.concepto}
+                  onChange={(e) => setNuevaIng({ ...nuevaIng, concepto: e.target.value })}
+                  onKeyDown={(e) => e.key === 'Enter' && addLinea('ingresos')}
+                  placeholder="Nueva fuente…"
+                  className="flex-1"
+                />
+                <Input
+                  type="number"
+                  inputMode="numeric"
+                  value={nuevaIng.monto}
+                  onChange={(e) => setNuevaIng({ ...nuevaIng, monto: e.target.value })}
+                  placeholder="$"
+                  className="w-24"
+                />
+                <Button intent="ghost" size="sm" onClick={() => addLinea('ingresos')}>
+                  <Plus size={14} />
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Egresos */}
+          <Card>
+            <CardContent className="p-5">
+              <div className="mb-3 flex items-center justify-between">
+                <h3 className="flex items-center gap-2 font-bold text-slate-900">
+                  <ArrowDownRight size={16} className="text-status-risk-fg" /> Egresos planeados
+                </h3>
+                <span className="text-status-risk-fg font-mono text-sm font-bold">
+                  {ars.format(egrOperativos)}
+                </span>
+              </div>
+              <ul className="space-y-1.5">
+                {plan.egresos.map((l) => (
+                  <li key={l.id} className="group flex items-center gap-2">
+                    <span className="min-w-0 flex-1 truncate text-sm text-slate-800">
+                      {l.concepto}
+                    </span>
+                    <Input
+                      type="number"
+                      inputMode="numeric"
+                      value={String(l.monto)}
+                      onChange={(e) => setMontoLinea('egresos', l.id, Number(e.target.value) || 0)}
+                      className="w-28 text-right font-mono text-sm"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => eliminarLinea('egresos', l.id)}
+                      aria-label="Quitar egreso"
+                      className="hover:text-status-risk-fg shrink-0 text-slate-300 opacity-0 transition-opacity group-hover:opacity-100"
+                    >
+                      <Trash2 size={15} />
+                    </button>
+                  </li>
+                ))}
+              </ul>
+              <div className="mt-3 flex gap-2 border-t border-slate-100 pt-3">
+                <Input
+                  value={nuevaEgr.concepto}
+                  onChange={(e) => setNuevaEgr({ ...nuevaEgr, concepto: e.target.value })}
+                  onKeyDown={(e) => e.key === 'Enter' && addLinea('egresos')}
+                  placeholder="Nueva categoría…"
+                  className="flex-1"
+                />
+                <Input
+                  type="number"
+                  inputMode="numeric"
+                  value={nuevaEgr.monto}
+                  onChange={(e) => setNuevaEgr({ ...nuevaEgr, monto: e.target.value })}
+                  placeholder="$"
+                  className="w-24"
+                />
+                <Button intent="ghost" size="sm" onClick={() => addLinea('egresos')}>
+                  <Plus size={14} />
+                </Button>
               </div>
             </CardContent>
           </Card>

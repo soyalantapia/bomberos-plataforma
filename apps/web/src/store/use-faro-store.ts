@@ -80,6 +80,7 @@ import {
 import {
   planAnualMock,
   type InversionPlan,
+  type LineaPlan,
   type ObjetivoPlan,
   type PlanAnual,
 } from '../data/plan-anual';
@@ -185,6 +186,9 @@ interface Actions {
   eliminarObjetivoPlan: (id: string) => void;
   agregarInversionPlan: (input: Omit<InversionPlan, 'id'>) => void;
   eliminarInversionPlan: (id: string) => void;
+  agregarLineaPlan: (tipo: 'ingresos' | 'egresos', concepto: string, monto: number) => void;
+  setMontoLineaPlan: (tipo: 'ingresos' | 'egresos', id: string, monto: number) => void;
+  eliminarLineaPlan: (tipo: 'ingresos' | 'egresos', id: string) => void;
   presentarPlan: () => void;
   presentarRendicion: (rendicionId: string, mandoId: string) => void;
   marcarNotifLeida: (id: string) => void;
@@ -634,6 +638,24 @@ export const useFaroStore = create<FaroStore>()(
       eliminarInversionPlan(id) {
         const p = get().planAnual;
         set({ planAnual: { ...p, inversiones: p.inversiones.filter((i) => i.id !== id) } });
+      },
+      agregarLineaPlan(tipo, concepto, monto) {
+        const l: LineaPlan = { id: genId('lin'), concepto, monto };
+        const p = get().planAnual;
+        set({ planAnual: { ...p, [tipo]: [...p[tipo], l] } });
+      },
+      setMontoLineaPlan(tipo, id, monto) {
+        const p = get().planAnual;
+        set({
+          planAnual: {
+            ...p,
+            [tipo]: p[tipo].map((l) => (l.id === id ? { ...l, monto } : l)),
+          },
+        });
+      },
+      eliminarLineaPlan(tipo, id) {
+        const p = get().planAnual;
+        set({ planAnual: { ...p, [tipo]: p[tipo].filter((l) => l.id !== id) } });
       },
       presentarPlan() {
         set({ planAnual: { ...get().planAnual, estado: 'presentado' } });
