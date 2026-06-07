@@ -1,152 +1,65 @@
 'use client';
 
-import {
-  ArrowLeft,
-  ClipboardCheck,
-  Eye,
-  FileCheck2,
-  Flag,
-  Gauge,
-  Megaphone,
-  ShieldAlert,
-  Target,
-  Truck,
-  Users,
-  Wrench,
-  type LucideIcon,
-} from 'lucide-react';
+import { Badge, Button, Card, CardContent, Kpi, cn, useToast } from '@faro/ui';
+import { ArrowLeft, CalendarClock, Clock, Droplets, Flag, Send, ShieldCheck } from 'lucide-react';
 import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
-import { useMemo, useState } from 'react';
+import { useMemo } from 'react';
 
-import {
-  Badge,
-  Button,
-  Card,
-  CardContent,
-  Dialog,
-  Input,
-  Kpi,
-  Label,
-  Textarea,
-  cn,
-  useToast,
-} from '@faro/ui';
-
+import { ORGANISMO_LABEL } from '../../../../../components/federacion/finanzas-utils';
+import { aireIntent, ars, arsCompact } from '../../../../../components/finanzas/utils';
 import { EmptyState } from '../../../../../components/shared/empty-state';
-import type { TipoAccionFed } from '../../../../../data/acciones-fed';
-import { fmtFechaCorta, mesKey } from '../../../../../lib/utils/date';
-import { demoToday } from '../../../../../lib/utils/demo-today';
-import { tipoServicioLabel } from '../../../../../lib/utils/tipo-servicio';
+import { finanzasRedMock } from '../../../../../data/finanzas-red';
+import { finanzasCuartel } from '../../../../../lib/utils/finanzas-red';
 import { useFaroStore } from '../../../../../store/use-faro-store';
 
-const TIPOS: Array<{
-  id: TipoAccionFed;
-  label: string;
-  icon: LucideIcon;
-  desc: string;
-  tone: string;
-}> = [
-  {
-    id: 'comunicado',
-    label: 'Comunicar',
-    icon: Megaphone,
-    desc: 'Mensaje al mando del cuartel',
-    tone: 'bg-brand-600',
-  },
-  {
-    id: 'observacion',
-    label: 'Observación',
-    icon: Eye,
-    desc: 'Dejar registro',
-    tone: 'bg-slate-600',
-  },
-  {
-    id: 'intervencion',
-    label: 'Intervención',
-    icon: ShieldAlert,
-    desc: 'Plan de regularización',
-    tone: 'bg-status-risk',
-  },
-  {
-    id: 'auditoria',
-    label: 'Auditoría',
-    icon: ClipboardCheck,
-    desc: 'Solicitar / programar',
-    tone: 'bg-status-warn',
-  },
-  {
-    id: 'objetivo',
-    label: 'Objetivo',
-    icon: Target,
-    desc: 'Fijar meta con plazo',
-    tone: 'bg-status-ok',
-  },
-];
-const TIPO_LABEL: Record<TipoAccionFed, string> = {
-  comunicado: 'Comunicado',
-  observacion: 'Observación',
-  intervencion: 'Intervención',
-  auditoria: 'Auditoría',
-  objetivo: 'Objetivo',
-};
+const VENTANA_DIAS = 120;
 
-function diasHasta(iso: string) {
-  return Math.round(
-    (new Date(iso).setHours(0, 0, 0, 0) - demoToday().setHours(0, 0, 0, 0)) / 8.64e7,
-  );
-}
+const SALUD_CHIP: Record<
+  'ok' | 'warn' | 'risk',
+  { label: string; intent: 'ok' | 'warn' | 'risk' }
+> = {
+  ok: { label: 'Sana', intent: 'ok' },
+  warn: { label: 'Atención', intent: 'warn' },
+  risk: { label: 'En riesgo', intent: 'risk' },
+};
 
 export default function FichaCuartelFederacion() {
   const params = useParams<{ id: string }>();
   const router = useRouter();
   const toast = useToast();
   const cuarteles = useFaroStore((s) => s.cuarteles);
-  const personas = useFaroStore((s) => s.personas);
-  const servicios = useFaroStore((s) => s.servicios);
-  const moviles = useFaroStore((s) => s.moviles);
-  const rendiciones = useFaroStore((s) => s.rendiciones);
-  const accionesFed = useFaroStore((s) => s.accionesFed);
-  const registrarAccionFed = useFaroStore((s) => s.registrarAccionFed);
-  const resolverAccionFed = useFaroStore((s) => s.resolverAccionFed);
+  const enviarComunicadoFed = useFaroStore((s) => s.enviarComunicadoFed);
 
   const cuartel = cuarteles.find((c) => c.id === params.id);
-  const [dlg, setDlg] = useState<TipoAccionFed | null>(null);
-  const [asunto, setAsunto] = useState('');
-  const [detalle, setDetalle] = useState('');
 
-  const periodo = mesKey(demoToday());
-  const d = useMemo(() => {
-    const id = params.id;
-    const personal = personas.filter((p) => p.cuartelId === id && p.estado === 'activo');
-    const servs = servicios.filter(
-      (s) => s.cuartelId === id && s.horaSalida.slice(0, 7) === periodo,
-    );
-    const mov = moviles.filter((m) => m.cuartelId === id);
-    const vtvVencen = mov.filter((m) => {
-      const dd = diasHasta(m.vtvVencimiento);
-      return dd >= 0 && dd < 30;
-    }).length;
-    const rend = Object.values(rendiciones).find(
-      (r) => r.cuartelId === id && r.periodo === periodo,
-    );
-    const porTipo = servs.reduce<Record<string, number>>((acc, s) => {
-      acc[s.tipo] = (acc[s.tipo] ?? 0) + 1;
-      return acc;
-    }, {});
-    return { personal, servs, mov, vtvVencen, rend, porTipo };
-  }, [params.id, personas, servicios, moviles, rendiciones, periodo]);
+  const fin = useMemo(() => (cuartel ? finanzasCuartel(cuartel) : null), [cuartel]);
+  const subsidios = useMemo(() => {
+    const fr = finanzasRedMock.find((x) => x.cuartelId === params.id);
+    const caja = fin?.caja ?? fr?.caja ?? 0;
+    const items = (fr?.subsidios ?? []).map((s) => {
+      const porEjecutar = Math.max(0, s.otorgado - s.ejecutado);
+      const pct = s.otorgado > 0 ? (s.ejecutado / s.otorgado) * 100 : 0;
+      const pctTiempo = Math.min(100, Math.max(0, (1 - s.venceEnDias / VENTANA_DIAS) * 100));
+      return {
+        ...s,
+        porEjecutar,
+        pct,
+        pctTiempo,
+        atrasado: pct < pctTiempo - 6 && porEjecutar > 0,
+      };
+    });
+    const otorgado = items.reduce((a, s) => a + s.otorgado, 0);
+    const ejecutado = items.reduce((a, s) => a + s.ejecutado, 0);
+    const porEjecutar = Math.max(0, otorgado - ejecutado);
+    const ejecPct = otorgado > 0 ? (ejecutado / otorgado) * 100 : 0;
+    const venceMasPronto = items
+      .filter((s) => s.porEjecutar > 0)
+      .reduce((m, s) => Math.min(m, s.venceEnDias), Infinity);
+    return { items, otorgado, porEjecutar, ejecPct, caja, venceMasPronto };
+  }, [params.id, fin]);
 
-  const acciones = useMemo(
-    () =>
-      accionesFed
-        .filter((a) => a.cuartelId === params.id)
-        .sort((a, b) => b.fecha.localeCompare(a.fecha)),
-    [accionesFed, params.id],
-  );
-  const abiertas = acciones.filter((a) => a.estado !== 'resuelta').length;
-
-  if (!cuartel) {
+  if (!cuartel || !fin) {
     return (
       <div className="mx-auto max-w-4xl space-y-5">
         <Link
@@ -166,58 +79,26 @@ export default function FichaCuartelFederacion() {
     );
   }
 
-  const semColor =
-    cuartel.cumplimiento === 'ok'
-      ? 'bg-status-ok'
-      : cuartel.cumplimiento === 'warn'
-        ? 'bg-status-warn'
-        : cuartel.cumplimiento === 'risk'
-          ? 'bg-status-risk'
-          : 'bg-status-neutral';
-  const semLabel =
-    cuartel.cumplimiento === 'ok'
-      ? 'En regla'
-      : cuartel.cumplimiento === 'warn'
-        ? 'Atención'
-        : cuartel.cumplimiento === 'risk'
-          ? 'En riesgo'
-          : 'Sin datos';
+  const chip = SALUD_CHIP[fin.salud];
 
-  function abrir(tipo: TipoAccionFed) {
-    setAsunto('');
-    setDetalle('');
-    setDlg(tipo);
-  }
-  function guardar() {
-    if (!dlg || !cuartel) return;
-    if (asunto.trim().length < 4) {
-      toast.push({
-        kind: 'warn',
-        title: 'Falta el asunto',
-        description: 'Escribí de qué se trata.',
-      });
-      return;
-    }
-    registrarAccionFed({
-      cuartelId: cuartel.id,
+  function recordar() {
+    if (!cuartel) return;
+    enviarComunicadoFed({
+      asunto: `Subsidio por ejecutar (vence en ${subsidios.venceMasPronto} días)`,
+      cuerpo: `Tenés ${ars.format(subsidios.porEjecutar)} de subsidio otorgado sin ejecutar. Lo que no se ejecuta a tiempo se devuelve — coordiná la inversión.`,
       region: cuartel.region,
-      tipo: dlg,
-      asunto: asunto.trim(),
-      detalle: detalle.trim() || undefined,
+      canales: ['push'],
+      prioridad: 'alta',
     });
     toast.push({
       kind: 'success',
-      title: `${TIPO_LABEL[dlg]} registrada`,
-      description:
-        dlg === 'comunicado'
-          ? 'Le llega una notificación al mando del cuartel.'
-          : 'Queda en la bitácora del cuartel.',
+      title: `Recordatorio enviado a ${cuartel.nombre}`,
+      description: `${ars.format(subsidios.porEjecutar)} por ejecutar`,
     });
-    setDlg(null);
   }
 
   return (
-    <div className="mx-auto max-w-5xl space-y-5">
+    <div className="mx-auto max-w-3xl space-y-4">
       <Link
         href="/federacion"
         className="hover:text-brand-700 inline-flex items-center gap-1 text-sm text-slate-500"
@@ -228,288 +109,121 @@ export default function FichaCuartelFederacion() {
       {/* Cabecera */}
       <Card>
         <CardContent className="p-5">
-          <div className="flex items-start gap-4">
-            <div
-              className={cn(
-                'grid h-16 w-16 shrink-0 place-items-center rounded-2xl text-xl font-black text-white shadow-sm',
-                semColor,
-              )}
-            >
-              {cuartel.porcentajeRendicion}
-            </div>
-            <div className="min-w-0 flex-1">
-              <div className="flex flex-wrap items-center gap-2">
-                <h1 className="text-2xl font-black text-slate-900">{cuartel.nombre}</h1>
-                <Badge
-                  intent={
-                    cuartel.cumplimiento === 'ok'
-                      ? 'ok'
-                      : cuartel.cumplimiento === 'warn'
-                        ? 'warn'
-                        : 'risk'
-                  }
-                >
-                  {semLabel}
-                </Badge>
-                {abiertas > 0 && (
-                  <Badge intent="brand">
-                    {abiertas} acción{abiertas === 1 ? '' : 'es'} abierta{abiertas === 1 ? '' : 's'}
-                  </Badge>
-                )}
-              </div>
-              <div className="mt-0.5 text-sm text-slate-600">
-                {cuartel.ciudad}, {cuartel.provincia} · {cuartel.region}
-                {cuartel.matricula ? ` · ${cuartel.matricula}` : ''}
-                {cuartel.jefe ? ` · Jefe: ${cuartel.jefe}` : ''}
-              </div>
-            </div>
+          <div className="flex flex-wrap items-center gap-2">
+            <h1 className="text-2xl font-black text-slate-900">{cuartel.nombre}</h1>
+            <Badge intent={chip.intent}>{chip.label}</Badge>
           </div>
-
+          <div className="mt-0.5 text-sm text-slate-600">
+            {cuartel.ciudad}, {cuartel.provincia} · {cuartel.region}
+          </div>
           <div className="mt-4 grid grid-cols-2 gap-2 sm:grid-cols-4">
+            <Kpi label="Por ejecutar" value={arsCompact(subsidios.porEjecutar)} intent="brand" />
             <Kpi
-              label="Rendición"
-              value={`${cuartel.porcentajeRendicion}%`}
-              hint={semLabel}
-              icon={<Gauge size={16} />}
-              intent={
-                cuartel.cumplimiento === 'ok'
-                  ? 'ok'
-                  : cuartel.cumplimiento === 'warn'
-                    ? 'warn'
-                    : 'risk'
-              }
+              label="Ejecución"
+              value={`${subsidios.ejecPct.toFixed(0)}%`}
+              intent={subsidios.ejecPct >= 70 ? 'ok' : subsidios.ejecPct >= 45 ? 'warn' : 'risk'}
             />
             <Kpi
-              label="Personal activo"
-              value={d.personal.length}
-              icon={<Users size={16} />}
-              intent="brand"
+              label="Meses de aire"
+              value={fin.mesesAire.toFixed(1).replace('.', ',')}
+              intent={aireIntent(fin.mesesAire)}
+              icon={<Clock size={16} />}
             />
-            <Kpi label="Servicios mes" value={d.servs.length} hint={periodo} intent="neutral" />
             <Kpi
-              label="Móviles"
-              value={d.mov.length}
-              hint={d.vtvVencen > 0 ? `${d.vtvVencen} VTV x vencer` : 'al día'}
-              intent={d.vtvVencen > 0 ? 'warn' : 'ok'}
-              icon={<Truck size={16} />}
+              label="Morosidad"
+              value={`${fin.morosidadPct}%`}
+              hint="cuotas"
+              intent={fin.morosidadPct > 15 ? 'warn' : 'ok'}
             />
           </div>
         </CardContent>
       </Card>
 
-      <div className="grid gap-4 lg:grid-cols-[1fr_360px]">
-        {/* Consolidación */}
-        <div className="space-y-4">
-          <Card>
-            <CardContent className="p-5">
-              <h3 className="mb-3 flex items-center gap-2 font-bold text-slate-900">
-                <FileCheck2 size={18} className="text-brand-700" /> Consolidado del cuartel ·{' '}
-                {periodo}
-              </h3>
-              {d.personal.length === 0 && d.servs.length === 0 && d.mov.length === 0 ? (
-                <p className="text-sm text-slate-500">
-                  Este cuartel todavía no tiene datos operativos cargados en el sistema. El semáforo
-                  y la rendición vienen del consolidado regional; usá las acciones de la derecha
-                  para pedir información o intervenir.
-                </p>
-              ) : (
-                <div className="grid gap-3 sm:grid-cols-2">
-                  <div className="rounded-lg bg-slate-50 p-3">
-                    <div className="text-xs text-slate-500">Personal activo</div>
-                    <div className="text-xl font-bold text-slate-900">{d.personal.length}</div>
+      {/* Reloj de subsidios del cuartel */}
+      <Card>
+        <CardContent className="p-5">
+          <h3 className="mb-3 flex items-center gap-2 font-bold text-slate-900">
+            <CalendarClock size={18} className="text-brand-700" /> Subsidios · ejecución
+          </h3>
+          {subsidios.items.length === 0 ? (
+            <p className="text-sm text-slate-500">Este cuartel no tiene subsidios cargados.</p>
+          ) : (
+            <ul className="space-y-3">
+              {subsidios.items.map((s) => (
+                <li key={s.organismo}>
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="text-sm font-semibold text-slate-900">
+                      {ORGANISMO_LABEL[s.organismo]}
+                    </span>
+                    <span className="font-mono text-sm font-bold text-slate-900">
+                      {ars.format(s.porEjecutar)}{' '}
+                      <span className="text-xs font-normal text-slate-400">por ejecutar</span>
+                    </span>
                   </div>
-                  <div className="rounded-lg bg-slate-50 p-3">
-                    <div className="text-xs text-slate-500">Móviles</div>
-                    <div className="text-xl font-bold text-slate-900">
-                      {d.mov.length}
-                      {d.vtvVencen > 0 && (
-                        <span className="text-status-warn-fg ml-2 text-xs font-semibold">
-                          {d.vtvVencen} VTV x vencer
-                        </span>
+                  <div className="relative mt-1.5 h-2.5 overflow-hidden rounded-full bg-slate-100">
+                    <div
+                      className="absolute top-0 z-10 h-full w-0.5 bg-slate-500"
+                      style={{ left: `${s.pctTiempo}%` }}
+                      title={`${s.pctTiempo.toFixed(0)}% del plazo`}
+                    />
+                    <div
+                      className={cn(
+                        'h-full rounded-full',
+                        s.atrasado ? 'bg-status-warn' : 'bg-status-ok',
                       )}
-                    </div>
+                      style={{ width: `${Math.min(100, s.pct)}%` }}
+                    />
                   </div>
-                  {Object.keys(d.porTipo).length > 0 && (
-                    <div className="rounded-lg bg-slate-50 p-3 sm:col-span-2">
-                      <div className="mb-1.5 text-xs text-slate-500">
-                        Servicios del mes por tipo
-                      </div>
-                      <div className="flex flex-wrap gap-1.5">
-                        {Object.entries(d.porTipo)
-                          .sort((a, b) => b[1] - a[1])
-                          .map(([t, n]) => (
-                            <span
-                              key={t}
-                              className="bg-brand-50 text-brand-800 rounded-md px-2 py-1 text-xs font-medium"
-                            >
-                              {tipoServicioLabel[t as keyof typeof tipoServicioLabel] ?? t}: {n}
-                            </span>
-                          ))}
-                      </div>
-                    </div>
-                  )}
-                  {d.rend && (
-                    <div className="rounded-lg bg-slate-50 p-3 sm:col-span-2">
-                      <div className="flex items-center justify-between">
-                        <span className="text-xs text-slate-500">
-                          Rendición al Fondo (Ley 25.054)
-                        </span>
-                        <Badge intent={d.rend.estado === 'presentada' ? 'ok' : 'warn'}>
-                          {d.rend.porcentaje}% · {d.rend.estado.replace(/_/g, ' ')}
-                        </Badge>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              )}
-            </CardContent>
-          </Card>
-
-          {/* Bitácora */}
-          <Card>
-            <CardContent className="p-5">
-              <h3 className="mb-3 flex items-center gap-2 font-bold text-slate-900">
-                <Wrench size={18} className="text-brand-700" /> Bitácora de la Federación
-              </h3>
-              {acciones.length === 0 ? (
-                <EmptyState
-                  inline
-                  icon={<Flag size={24} />}
-                  titulo="Sin acciones"
-                  descripcion="Todavía no registraste acciones sobre este cuartel."
-                />
-              ) : (
-                <ul className="space-y-2.5">
-                  {acciones.map((a) => (
-                    <li key={a.id} className="rounded-xl border border-slate-200 p-3">
-                      <div className="flex items-start justify-between gap-2">
-                        <div className="min-w-0 flex-1">
-                          <div className="flex flex-wrap items-center gap-2">
-                            <Badge
-                              intent={
-                                a.tipo === 'intervencion'
-                                  ? 'risk'
-                                  : a.tipo === 'auditoria'
-                                    ? 'warn'
-                                    : 'neutral'
-                              }
-                            >
-                              {TIPO_LABEL[a.tipo]}
-                            </Badge>
-                            <span className="font-medium text-slate-900">{a.asunto}</span>
-                          </div>
-                          {a.detalle && <p className="mt-1 text-sm text-slate-600">{a.detalle}</p>}
-                          <div className="mt-1 text-xs text-slate-400">
-                            {fmtFechaCorta(a.fecha)} · {a.autor}
-                          </div>
-                        </div>
-                        <div className="shrink-0">
-                          {a.estado === 'resuelta' ? (
-                            <Badge intent="ok">Resuelta</Badge>
-                          ) : (
-                            <Button
-                              intent="ghost"
-                              size="sm"
-                              onClick={() => resolverAccionFed(a.id)}
-                            >
-                              Resolver
-                            </Button>
-                          )}
-                        </div>
-                      </div>
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Decisiones */}
-        <div className="space-y-3">
-          <Card className="border-brand-100 bg-brand-50/30 border-2">
-            <CardContent className="p-4">
-              <h3 className="mb-1 flex items-center gap-2 font-bold text-slate-900">
-                <ShieldAlert size={18} className="text-brand-700" /> Tomar una decisión
-              </h3>
-              <p className="mb-3 text-xs text-slate-600">
-                Cada acción queda registrada en la bitácora del cuartel.
-              </p>
-              <div className="space-y-2">
-                {TIPOS.map((t) => {
-                  const Icon = t.icon;
-                  return (
-                    <button
-                      key={t.id}
-                      type="button"
-                      onClick={() => abrir(t.id)}
-                      className="hover:border-brand-300 hover:bg-brand-50/40 flex w-full items-center gap-3 rounded-xl border border-slate-200 bg-white p-2.5 text-left transition-colors"
+                  <div className="mt-1 flex justify-between text-[11px]">
+                    <span className="text-slate-600">
+                      Ejecutado <strong className="text-slate-900">{s.pct.toFixed(0)}%</strong>
+                    </span>
+                    <span
+                      className={cn(s.venceEnDias < 15 ? 'text-status-risk-fg' : 'text-slate-500')}
                     >
-                      <span
-                        className={cn(
-                          'grid h-9 w-9 shrink-0 place-items-center rounded-lg text-white',
-                          t.tone,
-                        )}
-                      >
-                        <Icon size={16} />
-                      </span>
-                      <span className="min-w-0 flex-1">
-                        <span className="block text-sm font-semibold text-slate-900">
-                          {t.label}
-                        </span>
-                        <span className="block text-xs text-slate-500">{t.desc}</span>
-                      </span>
-                    </button>
-                  );
-                })}
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      </div>
+                      vence en {s.venceEnDias} días
+                    </span>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          )}
+          <div className="mt-3 flex items-center gap-1.5 border-t border-slate-100 pt-3 text-sm text-slate-600">
+            <Droplets size={14} className="text-slate-400" />
+            {arsCompact(subsidios.caja)} en caja · ~{fin.mesesAire.toFixed(1).replace('.', ',')}{' '}
+            meses de aire
+          </div>
+        </CardContent>
+      </Card>
 
-      {/* Dialog acción */}
-      <Dialog
-        open={dlg !== null}
-        onClose={() => setDlg(null)}
-        title={dlg ? `${TIPO_LABEL[dlg]} · ${cuartel.nombre}` : ''}
-        description={
-          dlg === 'comunicado'
-            ? 'Le llega una notificación al mando del cuartel y queda en la bitácora.'
-            : 'Queda registrada en la bitácora del cuartel.'
-        }
-        size="md"
-        footer={
-          <div className="flex justify-end gap-2">
-            <Button intent="ghost" onClick={() => setDlg(null)}>
-              Cancelar
+      {/* Acción de acompañamiento */}
+      {subsidios.porEjecutar > 0 && (
+        <Card className="border-brand-100 bg-brand-50/30 border-2">
+          <CardContent className="flex flex-wrap items-center justify-between gap-3 p-4">
+            <div className="text-sm text-slate-700">
+              Tiene <strong>{ars.format(subsidios.porEjecutar)}</strong> de subsidio sin ejecutar.
+              Un recordatorio le avisa el plazo.
+            </div>
+            <Button intent="primary" size="sm" onClick={recordar}>
+              <Send size={14} /> Recordar
             </Button>
-            <Button intent="primary" onClick={guardar}>
-              Registrar
-            </Button>
-          </div>
-        }
-      >
-        <div className="space-y-3">
+          </CardContent>
+        </Card>
+      )}
+
+      {/* No veo todo */}
+      <Card className="border-slate-200 bg-slate-50">
+        <CardContent className="flex items-start gap-3 p-4 text-sm text-slate-600">
+          <ShieldCheck size={18} className="mt-0.5 shrink-0 text-slate-500" />
           <div>
-            <Label>Asunto *</Label>
-            <Input
-              value={asunto}
-              onChange={(e) => setAsunto(e.target.value)}
-              placeholder="Ej: Plan de regularización de rendición"
-            />
+            <strong className="text-slate-900">
+              La Federación ve indicadores, no tus movimientos.
+            </strong>{' '}
+            Esta ficha muestra la salud financiera consolidada del cuartel (subsidios, caja, cuotas)
+            — nunca el detalle de su caja interna ni su gestión operativa.
           </div>
-          <div>
-            <Label>Detalle</Label>
-            <Textarea
-              value={detalle}
-              onChange={(e) => setDetalle(e.target.value)}
-              rows={3}
-              placeholder="Contexto, plazo, responsable…"
-            />
-          </div>
-        </div>
-      </Dialog>
+        </CardContent>
+      </Card>
     </div>
   );
 }
