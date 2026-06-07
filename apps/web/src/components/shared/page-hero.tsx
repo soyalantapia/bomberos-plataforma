@@ -56,9 +56,9 @@ export function PageHero({
         <div className="flex min-w-0 flex-1 items-start gap-4">
           {icono && (
             <motion.div
-              initial={{ scale: 0.8, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              transition={{ delay: 0.1, type: 'spring', stiffness: 220, damping: 18 }}
+              initial={{ scale: 0.9 }}
+              animate={{ scale: 1 }}
+              transition={{ type: 'spring', stiffness: 220, damping: 18 }}
               className={cn(
                 'grid h-12 w-12 shrink-0 place-items-center rounded-xl shadow-sm sm:h-14 sm:w-14',
                 iconVariant[variant],
@@ -84,16 +84,7 @@ export function PageHero({
         )}
       </div>
 
-      {meta && (
-        <motion.div
-          initial={{ opacity: 0, y: 6 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.15, duration: 0.3 }}
-          className="mt-4"
-        >
-          {meta}
-        </motion.div>
-      )}
+      {meta && <div className="mt-4">{meta}</div>}
     </motion.div>
   );
 }
