@@ -13,9 +13,9 @@ import { CUARTEL_PRINCIPAL_ID, PERSONA_FEDERACION_ID } from '../../data';
 
 import type { Perfil } from '@faro/types';
 
-// FASE 2 — Administrador (Finanzas) + Bombero (Protocolos / cuerpo activo).
-// Backlog (otra etapa): sumar 'mando', 'federacion', 'gobierno'.
-const OPCIONES: Perfil[] = ['administrativo', 'bombero'];
+// DOS VISTAS: Cuartel (administrativo · Finanzas, por defecto) + Federación.
+// Bombero queda para el próximo lanzamiento (la pantalla sigue en el repo).
+const OPCIONES: Perfil[] = ['administrativo', 'federacion'];
 
 const ICONO: Partial<Record<Perfil, React.ReactNode>> = {
   administrativo: <Wallet size={22} />,
@@ -91,7 +91,7 @@ export default function SeleccionarPerfil() {
         </div>
 
         <h1 className="text-xl font-bold text-slate-900 sm:text-2xl">Entrá a Vulcano</h1>
-        <p className="mt-1 text-sm text-slate-600">Elegí cómo querés entrar a tu cuartel.</p>
+        <p className="mt-1 text-sm text-slate-600">Elegí la vista: tu cuartel o la federación.</p>
 
         <div className="mt-5 space-y-3">
           {OPCIONES.map((p) => {

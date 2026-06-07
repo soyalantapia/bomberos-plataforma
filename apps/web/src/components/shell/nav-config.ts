@@ -173,12 +173,62 @@ const NAV_BOMBERO: NavItem[] = [
   DIRECTORIO_PUBLICO,
 ];
 
+// ════════════════════════════════════════════════════════════════════
+// FEDERACIÓN · segunda vista viva (la del presidente de la Federación).
+// ════════════════════════════════════════════════════════════════════
+const NAV_FEDERACION: NavItem[] = [
+  { label: 'Tablero', href: '/federacion', icon: 'globe-2', bottomNav: true },
+  {
+    label: 'Consolidados',
+    href: '/federacion/consolidados',
+    icon: 'bar-chart-3',
+    bottomNav: true,
+    bottomLabel: 'Datos',
+    seccion: 'Análisis',
+  },
+  {
+    label: 'Mapa provincial',
+    href: '/federacion/mapa',
+    icon: 'map',
+    bottomNav: true,
+    bottomLabel: 'Mapa',
+    seccion: 'Análisis',
+  },
+  {
+    label: 'Cumplimiento',
+    href: '/federacion/cumplimiento',
+    icon: 'flag-triangle-right',
+    bottomNav: true,
+    bottomLabel: 'Cumpl.',
+    seccion: 'Análisis',
+  },
+  {
+    label: 'Comunicados',
+    href: '/federacion/comunicados',
+    icon: 'megaphone',
+    bottomNav: true,
+    bottomLabel: 'Avisos',
+  },
+  { label: 'Gobernanza', href: '/federacion/governance', icon: 'gavel', seccion: 'Institucional' },
+  {
+    label: 'Integraciones',
+    href: '/federacion/integraciones',
+    icon: 'plug',
+    seccion: 'Institucional',
+  },
+  DIRECTORIO_PUBLICO,
+  AGENDA_PUBLICA,
+  ORGANIGRAMA_PUBLICO,
+];
+
+// DOS VISTAS VIVAS: Cuartel (administrativo · Finanzas) + Federación.
+// El resto queda parqueado (bombero = próximo lanzamiento).
 export const navByPerfil: Record<Perfil, NavItem[]> = {
-  bombero: NAV_BOMBERO,
+  bombero: NAV_BOMBERO, // próximo lanzamiento (cuerpo activo)
   mando: NAV_FINANZAS,
   administrativo: NAV_FINANZAS,
   gobierno: NAV_FINANZAS,
-  federacion: NAV_FINANZAS,
+  federacion: NAV_FEDERACION,
 };
 
 // ════════════════════════════════════════════════════════════════════

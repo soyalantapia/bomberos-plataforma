@@ -85,8 +85,10 @@ export default function LoginPage() {
       const persona =
         personas.find((p) => p.legajo === legajo.trim()) ??
         personas.find((p) => p.id === PERSONA_DEMO_ID)!;
-      iniciarSesion(persona.id, persona.cuartelId ?? CUARTEL_PRINCIPAL_ID, persona.perfiles[0]!);
-      router.replace('/seleccionar-perfil');
+      // Por defecto entra a la vista del Cuartel (finanzas). La Federación se
+      // elige después desde el avatar (selector de vistas).
+      iniciarSesion(persona.id, persona.cuartelId ?? CUARTEL_PRINCIPAL_ID, 'administrativo');
+      router.replace('/mando/finanzas');
     }, 600);
   }
 
