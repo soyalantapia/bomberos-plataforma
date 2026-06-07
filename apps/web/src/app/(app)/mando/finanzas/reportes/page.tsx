@@ -179,7 +179,7 @@ export default function ReportesPage() {
       {/* Selectores reporte */}
       <Card>
         <CardContent className="flex flex-wrap items-center gap-2 p-3">
-          <div className="flex gap-1">
+          <div className="-mx-1 flex w-full gap-1 overflow-x-auto px-1 sm:mx-0 sm:w-auto sm:px-0">
             {(
               [
                 ['resultados', 'Estado de Resultados'],
@@ -194,7 +194,7 @@ export default function ReportesPage() {
                 type="button"
                 onClick={() => setTipo(k)}
                 className={cn(
-                  'rounded-full px-3 py-1.5 text-xs font-medium transition-all',
+                  'shrink-0 whitespace-nowrap rounded-full px-3 py-1.5 text-xs font-medium transition-all',
                   tipo === k
                     ? 'bg-brand-600 text-white shadow-sm'
                     : 'bg-slate-100 text-slate-700 hover:bg-slate-200',
@@ -417,54 +417,68 @@ export default function ReportesPage() {
         <Card>
           <CardContent className="p-6">
             <h3 className="mb-4 font-bold text-slate-900">Flujo de fondos</h3>
-            <table className="w-full text-sm">
-              <thead className="bg-slate-50 text-xs uppercase text-slate-500">
-                <tr>
-                  <th className="px-3 py-2 text-left">Concepto</th>
-                  <th className="px-3 py-2 text-right">Mes</th>
-                  <th className="px-3 py-2 text-right">Trim. (est.)</th>
-                  <th className="px-3 py-2 text-right">YTD (est.)</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr className="font-bold">
-                  <td className="text-status-ok-fg px-3 py-2">+ Ingresos operativos</td>
-                  <td className="px-3 py-2 text-right font-mono">{ars.format(totalIng)}</td>
-                  <td className="px-3 py-2 text-right font-mono">{ars.format(totalIng * 2.95)}</td>
-                  <td className="px-3 py-2 text-right font-mono">{ars.format(totalIng * 4.92)}</td>
-                </tr>
-                <tr>
-                  <td className="text-status-risk-fg px-3 py-2">− Egresos operativos</td>
-                  <td className="px-3 py-2 text-right font-mono">−{ars.format(totalEgr)}</td>
-                  <td className="px-3 py-2 text-right font-mono">−{ars.format(totalEgr * 2.95)}</td>
-                  <td className="px-3 py-2 text-right font-mono">−{ars.format(totalEgr * 4.92)}</td>
-                </tr>
-                <tr className="bg-brand-50 border-t-2 border-slate-300 font-bold">
-                  <td className="text-brand-900 px-3 py-2">= Flujo operativo neto</td>
-                  <td className="px-3 py-2 text-right font-mono">{ars.format(resultado)}</td>
-                  <td className="px-3 py-2 text-right font-mono">{ars.format(resultado * 2.95)}</td>
-                  <td className="px-3 py-2 text-right font-mono">{ars.format(resultado * 4.92)}</td>
-                </tr>
-                <tr className="border-t border-slate-100">
-                  <td className="px-3 py-2 text-slate-700">+ Saldo inicial caja</td>
-                  <td className="px-3 py-2 text-right font-mono">
-                    {ars.format(activos - resultado)}
-                  </td>
-                  <td className="px-3 py-2 text-right font-mono">
-                    {ars.format(activos - resultado * 2.95)}
-                  </td>
-                  <td className="px-3 py-2 text-right font-mono">
-                    {ars.format(activos - resultado * 4.92)}
-                  </td>
-                </tr>
-                <tr className="bg-status-ok-bg/40 border-t-2 border-slate-300 font-bold">
-                  <td className="text-status-ok-fg px-3 py-2">= Saldo final caja</td>
-                  <td className="px-3 py-2 text-right font-mono">{ars.format(activos)}</td>
-                  <td className="px-3 py-2 text-right font-mono">{ars.format(activos)}</td>
-                  <td className="px-3 py-2 text-right font-mono">{ars.format(activos)}</td>
-                </tr>
-              </tbody>
-            </table>
+            <div className="-mx-6 overflow-x-auto px-6">
+              <table className="w-full min-w-[520px] text-sm">
+                <thead className="bg-slate-50 text-xs uppercase text-slate-500">
+                  <tr>
+                    <th className="px-3 py-2 text-left">Concepto</th>
+                    <th className="px-3 py-2 text-right">Mes</th>
+                    <th className="px-3 py-2 text-right">Trim. (est.)</th>
+                    <th className="px-3 py-2 text-right">YTD (est.)</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr className="font-bold">
+                    <td className="text-status-ok-fg px-3 py-2">+ Ingresos operativos</td>
+                    <td className="px-3 py-2 text-right font-mono">{ars.format(totalIng)}</td>
+                    <td className="px-3 py-2 text-right font-mono">
+                      {ars.format(totalIng * 2.95)}
+                    </td>
+                    <td className="px-3 py-2 text-right font-mono">
+                      {ars.format(totalIng * 4.92)}
+                    </td>
+                  </tr>
+                  <tr>
+                    <td className="text-status-risk-fg px-3 py-2">− Egresos operativos</td>
+                    <td className="px-3 py-2 text-right font-mono">−{ars.format(totalEgr)}</td>
+                    <td className="px-3 py-2 text-right font-mono">
+                      −{ars.format(totalEgr * 2.95)}
+                    </td>
+                    <td className="px-3 py-2 text-right font-mono">
+                      −{ars.format(totalEgr * 4.92)}
+                    </td>
+                  </tr>
+                  <tr className="bg-brand-50 border-t-2 border-slate-300 font-bold">
+                    <td className="text-brand-900 px-3 py-2">= Flujo operativo neto</td>
+                    <td className="px-3 py-2 text-right font-mono">{ars.format(resultado)}</td>
+                    <td className="px-3 py-2 text-right font-mono">
+                      {ars.format(resultado * 2.95)}
+                    </td>
+                    <td className="px-3 py-2 text-right font-mono">
+                      {ars.format(resultado * 4.92)}
+                    </td>
+                  </tr>
+                  <tr className="border-t border-slate-100">
+                    <td className="px-3 py-2 text-slate-700">+ Saldo inicial caja</td>
+                    <td className="px-3 py-2 text-right font-mono">
+                      {ars.format(activos - resultado)}
+                    </td>
+                    <td className="px-3 py-2 text-right font-mono">
+                      {ars.format(activos - resultado * 2.95)}
+                    </td>
+                    <td className="px-3 py-2 text-right font-mono">
+                      {ars.format(activos - resultado * 4.92)}
+                    </td>
+                  </tr>
+                  <tr className="bg-status-ok-bg/40 border-t-2 border-slate-300 font-bold">
+                    <td className="text-status-ok-fg px-3 py-2">= Saldo final caja</td>
+                    <td className="px-3 py-2 text-right font-mono">{ars.format(activos)}</td>
+                    <td className="px-3 py-2 text-right font-mono">{ars.format(activos)}</td>
+                    <td className="px-3 py-2 text-right font-mono">{ars.format(activos)}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
           </CardContent>
         </Card>
       )}
@@ -593,49 +607,51 @@ export default function ReportesPage() {
                 recibidas con discriminación de crédito fiscal informativo.
               </p>
             </div>
-            <table className="w-full text-sm">
-              <thead className="bg-slate-50 text-xs uppercase text-slate-500">
-                <tr>
-                  <th className="px-3 py-2 text-left">Fecha</th>
-                  <th className="px-3 py-2 text-left">Tipo</th>
-                  <th className="px-3 py-2 text-left">Nº comprobante</th>
-                  <th className="px-3 py-2 text-left">CUIT</th>
-                  <th className="px-3 py-2 text-left">Razón social</th>
-                  <th className="px-3 py-2 text-right">Neto</th>
-                  <th className="px-3 py-2 text-right">IVA 21%</th>
-                  <th className="px-3 py-2 text-right">Total</th>
-                </tr>
-              </thead>
-              <tbody>
-                {movsPeriodo
-                  .filter((m) => m.tipo === 'egreso' && m.comprobanteTipo === 'FA-A')
-                  .slice(0, 20)
-                  .map((m) => {
-                    const neto = m.monto / 1.21;
-                    const iva = m.monto - neto;
-                    return (
-                      <tr key={m.id} className="border-t border-slate-100">
-                        <td className="px-3 py-1.5 text-xs">{m.fecha.slice(0, 10)}</td>
-                        <td className="px-3 py-1.5">
-                          <Badge intent="ok">FA-A</Badge>
-                        </td>
-                        <td className="px-3 py-1.5 font-mono text-xs">{m.comprobanteNumero}</td>
-                        <td className="px-3 py-1.5 font-mono text-xs">{m.cuitContraparte}</td>
-                        <td className="px-3 py-1.5 text-xs">{m.contraparte}</td>
-                        <td className="px-3 py-1.5 text-right font-mono text-xs">
-                          {ars.format(neto)}
-                        </td>
-                        <td className="px-3 py-1.5 text-right font-mono text-xs text-slate-500">
-                          {ars.format(iva)}
-                        </td>
-                        <td className="px-3 py-1.5 text-right font-mono text-xs font-bold">
-                          {ars.format(m.monto)}
-                        </td>
-                      </tr>
-                    );
-                  })}
-              </tbody>
-            </table>
+            <div className="-mx-6 overflow-x-auto px-6">
+              <table className="w-full min-w-[760px] text-sm">
+                <thead className="bg-slate-50 text-xs uppercase text-slate-500">
+                  <tr>
+                    <th className="px-3 py-2 text-left">Fecha</th>
+                    <th className="px-3 py-2 text-left">Tipo</th>
+                    <th className="px-3 py-2 text-left">Nº comprobante</th>
+                    <th className="px-3 py-2 text-left">CUIT</th>
+                    <th className="px-3 py-2 text-left">Razón social</th>
+                    <th className="px-3 py-2 text-right">Neto</th>
+                    <th className="px-3 py-2 text-right">IVA 21%</th>
+                    <th className="px-3 py-2 text-right">Total</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {movsPeriodo
+                    .filter((m) => m.tipo === 'egreso' && m.comprobanteTipo === 'FA-A')
+                    .slice(0, 20)
+                    .map((m) => {
+                      const neto = m.monto / 1.21;
+                      const iva = m.monto - neto;
+                      return (
+                        <tr key={m.id} className="border-t border-slate-100">
+                          <td className="px-3 py-1.5 text-xs">{m.fecha.slice(0, 10)}</td>
+                          <td className="px-3 py-1.5">
+                            <Badge intent="ok">FA-A</Badge>
+                          </td>
+                          <td className="px-3 py-1.5 font-mono text-xs">{m.comprobanteNumero}</td>
+                          <td className="px-3 py-1.5 font-mono text-xs">{m.cuitContraparte}</td>
+                          <td className="px-3 py-1.5 text-xs">{m.contraparte}</td>
+                          <td className="px-3 py-1.5 text-right font-mono text-xs">
+                            {ars.format(neto)}
+                          </td>
+                          <td className="px-3 py-1.5 text-right font-mono text-xs text-slate-500">
+                            {ars.format(iva)}
+                          </td>
+                          <td className="px-3 py-1.5 text-right font-mono text-xs font-bold">
+                            {ars.format(m.monto)}
+                          </td>
+                        </tr>
+                      );
+                    })}
+                </tbody>
+              </table>
+            </div>
           </CardContent>
         </Card>
       )}
