@@ -25,6 +25,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const persona = useFaroStore(selectPersonaActual);
   const cuartel = useFaroStore(selectCuartelActivo);
   const cerrar = useFaroStore((s) => s.cerrarSesion);
+  const cambiarPerfil = useFaroStore((s) => s.cambiarPerfil);
   const hidratado = useFaroStore((s) => s.hidratado);
   const notifSinLeer = useFaroStore((s) => s.notificaciones.filter((n) => !n.leida).length);
   const pathname = usePathname();
@@ -33,6 +34,18 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     if (hidratado && !sesion) router.replace('/login');
   }, [hidratado, sesion, router]);
+
+  // La URL manda: sincroniza la vista (perfil) con la sección, para que los
+  // deep-links funcionen solos. /federacion* → Federación · /mando* → Cuartel.
+  useEffect(() => {
+    if (!sesion) return;
+    const target = pathname.startsWith('/federacion')
+      ? ('federacion' as const)
+      : pathname.startsWith('/mando')
+        ? ('administrativo' as const)
+        : null;
+    if (target && sesion.perfilActivo !== target) cambiarPerfil(target);
+  }, [pathname, sesion, cambiarPerfil]);
 
   if (!hidratado || !sesion || !persona) {
     return (
