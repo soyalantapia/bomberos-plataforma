@@ -281,7 +281,7 @@ export default function OperacionesPage() {
                         {TIPO_ICON[principal.tipo]}
                       </div>
                       {enDia.length > 1 && (
-                        <span className="absolute -right-1 -top-1 grid h-3.5 min-w-3.5 place-items-center rounded-full bg-slate-900 px-0.5 text-[9px] font-bold tabular-nums text-white">
+                        <span className="absolute -right-1 -top-1 grid h-4 min-w-4 place-items-center rounded-full bg-slate-900 px-0.5 text-[10px] font-bold tabular-nums text-white">
                           {enDia.length}
                         </span>
                       )}
